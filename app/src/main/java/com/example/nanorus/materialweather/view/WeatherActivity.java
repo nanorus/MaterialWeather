@@ -27,6 +27,11 @@ public class WeatherActivity extends AppCompatActivity implements WeatherInterfa
     }
 
     @Override
+    public String getPlaceFromField() {
+        return null;
+    }
+
+    @Override
     public WeatherInterface.View getView() {
         return this;
     }

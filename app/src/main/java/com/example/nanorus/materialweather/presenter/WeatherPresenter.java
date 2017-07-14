@@ -4,13 +4,13 @@ import com.example.nanorus.materialweather.model.DataManager;
 import com.example.nanorus.materialweather.model.pojo.forecast.ListPojo;
 import com.example.nanorus.materialweather.model.pojo.forecast.RequestPojo;
 import com.example.nanorus.materialweather.utils.AppPreferencesManager;
-import com.example.nanorus.materialweather.view.WeatherInterface;
+import com.example.nanorus.materialweather.view.IWeatherActivity;
 
 import rx.Observable;
 import rx.Subscriber;
 
-public class WeatherPresenter implements WeatherInterface.Action {
-    private WeatherInterface.View mView;
+public class WeatherPresenter implements IWeatherPresenter {
+    private IWeatherActivity mView;
 
     private Observable<RequestPojo> requestPojoObservable;
     private Observable<ListPojo> listPojoObservable;
@@ -18,9 +18,9 @@ public class WeatherPresenter implements WeatherInterface.Action {
     private Subscriber<RequestPojo> requestPojoSubscriber;
     private AppPreferencesManager mAppPreferencesManager;
 
-    public WeatherPresenter(WeatherInterface.View view) {
+    public WeatherPresenter(IWeatherActivity view) {
         mView = view;
-        mAppPreferencesManager = new AppPreferencesManager(mView.getView());
+        mAppPreferencesManager = new AppPreferencesManager(mView.getActivity());
 
         mView.setUserEnteredPlace(getPlaceFromPref());
 
@@ -30,8 +30,8 @@ public class WeatherPresenter implements WeatherInterface.Action {
 
     @Override
     public void loadData() {
-        requestPojoObservable = DataManager.getFullForecastFromWeb(getPlaceFromPref());
-        listPojoObservable = DataManager.get3hForecastListFromWeb(getPlaceFromPref());
+        requestPojoObservable = DataManager.getFullForecastData(getPlaceFromPref());
+        listPojoObservable = DataManager.get3hForecastData(getPlaceFromPref());
     }
 
     @Override

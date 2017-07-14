@@ -11,14 +11,15 @@ import android.widget.TextView;
 
 import com.example.nanorus.materialweather.R;
 import com.example.nanorus.materialweather.model.pojo.forecast.ListPojo;
+import com.example.nanorus.materialweather.presenter.IWeatherPresenter;
 import com.example.nanorus.materialweather.presenter.WeatherPresenter;
 import com.example.nanorus.materialweather.view.ui.adapters.ForecastRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeatherActivity extends AppCompatActivity implements WeatherInterface.View {
-    private WeatherInterface.Action mPresenter;
+public class WeatherActivity extends AppCompatActivity implements IWeatherActivity {
+    private IWeatherPresenter mPresenter;
 
     private EditText weather_et_place;
     private ImageView weather_iv_search;
@@ -103,7 +104,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherInterfa
     }
 
     @Override
-    public WeatherInterface.View getView() {
+    public IWeatherActivity getView() {
         return this;
     }
 

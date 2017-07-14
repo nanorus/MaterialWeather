@@ -11,7 +11,7 @@ import rx.schedulers.Schedulers;
 
 public class DataManager {
 
-    public static Observable<RequestPojo> getFullForecastFromWeb(String place) {
+    public static Observable<RequestPojo> getFullForecastData(String place) {
         Retrofit retrofit = WeatherRetroClient.getInstance();
         ForecastService service = retrofit.create(ForecastService.class);
 
@@ -21,9 +21,9 @@ public class DataManager {
         return requestPojoObservable;
     }
 
-    public static Observable<ListPojo> get3hForecastListFromWeb(String place) {
+    public static Observable<ListPojo> get3hForecastData(String place) {
         // list for 3 hours each (ListPojo)
-        Observable<ListPojo> listPojoObservable = getFullForecastFromWeb(place)
+        Observable<ListPojo> listPojoObservable = getFullForecastData(place)
                 .map(requestPojo -> (requestPojo.getList()))
                 .flatMap(listPojos -> Observable.from(listPojos));
         return listPojoObservable;

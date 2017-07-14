@@ -4,25 +4,7 @@ import android.app.Activity;
 
 import com.example.nanorus.materialweather.model.pojo.forecast.ListPojo;
 
-public interface WeatherInterface {
-
-    interface Action {
-
-        void loadData();
-
-        void showData();
-
-        void setPlaceToPref();
-
-        String getPlaceFromPref();
-
-        void onSearchButtonPressed();
-
-        void releasePresenter();
-
-    }
-
-    interface View {
+public interface IWeatherActivity {
 
         void createWeatherList();
 
@@ -38,9 +20,8 @@ public interface WeatherInterface {
 
         void setWebPlace(String place);
 
-        WeatherInterface.View getView();
+        IWeatherActivity getView();
 
         Activity getActivity();
-    }
 
 }

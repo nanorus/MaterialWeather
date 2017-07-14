@@ -8,6 +8,7 @@ import com.example.nanorus.materialweather.view.IWeatherActivity;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class WeatherPresenter implements IWeatherPresenter {
     private IWeatherActivity mView;
@@ -47,7 +48,7 @@ public class WeatherPresenter implements IWeatherPresenter {
         requestPojoSubscriber = new Subscriber<RequestPojo>() {
             @Override
             public void onCompleted() {
-
+                requestPojoSubscriber.unsubscribe();
             }
 
             @Override
@@ -76,11 +77,15 @@ public class WeatherPresenter implements IWeatherPresenter {
             public void onNext(ListPojo forecast3hItem) {
                 mView.addToWeatherList(forecast3hItem);
                 mView.updateAdapter();
-
+                System.out.println("list onNext: " + forecast3hItem.getDtTxt() + ": " + forecast3hItem.getMain().getTemp());
             }
         };
-        requestPojoObservable.subscribe(requestPojoSubscriber);
-        listPojoObservable.subscribe(listPojoSubscriber);
+        requestPojoObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(requestPojoSubscriber);
+        listPojoObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listPojoSubscriber);
 
     }
 

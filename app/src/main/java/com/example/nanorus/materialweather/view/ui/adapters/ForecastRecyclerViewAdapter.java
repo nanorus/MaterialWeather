@@ -31,8 +31,7 @@ public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRe
     @Override
     public void onBindViewHolder(ForecastRecyclerViewHolder holder, int position) {
         holder.forecast_list_item_tv_date.setText(mData.get(position).getDtTxt());
-        holder.forecast_list_item_tv_temperature.setText(String.valueOf(Math.round(mData.get(position).getMain().getTempMin())-273)
-                + " - " + String.valueOf(Math.round(mData.get(position).getMain().getTempMax())-273));
+        holder.forecast_list_item_tv_temperature.setText(String.valueOf(Math.round(mData.get(position).getMain().getTemp()) - 273) + "°");
 
     }
 

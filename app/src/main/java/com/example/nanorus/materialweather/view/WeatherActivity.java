@@ -55,10 +55,9 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
     @Override
     public void createWeatherList() {
-        if (mWeatherList == null)
-            mWeatherList = new ArrayList<>();
-        else
+        if (mWeatherList != null)
             mWeatherList.clear();
+        mWeatherList = new ArrayList<>();
     }
 
     @Override
@@ -68,10 +67,12 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
     @Override
     public void setAdapter() {
-        if (mAdapter == null) {
-            mAdapter = new ForecastRecyclerViewAdapter(mWeatherList);
-            weather_rv_weatherList.setAdapter(mAdapter);
+        if (mAdapter != null) {
+            mAdapter = null;
         }
+        mAdapter = new ForecastRecyclerViewAdapter(mWeatherList);
+        weather_rv_weatherList.setAdapter(mAdapter);
+
         if (mLayoutManager == null) {
             mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
             weather_rv_weatherList.setLayoutManager(mLayoutManager);
@@ -80,8 +81,9 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
     @Override
     public void updateAdapter() {
-        if (mAdapter != null)
+        if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override

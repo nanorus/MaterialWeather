@@ -1,5 +1,5 @@
 
-package com.example.nanorus.materialweather.model.pojo.forecast;
+package com.example.nanorus.materialweather.model.pojo.forecast.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

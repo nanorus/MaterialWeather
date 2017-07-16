@@ -1,6 +1,6 @@
 package com.example.nanorus.materialweather.model.api.services;
 
-import com.example.nanorus.materialweather.model.pojo.forecast.RequestPojo;
+import com.example.nanorus.materialweather.model.pojo.forecast.api.RequestPojo;
 
 import retrofit2.http.GET;
 import retrofit2.http.Query;

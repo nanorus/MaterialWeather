@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.nanorus.materialweather.R;
-import com.example.nanorus.materialweather.model.pojo.forecast.ListPojo;
+import com.example.nanorus.materialweather.model.pojo.forecast.api.ListPojo;
 import com.example.nanorus.materialweather.presenter.IWeatherPresenter;
 import com.example.nanorus.materialweather.presenter.WeatherPresenter;
 import com.example.nanorus.materialweather.view.ui.adapters.ForecastRecyclerViewAdapter;
@@ -40,8 +40,6 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         weather_rv_weatherList = (RecyclerView) findViewById(R.id.weather_rv_weatherList);
 
         mPresenter = new WeatherPresenter(getView());
-
-
         setListeners();
     }
 
@@ -57,7 +55,8 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     public void createWeatherList() {
         if (mWeatherList != null)
             mWeatherList.clear();
-        mWeatherList = new ArrayList<>();
+        else
+            mWeatherList = new ArrayList<>();
     }
 
     @Override
@@ -67,12 +66,8 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
     @Override
     public void setAdapter() {
-        if (mAdapter != null) {
-            mAdapter = null;
-        }
         mAdapter = new ForecastRecyclerViewAdapter(mWeatherList);
         weather_rv_weatherList.setAdapter(mAdapter);
-
         if (mLayoutManager == null) {
             mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
             weather_rv_weatherList.setLayoutManager(mLayoutManager);
@@ -81,9 +76,8 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
     @Override
     public void updateAdapter() {
-        if (mAdapter != null) {
+        if (mAdapter != null)
             mAdapter.notifyDataSetChanged();
-        }
     }
 
     @Override

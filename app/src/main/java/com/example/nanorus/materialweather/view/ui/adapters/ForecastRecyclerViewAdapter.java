@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.nanorus.materialweather.R;
-import com.example.nanorus.materialweather.model.pojo.forecast.ListPojo;
+import com.example.nanorus.materialweather.model.pojo.forecast.api.ListPojo;
 
 import java.util.List;
 

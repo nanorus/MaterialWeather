@@ -1,8 +1,9 @@
 package com.example.nanorus.materialweather.presenter;
 
 import com.example.nanorus.materialweather.model.DataManager;
-import com.example.nanorus.materialweather.model.pojo.forecast.ListPojo;
-import com.example.nanorus.materialweather.model.pojo.forecast.RequestPojo;
+import com.example.nanorus.materialweather.model.pojo.ShortDayWeatherPojo;
+import com.example.nanorus.materialweather.model.pojo.forecast.api.ListPojo;
+import com.example.nanorus.materialweather.model.pojo.forecast.api.RequestPojo;
 import com.example.nanorus.materialweather.utils.AppPreferencesManager;
 import com.example.nanorus.materialweather.view.IWeatherActivity;
 
@@ -24,6 +25,28 @@ public class WeatherPresenter implements IWeatherPresenter {
         mAppPreferencesManager = new AppPreferencesManager(mView.getActivity());
 
         mView.setUserEnteredPlace(getPlaceFromPref());
+
+
+        Observable<ShortDayWeatherPojo> shortDayWeatherPojoObservable = DataManager.getShortDayWeatherPojos("chernigiv");
+        // testing (successful :))
+        shortDayWeatherPojoObservable.subscribe(new Subscriber<ShortDayWeatherPojo>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(ShortDayWeatherPojo shortDayWeatherPojo) {
+                // addToListOfAdapter
+            }
+        });
+
+
 
         loadData();
         showData();
@@ -77,7 +100,6 @@ public class WeatherPresenter implements IWeatherPresenter {
             public void onNext(ListPojo forecast3hItem) {
                 mView.addToWeatherList(forecast3hItem);
                 mView.updateAdapter();
-                System.out.println("list onNext: " + forecast3hItem.getDtTxt() + ": " + forecast3hItem.getMain().getTemp());
             }
         };
         requestPojoObservable

@@ -10,16 +10,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.nanorus.materialweather.R;
-import com.example.nanorus.materialweather.model.pojo.forecast.api.ListPojo;
-import com.example.nanorus.materialweather.presenter.IWeatherPresenter;
-import com.example.nanorus.materialweather.presenter.WeatherPresenter;
+import com.example.nanorus.materialweather.model.pojo.ShortDayWeatherPojo;
+import com.example.nanorus.materialweather.presenter.IWeatherActivityPresenter;
+import com.example.nanorus.materialweather.presenter.WeatherActivityPresenter;
 import com.example.nanorus.materialweather.view.ui.adapters.ForecastRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherActivity extends AppCompatActivity implements IWeatherActivity {
-    private IWeatherPresenter mPresenter;
+    private IWeatherActivityPresenter mPresenter;
 
     private EditText weather_et_place;
     private ImageView weather_iv_search;
@@ -28,7 +28,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
     private ForecastRecyclerViewAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
-    private List<ListPojo> mWeatherList;
+    private List<ShortDayWeatherPojo> mWeatherDaysList;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +39,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         weather_tv_place = (TextView) findViewById(R.id.weather_tv_place);
         weather_rv_weatherList = (RecyclerView) findViewById(R.id.weather_rv_weatherList);
 
-        mPresenter = new WeatherPresenter(getView());
+        mPresenter = new WeatherActivityPresenter(getView());
         setListeners();
     }
 
@@ -53,20 +53,20 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
     @Override
     public void createWeatherList() {
-        if (mWeatherList != null)
-            mWeatherList.clear();
+        if (mWeatherDaysList != null)
+            mWeatherDaysList.clear();
         else
-            mWeatherList = new ArrayList<>();
+            mWeatherDaysList = new ArrayList<>();
     }
 
     @Override
-    public void addToWeatherList(ListPojo listPojo) {
-        mWeatherList.add(listPojo);
+    public void addToWeatherList(ShortDayWeatherPojo shortDayWeatherPojo) {
+        mWeatherDaysList.add(shortDayWeatherPojo);
     }
 
     @Override
     public void setAdapter() {
-        mAdapter = new ForecastRecyclerViewAdapter(mWeatherList);
+        mAdapter = new ForecastRecyclerViewAdapter(mWeatherDaysList);
         weather_rv_weatherList.setAdapter(mAdapter);
         if (mLayoutManager == null) {
             mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
@@ -110,9 +110,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     }
 
     private void setListeners() {
-        weather_iv_search.setOnClickListener(view -> {
-            mPresenter.onSearchButtonPressed();
-        });
+        weather_iv_search.setOnClickListener(view -> mPresenter.onSearchButtonPressed());
     }
 
 }

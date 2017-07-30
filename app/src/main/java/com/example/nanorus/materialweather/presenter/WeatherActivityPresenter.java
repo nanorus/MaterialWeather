@@ -2,7 +2,6 @@ package com.example.nanorus.materialweather.presenter;
 
 import com.example.nanorus.materialweather.model.DataManager;
 import com.example.nanorus.materialweather.model.pojo.ShortDayWeatherPojo;
-import com.example.nanorus.materialweather.model.pojo.forecast.api.ListPojo;
 import com.example.nanorus.materialweather.model.pojo.forecast.api.RequestPojo;
 import com.example.nanorus.materialweather.utils.AppPreferencesManager;
 import com.example.nanorus.materialweather.view.IWeatherActivity;
@@ -10,43 +9,22 @@ import com.example.nanorus.materialweather.view.IWeatherActivity;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
-public class WeatherPresenter implements IWeatherPresenter {
+public class WeatherActivityPresenter implements IWeatherActivityPresenter {
     private IWeatherActivity mView;
 
-    private Observable<RequestPojo> requestPojoObservable;
-    private Observable<ListPojo> listPojoObservable;
-    private Subscriber<ListPojo> listPojoSubscriber;
-    private Subscriber<RequestPojo> requestPojoSubscriber;
+    Observable<ShortDayWeatherPojo> mShortDayWeatherPojoObservable;
+    private Observable<RequestPojo> mRequestPojoObservable;
+    private Subscriber<RequestPojo> mRequestPojoSubscriber;
+    private Subscriber<ShortDayWeatherPojo> mShortDayWeatherPojoSubscriber;
     private AppPreferencesManager mAppPreferencesManager;
 
-    public WeatherPresenter(IWeatherActivity view) {
+    public WeatherActivityPresenter(IWeatherActivity view) {
         mView = view;
         mAppPreferencesManager = new AppPreferencesManager(mView.getActivity());
 
         mView.setUserEnteredPlace(getPlaceFromPref());
-
-
-        Observable<ShortDayWeatherPojo> shortDayWeatherPojoObservable = DataManager.getShortDayWeatherPojos("chernigiv");
-        // testing (successful :))
-        shortDayWeatherPojoObservable.subscribe(new Subscriber<ShortDayWeatherPojo>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(ShortDayWeatherPojo shortDayWeatherPojo) {
-                // addToListOfAdapter
-            }
-        });
-
-
 
         loadData();
         showData();
@@ -54,29 +32,27 @@ public class WeatherPresenter implements IWeatherPresenter {
 
     @Override
     public void loadData() {
-        requestPojoObservable = DataManager.getFullForecastData(getPlaceFromPref());
-        listPojoObservable = DataManager.get3hForecastData(getPlaceFromPref());
+        mRequestPojoObservable = DataManager.getFullForecastData(getPlaceFromPref());
+        mShortDayWeatherPojoObservable = DataManager.getShortDayWeatherPojos(getPlaceFromPref());
     }
 
     @Override
     public void showData() {
         mView.createWeatherList();
         mView.setAdapter();
-        if (requestPojoSubscriber != null && !requestPojoSubscriber.isUnsubscribed())
-            requestPojoSubscriber.unsubscribe();
+        if (mRequestPojoSubscriber != null && !mRequestPojoSubscriber.isUnsubscribed())
+            mRequestPojoSubscriber.unsubscribe();
+        if (mShortDayWeatherPojoSubscriber != null && !mShortDayWeatherPojoSubscriber.isUnsubscribed())
+            mShortDayWeatherPojoSubscriber.unsubscribe();
 
-        if (listPojoSubscriber != null && !listPojoSubscriber.isUnsubscribed())
-            listPojoSubscriber.unsubscribe();
-
-        requestPojoSubscriber = new Subscriber<RequestPojo>() {
+        mRequestPojoSubscriber = new Subscriber<RequestPojo>() {
             @Override
             public void onCompleted() {
-                requestPojoSubscriber.unsubscribe();
             }
 
             @Override
             public void onError(Throwable e) {
-
+                e.printStackTrace();
             }
 
             @Override
@@ -85,29 +61,34 @@ public class WeatherPresenter implements IWeatherPresenter {
             }
         };
 
-        listPojoSubscriber = new Subscriber<ListPojo>() {
+        mShortDayWeatherPojoSubscriber = (new Subscriber<ShortDayWeatherPojo>() {
             @Override
             public void onCompleted() {
-                listPojoSubscriber.unsubscribe();
+
             }
 
             @Override
             public void onError(Throwable e) {
-
+                e.printStackTrace();
             }
 
             @Override
-            public void onNext(ListPojo forecast3hItem) {
-                mView.addToWeatherList(forecast3hItem);
+            public void onNext(ShortDayWeatherPojo shortDayWeatherPojo) {
+                // addToListOfAdapter
+                mView.addToWeatherList(shortDayWeatherPojo);
                 mView.updateAdapter();
             }
-        };
-        requestPojoObservable
+        });
+
+        mRequestPojoObservable
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(requestPojoSubscriber);
-        listPojoObservable
+                .subscribe(mRequestPojoSubscriber);
+
+        mShortDayWeatherPojoObservable
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(listPojoSubscriber);
+                .subscribe(mShortDayWeatherPojoSubscriber);
 
     }
 
@@ -130,10 +111,11 @@ public class WeatherPresenter implements IWeatherPresenter {
 
     @Override
     public void releasePresenter() {
+        if (mRequestPojoSubscriber != null && !mRequestPojoSubscriber.isUnsubscribed())
+            mRequestPojoSubscriber.unsubscribe();
+        if (mShortDayWeatherPojoSubscriber != null && !mShortDayWeatherPojoSubscriber.isUnsubscribed())
+            mShortDayWeatherPojoSubscriber.unsubscribe();
         mView = null;
-        if (listPojoSubscriber != null && !listPojoSubscriber.isUnsubscribed())
-            listPojoSubscriber.unsubscribe();
-        listPojoObservable = null;
-        requestPojoObservable = null;
+        mRequestPojoObservable = null;
     }
 }

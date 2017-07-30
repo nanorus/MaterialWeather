@@ -1,6 +1,6 @@
 package com.example.nanorus.materialweather.presenter;
 
-public interface IWeatherPresenter {
+public interface IWeatherActivityPresenter {
 
     void loadData();
 

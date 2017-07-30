@@ -8,19 +8,19 @@
     tools:context="com.example.nanorus.materialweather.view.WeatherActivity">
 
     <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:id="@+id/relativeLayout">
+        android:background="@color/colorPrimary">
 
         <ImageView
             android:id="@+id/weather_iv_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_search_white_24dp"
-            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"/>
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/ic_search_white_24dp"/>
 
         <EditText
             android:id="@+id/weather_et_place"
@@ -44,6 +44,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/relativeLayout"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
         android:text="place"/>
 
     <android.support.v7.widget.RecyclerView

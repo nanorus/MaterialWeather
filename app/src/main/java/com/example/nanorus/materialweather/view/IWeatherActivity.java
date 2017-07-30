@@ -2,13 +2,13 @@ package com.example.nanorus.materialweather.view;
 
 import android.app.Activity;
 
-import com.example.nanorus.materialweather.model.pojo.forecast.api.ListPojo;
+import com.example.nanorus.materialweather.model.pojo.ShortDayWeatherPojo;
 
 public interface IWeatherActivity {
 
         void createWeatherList();
 
-        void addToWeatherList(ListPojo listPojo);
+        void addToWeatherList(ShortDayWeatherPojo shortDayWeatherPojo);
 
         void setAdapter();
 

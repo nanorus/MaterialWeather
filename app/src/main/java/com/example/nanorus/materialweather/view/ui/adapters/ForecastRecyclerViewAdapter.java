@@ -7,15 +7,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.nanorus.materialweather.R;
-import com.example.nanorus.materialweather.model.pojo.forecast.api.ListPojo;
+import com.example.nanorus.materialweather.model.pojo.ShortDayWeatherPojo;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRecyclerViewAdapter.ForecastRecyclerViewHolder> {
 
-    List<ListPojo> mData;
+    List<ShortDayWeatherPojo> mData;
 
-    public ForecastRecyclerViewAdapter(List<ListPojo> data) {
+    public ForecastRecyclerViewAdapter(List<ShortDayWeatherPojo> data) {
         mData = data;
     }
 
@@ -30,8 +33,20 @@ public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRe
 
     @Override
     public void onBindViewHolder(ForecastRecyclerViewHolder holder, int position) {
-        holder.forecast_list_item_tv_date.setText(mData.get(position).getDtTxt());
-        holder.forecast_list_item_tv_temperature.setText(String.valueOf(Math.round(mData.get(position).getMain().getTemp()) - 273) + "°");
+        ShortDayWeatherPojo singleData = mData.get(position);
+        String strDt = null;
+        if (position == 0) {
+            if (singleData.getDayOfMonth() == Integer.parseInt(new SimpleDateFormat("dd").format(Calendar.getInstance().getTime()))) {
+                strDt = "Today";
+            }
+        } else {
+            Date date = new Date();
+            date.setDate(singleData.getDayOfMonth());
+            date.setMonth(singleData.getMonth());
+            strDt = (new SimpleDateFormat("EEEE, dd MMMM")).format(date);
+        }
+        holder.forecast_list_item_tv_date.setText(strDt);
+        holder.forecast_list_item_tv_temperature.setText(singleData.getMinTemp() + " - " + singleData.getMaxTemp() + "°");
 
     }
 

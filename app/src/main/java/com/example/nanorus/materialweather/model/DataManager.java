@@ -11,6 +11,7 @@ import com.example.nanorus.materialweather.model.pojo.forecast.api.RequestPojo;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Calendar;
 
 import retrofit2.Retrofit;
 import rx.Observable;
@@ -52,35 +53,53 @@ public class DataManager {
             final int[] dayOfWeek = {0};
             final int[] minTemp = {0};
             final int[] maxTemp = {0};
-            get3hForecastData(place).subscribe(new Subscriber<ListPojo>() {
+            get3hForecastData(place)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .subscribe(new Subscriber<ListPojo>() {
                 @Override
                 public void onCompleted() {
+                    // end of the last day
 
+                    minTemp[0] = temperaturesList.get(0);
+                    maxTemp[0] = temperaturesList.get(0);
+                    for (Integer i : temperaturesList) {
+                        if (i < minTemp[0]) minTemp[0] = i;
+                        if (i > maxTemp[0]) maxTemp[0] = i;
+                    }
+
+                    previousDay[0] = 0;
+                    temperaturesList.clear();
+
+                    subscriber.onNext(new ShortDayWeatherPojo(dayOfMonth[0], month[0],
+                            dayOfWeek[0], minTemp[0], maxTemp[0]));
                 }
 
                 @Override
                 public void onError(Throwable e) {
-
+                    e.printStackTrace();
                 }
 
                 @Override
                 public void onNext(ListPojo listPojo) {
                     Date date = DataConverter.convertStringToDate(listPojo.getDtTxt());
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(date);
                     int day = Integer.parseInt((String) DateFormat.format("dd", date));
-                    if (previousDay[0] == 0) {
-                        // start
+                    if (previousDay[0] == 0) {  // start day
+
                         previousDay[0] = day;
                         temperaturesList.add(DataConverter.convertKelvinToCelsius(listPojo.getMain().getTemp()));
 
                         dayOfMonth[0] = day;
                         month[0] = date.getMonth();
-                        dayOfWeek[0] = day;
+                        dayOfWeek[0] = c.get(Calendar.DAY_OF_WEEK);
                     } else {
-                        if (previousDay[0] == day) {
-                            // next
+                        if (previousDay[0] == day) {  // next in this day
+
                             temperaturesList.add(DataConverter.convertKelvinToCelsius(listPojo.getMain().getTemp()));
-                        } else {
-                            // end
+                        } else {  // end of day
+
                             minTemp[0] = temperaturesList.get(0);
                             maxTemp[0] = temperaturesList.get(0);
                             for (Integer i : temperaturesList) {
@@ -90,13 +109,14 @@ public class DataManager {
 
                             previousDay[0] = 0;
                             temperaturesList.clear();
-                            subscriber.onNext(new ShortDayWeatherPojo(dayOfMonth[0], month[0], dayOfWeek[0], minTemp[0], maxTemp[0]));
+
+                            subscriber.onNext(new ShortDayWeatherPojo(dayOfMonth[0], month[0],
+                                    dayOfWeek[0], minTemp[0], maxTemp[0]));
                         }
                     }
                 }
             });
         });
-        shortDayWeatherPojoObservable.subscribeOn(Schedulers.io());
         return shortDayWeatherPojoObservable;
     }
 
@@ -106,8 +126,7 @@ public class DataManager {
         ForecastService service = retrofit.create(ForecastService.class);
 
         // all data (RequestPojo)
-        Observable<RequestPojo> requestPojoObservable = service.getRequestPojoObservable(place)
-                .subscribeOn(Schedulers.io());
+        Observable<RequestPojo> requestPojoObservable = service.getRequestPojoObservable(place);
         return requestPojoObservable;
     }
 

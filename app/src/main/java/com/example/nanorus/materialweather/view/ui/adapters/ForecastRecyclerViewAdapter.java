@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRecyclerViewAdapter.ForecastRecyclerViewHolder> {
 
@@ -34,19 +35,36 @@ public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRe
     @Override
     public void onBindViewHolder(ForecastRecyclerViewHolder holder, int position) {
         ShortDayWeatherPojo singleData = mData.get(position);
+
+        // set date
         String strDt = null;
+        Date date = new Date();
+        date.setDate(singleData.getDayOfMonth());
+        date.setMonth(singleData.getMonth());
         if (position == 0) {
             if (singleData.getDayOfMonth() == Integer.parseInt(new SimpleDateFormat("dd").format(Calendar.getInstance().getTime()))) {
-                strDt = "Today";
+                strDt = "Today, " + (new SimpleDateFormat("dd MMMM", Locale.ENGLISH)).format(date);
             }
         } else {
-            Date date = new Date();
-            date.setDate(singleData.getDayOfMonth());
-            date.setMonth(singleData.getMonth());
-            strDt = (new SimpleDateFormat("EEEE, dd MMMM")).format(date);
+            strDt = (new SimpleDateFormat("EEEE, dd MMMM", Locale.ENGLISH)).format(date);
         }
         holder.forecast_list_item_tv_date.setText(strDt);
-        holder.forecast_list_item_tv_temperature.setText(singleData.getMinTemp() + " - " + singleData.getMaxTemp() + "°");
+
+        // set temperatures
+        String tempMin = null;
+        String tempMax = null;
+
+        if (singleData.getMinTemp() > 0)
+            tempMin = "+" + String.valueOf(singleData.getMinTemp());
+        else if (singleData.getMinTemp() < 0)
+            tempMin = String.valueOf(singleData.getMinTemp());
+
+        if (singleData.getMaxTemp() > 0)
+            tempMax = "+" + String.valueOf(singleData.getMaxTemp());
+        else if (singleData.getMaxTemp() < 0)
+            tempMax = String.valueOf(singleData.getMaxTemp());
+
+        holder.forecast_list_item_tv_temperature.setText(tempMin + "°C" + " / " + tempMax + "°C");
 
     }
 

@@ -25,6 +25,8 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     private ImageView weather_iv_search;
     private TextView weather_tv_place;
     private RecyclerView weather_rv_weatherList;
+    private TextView weather_now_tv_sky;
+    private TextView weather_now_tv_temperature;
 
     private ForecastRecyclerViewAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -38,6 +40,8 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         weather_iv_search = (ImageView) findViewById(R.id.weather_iv_search);
         weather_tv_place = (TextView) findViewById(R.id.weather_tv_place);
         weather_rv_weatherList = (RecyclerView) findViewById(R.id.weather_rv_weatherList);
+        weather_now_tv_sky = (TextView) findViewById(R.id.weather_now_tv_sky);
+        weather_now_tv_temperature = (TextView) findViewById(R.id.weather_now_tv_temperature);
 
         mPresenter = new WeatherActivityPresenter(getView());
         setListeners();
@@ -72,6 +76,16 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
             mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
             weather_rv_weatherList.setLayoutManager(mLayoutManager);
         }
+    }
+
+    @Override
+    public void setNowTemperature(String temperature) {
+        weather_now_tv_temperature.setText(temperature);
+    }
+
+    @Override
+    public void setNowSky(String sky) {
+        weather_now_tv_sky.setText(sky);
     }
 
     @Override

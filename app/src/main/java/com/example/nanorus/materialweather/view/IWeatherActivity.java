@@ -12,6 +12,10 @@ public interface IWeatherActivity {
 
         void setAdapter();
 
+        void setNowTemperature(String temperature);
+
+        void setNowSky(String sky);
+
         void updateAdapter();
 
         void setUserEnteredPlace(String place);

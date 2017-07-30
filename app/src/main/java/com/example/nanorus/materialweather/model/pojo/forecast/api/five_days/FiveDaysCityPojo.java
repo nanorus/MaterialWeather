@@ -1,10 +1,10 @@
 
-package com.example.nanorus.materialweather.model.pojo.forecast.api;
+package com.example.nanorus.materialweather.model.pojo.forecast.api.five_days;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class CityPojo {
+public class FiveDaysCityPojo {
 
     @SerializedName("id")
     @Expose
@@ -14,7 +14,7 @@ public class CityPojo {
     private String name;
     @SerializedName("coord")
     @Expose
-    private CoordPojo coord;
+    private FiveDaysCoordPojo coord;
     @SerializedName("country")
     @Expose
     private String country;
@@ -35,11 +35,11 @@ public class CityPojo {
         this.name = name;
     }
 
-    public CoordPojo getCoord() {
+    public FiveDaysCoordPojo getCoord() {
         return coord;
     }
 
-    public void setCoord(CoordPojo coord) {
+    public void setCoord(FiveDaysCoordPojo coord) {
         this.coord = coord;
     }
 

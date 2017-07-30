@@ -1,10 +1,10 @@
 
-package com.example.nanorus.materialweather.model.pojo.forecast.api;
+package com.example.nanorus.materialweather.model.pojo.forecast.api.five_days;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class MainPojo {
+public class FiveDaysMainPojo {
 
     @SerializedName("temp")
     @Expose

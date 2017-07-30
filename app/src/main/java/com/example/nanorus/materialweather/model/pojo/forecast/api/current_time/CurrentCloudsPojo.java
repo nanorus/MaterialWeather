@@ -1,20 +1,20 @@
 
-package com.example.nanorus.materialweather.model.pojo.forecast.api;
+package com.example.nanorus.materialweather.model.pojo.forecast.api.current_time;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class CloudsPojo {
+public class CurrentCloudsPojo {
 
     @SerializedName("all")
     @Expose
-    private long all;
+    private int all;
 
-    public long getAll() {
+    public int getAll() {
         return all;
     }
 
-    public void setAll(long all) {
+    public void setAll(int all) {
         this.all = all;
     }
 

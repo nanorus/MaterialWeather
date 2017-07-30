@@ -1,35 +1,35 @@
 
-package com.example.nanorus.materialweather.model.pojo.forecast.api;
+package com.example.nanorus.materialweather.model.pojo.forecast.api.five_days;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ListPojo {
+public class FiveDaysListPojo {
 
     @SerializedName("dt")
     @Expose
     private double dt;
     @SerializedName("main")
     @Expose
-    private MainPojo main;
+    private FiveDaysMainPojo main;
     @SerializedName("weather")
     @Expose
-    private java.util.List<WeatherPojo> weather = null;
+    private java.util.List<FiveDaysWeatherPojo> weather = null;
     @SerializedName("clouds")
     @Expose
-    private CloudsPojo clouds;
+    private FiveDaysCloudsPojo clouds;
     @SerializedName("wind")
     @Expose
-    private WindPojo wind;
+    private FiveDaysWindPojo wind;
     @SerializedName("sys")
     @Expose
-    private SysPojo sys;
+    private FiveDaysSysPojo sys;
     @SerializedName("dt_txt")
     @Expose
     private String dtTxt;
     @SerializedName("rain")
     @Expose
-    private RainPojo rain;
+    private FiveDaysRainPojo rain;
 
     public double getDt() {
         return dt;
@@ -39,43 +39,43 @@ public class ListPojo {
         this.dt = dt;
     }
 
-    public MainPojo getMain() {
+    public FiveDaysMainPojo getMain() {
         return main;
     }
 
-    public void setMain(MainPojo main) {
+    public void setMain(FiveDaysMainPojo main) {
         this.main = main;
     }
 
-    public java.util.List<WeatherPojo> getWeather() {
+    public java.util.List<FiveDaysWeatherPojo> getWeather() {
         return weather;
     }
 
-    public void setWeather(java.util.List<WeatherPojo> weather) {
+    public void setWeather(java.util.List<FiveDaysWeatherPojo> weather) {
         this.weather = weather;
     }
 
-    public CloudsPojo getClouds() {
+    public FiveDaysCloudsPojo getClouds() {
         return clouds;
     }
 
-    public void setClouds(CloudsPojo clouds) {
+    public void setClouds(FiveDaysCloudsPojo clouds) {
         this.clouds = clouds;
     }
 
-    public WindPojo getWind() {
+    public FiveDaysWindPojo getWind() {
         return wind;
     }
 
-    public void setWind(WindPojo wind) {
+    public void setWind(FiveDaysWindPojo wind) {
         this.wind = wind;
     }
 
-    public SysPojo getSys() {
+    public FiveDaysSysPojo getSys() {
         return sys;
     }
 
-    public void setSys(SysPojo sys) {
+    public void setSys(FiveDaysSysPojo sys) {
         this.sys = sys;
     }
 
@@ -87,11 +87,11 @@ public class ListPojo {
         this.dtTxt = dtTxt;
     }
 
-    public RainPojo getRain() {
+    public FiveDaysRainPojo getRain() {
         return rain;
     }
 
-    public void setRain(RainPojo rain) {
+    public void setRain(FiveDaysRainPojo rain) {
         this.rain = rain;
     }
 

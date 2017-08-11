@@ -8,48 +8,6 @@
     tools:context="com.example.nanorus.materialweather.view.WeatherActivity">
 
 
-    <RelativeLayout
-        android:padding="8dp"
-        android:id="@+id/activity_weather_rl_now"
-        android:layout_width="match_parent"
-        android:layout_height="170dp"
-        android:background="@color/colorPrimary"
-        android:layout_below="@+id/activity_weather_toolbar"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
-        <TextView
-            android:id="@+id/weather_now_tv_temperature"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/weather_now_tv_sky"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:text="0°C(null)"
-            android:textColor="@android:color/white"
-            android:textSize="50sp"/>
-
-        <TextView
-            android:id="@+id/weather_tv_place"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:text="place"
-            android:textColor="@android:color/white"/>
-
-        <TextView
-            android:id="@+id/weather_now_tv_sky"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:text="sun"
-            android:textColor="@android:color/white"/>
-    </RelativeLayout>
-
     <android.support.v7.widget.Toolbar
         android:id="@+id/activity_weather_toolbar"
         android:layout_width="match_parent"
@@ -88,13 +46,65 @@
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/weather_rv_weatherList"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/activity_weather_rl_now"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/activity_weather_toolbar">
 
-    </android.support.v7.widget.RecyclerView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/activity_weather_rl_now"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@color/colorPrimary"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/weather_now_tv_temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/weather_now_tv_sky"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:text="0°C(null)"
+                    android:textColor="@android:color/white"
+                    android:textSize="50sp"/>
+
+                <TextView
+                    android:id="@+id/weather_tv_place"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:text="place"
+                    android:textColor="@android:color/white"/>
+
+                <TextView
+                    android:id="@+id/weather_now_tv_sky"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:text="sun"
+                    android:textColor="@android:color/white"/>
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/weather_rv_weatherList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
 </RelativeLayout>

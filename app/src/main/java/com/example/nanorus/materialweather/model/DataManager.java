@@ -2,7 +2,6 @@ package com.example.nanorus.materialweather.model;
 
 import android.text.format.DateFormat;
 
-import com.example.nanorus.materialweather.model.api.WeatherRetroClient;
 import com.example.nanorus.materialweather.model.api.services.CurrentTimeForecastService;
 import com.example.nanorus.materialweather.model.api.services.FiveDaysForecastService;
 import com.example.nanorus.materialweather.model.pojo.CurrentTimeWeatherPojo;
@@ -16,18 +15,32 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import retrofit2.Retrofit;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
 
+@Singleton
 public class DataManager {
 
+    private DataConverter mDataConverter;
+    private CurrentTimeForecastService mCurrentTimeForecastService;
+    private FiveDaysForecastService mFiveDaysForecastService;
 
-    public static Observable<CurrentTimeWeatherPojo> getCurrentWeather(String place) {
+    @Inject
+    public DataManager(DataConverter dataConverter, CurrentTimeForecastService currentTimeForecastService,
+                       FiveDaysForecastService fiveDaysForecastService) {
+        mDataConverter = dataConverter;
+        mCurrentTimeForecastService = currentTimeForecastService;
+        mFiveDaysForecastService = fiveDaysForecastService;
+    }
+
+    public Observable<CurrentTimeWeatherPojo> getCurrentWeather(String place) {
         return getCurrentWeatherRequest(place)
                 .map(currentRequestPojo -> new CurrentTimeWeatherPojo(
-                        DataConverter.convertKelvinToCelsius(currentRequestPojo.getMain().getTemp()),
+                        mDataConverter.convertKelvinToCelsius(currentRequestPojo.getMain().getTemp()),
                         currentRequestPojo.getWeather().get(0).getDescription(),
                         (int) currentRequestPojo.getMain().getPressure(),
                         currentRequestPojo.getMain().getHumidity(),
@@ -38,19 +51,17 @@ public class DataManager {
                 ));
     }
 
-    public static Observable<CurrentRequestPojo> getCurrentWeatherRequest(String place) {
-        Retrofit retrofit = WeatherRetroClient.getInstance();
-        CurrentTimeForecastService service = retrofit.create(CurrentTimeForecastService.class);
-        return service.getRequestPojoObservable(place);
+    public Observable<CurrentRequestPojo> getCurrentWeatherRequest(String place) {
+        return mCurrentTimeForecastService.getRequestPojoObservable(place);
     }
 
-    public static Observable<ThreeHoursWeatherPojo> getThreeHoursWeatherPojosByDay(String place, int day) {
+    public Observable<ThreeHoursWeatherPojo> getThreeHoursWeatherPojosByDay(String place, int day) {
         return get3hForecastData(place)
                 .filter(listPojo ->
-                        Integer.parseInt((String) DateFormat.format("dd", DataConverter.convertStringToDate(listPojo.getDtTxt())))
+                        Integer.parseInt((String) DateFormat.format("dd", mDataConverter.convertStringToDate(listPojo.getDtTxt())))
                                 == day)
                 .map(listPojo -> {
-                    Date date = DataConverter.convertStringToDate(listPojo.getDtTxt());
+                    Date date = mDataConverter.convertStringToDate(listPojo.getDtTxt());
                     return new ThreeHoursWeatherPojo(
                             (int) Math.round(listPojo.getMain().getTemp()) - 273,
                             listPojo.getWeather().get(0).getDescription(),
@@ -66,7 +77,7 @@ public class DataManager {
 
     }
 
-    public static Observable<ShortDayWeatherPojo> getShortDayWeatherPojos(String place) {
+    public Observable<ShortDayWeatherPojo> getShortDayWeatherPojos(String place) {
         return Observable.create(subscriber -> {
             ArrayList<Integer> temperaturesList = new ArrayList<>();
             final int[] previousDay = {0};
@@ -104,14 +115,14 @@ public class DataManager {
 
                         @Override
                         public void onNext(FiveDaysListPojo listPojo) {
-                            Date date = DataConverter.convertStringToDate(listPojo.getDtTxt());
+                            Date date = mDataConverter.convertStringToDate(listPojo.getDtTxt());
                             Calendar c = Calendar.getInstance();
                             c.setTime(date);
                             int day = Integer.parseInt((String) DateFormat.format("dd", date));
                             if (previousDay[0] == 0) {  // start day
 
                                 previousDay[0] = day;
-                                temperaturesList.add(DataConverter.convertKelvinToCelsius(listPojo.getMain().getTemp()));
+                                temperaturesList.add(mDataConverter.convertKelvinToCelsius(listPojo.getMain().getTemp()));
 
                                 dayOfMonth[0] = day;
                                 month[0] = date.getMonth();
@@ -119,7 +130,7 @@ public class DataManager {
                             } else {
                                 if (previousDay[0] == day) {  // next in this day
 
-                                    temperaturesList.add(DataConverter.convertKelvinToCelsius(listPojo.getMain().getTemp()));
+                                    temperaturesList.add(mDataConverter.convertKelvinToCelsius(listPojo.getMain().getTemp()));
                                 } else {  // end of day
 
                                     minTemp[0] = temperaturesList.get(0);
@@ -142,15 +153,11 @@ public class DataManager {
     }
 
 
-    public static Observable<FiveDaysRequestPojo> getFullForecastData(String place) {
-        Retrofit retrofit = WeatherRetroClient.getInstance();
-        FiveDaysForecastService service = retrofit.create(FiveDaysForecastService.class);
-
-        // all data (RequestPojo)
-        return service.getRequestPojoObservable(place);
+    public Observable<FiveDaysRequestPojo> getFullForecastData(String place) {
+        return mFiveDaysForecastService.getRequestPojoObservable(place);
     }
 
-    public static Observable<FiveDaysListPojo> get3hForecastData(String place) {
+    public Observable<FiveDaysListPojo> get3hForecastData(String place) {
         // list for 3 hours each (ListPojo)
         return getFullForecastData(place)
                 .map(requestPojo -> (requestPojo.getList()))

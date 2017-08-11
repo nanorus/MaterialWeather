@@ -7,6 +7,8 @@ import com.example.nanorus.materialweather.model.pojo.ShortDayWeatherPojo;
 import com.example.nanorus.materialweather.model.pojo.forecast.api.five_days.FiveDaysRequestPojo;
 import com.example.nanorus.materialweather.view.IWeatherActivity;
 
+import javax.inject.Inject;
+
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -15,6 +17,9 @@ import rx.schedulers.Schedulers;
 public class WeatherActivityPresenter implements IWeatherActivityPresenter {
     private IWeatherActivity mView;
 
+    private DataManager mDataManager;
+    private AppPreferencesManager mAppPreferencesManager;
+
     private Observable<ShortDayWeatherPojo> mShortDayWeatherPojoObservable;
     private Observable<FiveDaysRequestPojo> mRequestPojoObservable;
     private Observable<CurrentTimeWeatherPojo> mCurrentRequestPojoObservable;
@@ -22,20 +27,30 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
     private Subscription mCurrentRequestPojoSubscription;
     private Subscription mShortDayWeatherPojoSubscription;
 
-    public WeatherActivityPresenter(IWeatherActivity view) {
-        mView = view;
+    @Inject
+    public WeatherActivityPresenter(DataManager dataManager, AppPreferencesManager appPreferencesManager) {
+        mDataManager = dataManager;
+        mAppPreferencesManager = appPreferencesManager;
 
+    }
+
+    @Override
+    public void bindView(IWeatherActivity activity) {
+        mView = activity;
+    }
+
+    @Override
+    public void startWork() {
         mView.setUserEnteredPlace(getPlaceFromPref());
-
         loadData();
         showData();
     }
 
     @Override
     public void loadData() {
-        mRequestPojoObservable = DataManager.getFullForecastData(getPlaceFromPref());
-        mShortDayWeatherPojoObservable = DataManager.getShortDayWeatherPojos(getPlaceFromPref());
-        mCurrentRequestPojoObservable = DataManager.getCurrentWeather(getPlaceFromPref());
+        mRequestPojoObservable = mDataManager.getFullForecastData(getPlaceFromPref());
+        mShortDayWeatherPojoObservable = mDataManager.getShortDayWeatherPojos(getPlaceFromPref());
+        mCurrentRequestPojoObservable = mDataManager.getCurrentWeather(getPlaceFromPref());
     }
 
     @Override
@@ -96,12 +111,12 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
 
     @Override
     public void setPlaceToPref() {
-        AppPreferencesManager.setPlace(mView.getUserEnteredPlace());
+        mAppPreferencesManager.setPlace(mView.getUserEnteredPlace());
     }
 
     @Override
     public String getPlaceFromPref() {
-        return AppPreferencesManager.getPlace();
+        return mAppPreferencesManager.getPlace();
     }
 
     @Override

@@ -5,21 +5,29 @@ import android.content.SharedPreferences;
 
 import com.example.nanorus.materialweather.app.App;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class AppPreferencesManager {
-    private static SharedPreferences sPreferences;
+    private  SharedPreferences sPreferences;
 
+    @Inject
+    public  AppPreferencesManager(){
 
-    public static void setPlace(String place) {
+    }
+
+    public  void setPlace(String place) {
         SharedPreferences.Editor editor = getPreferences().edit();
         editor.putString("place", place);
         editor.apply();
     }
 
-    public static String getPlace() {
+    public  String getPlace() {
         return getPreferences().getString("place", "kaka");
     }
 
-    public static SharedPreferences getPreferences() {
+    public  SharedPreferences getPreferences() {
         if (sPreferences == null)
             sPreferences = App.getApp().getSharedPreferences("app_preferences", Context.MODE_PRIVATE);
         return sPreferences;

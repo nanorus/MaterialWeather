@@ -10,16 +10,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.nanorus.materialweather.R;
+import com.example.nanorus.materialweather.app.App;
 import com.example.nanorus.materialweather.model.pojo.ShortDayWeatherPojo;
 import com.example.nanorus.materialweather.presenter.IWeatherActivityPresenter;
-import com.example.nanorus.materialweather.presenter.WeatherActivityPresenter;
 import com.example.nanorus.materialweather.view.ui.adapters.ForecastRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class WeatherActivity extends AppCompatActivity implements IWeatherActivity {
-    private IWeatherActivityPresenter mPresenter;
+
+    @Inject
+    IWeatherActivityPresenter mPresenter;
 
     private EditText weather_et_place;
     private ImageView weather_iv_search;
@@ -43,7 +47,10 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         weather_now_tv_sky = (TextView) findViewById(R.id.weather_now_tv_sky);
         weather_now_tv_temperature = (TextView) findViewById(R.id.weather_now_tv_temperature);
 
-        mPresenter = new WeatherActivityPresenter(getView());
+        App.getApp().getWeatherComponent().inject(this);
+        mPresenter.bindView(getView());
+        mPresenter.startWork();
+
         setListeners();
     }
 
@@ -52,6 +59,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     protected void onDestroy() {
         mPresenter.releasePresenter();
         mPresenter = null;
+        App.getApp().releaseWeatherComponent();
         super.onDestroy();
     }
 

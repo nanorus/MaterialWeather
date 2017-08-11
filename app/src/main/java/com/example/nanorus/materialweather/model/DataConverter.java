@@ -6,9 +6,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class DataConverter {
 
-    public static Date convertStringToDate(String string) {
+    @Inject
+    public DataConverter(){
+
+    }
+
+    public  Date convertStringToDate(String string) {
         Date date = null;
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         try {
@@ -19,7 +28,7 @@ public class DataConverter {
         return date;
     }
 
-    public static int convertKelvinToCelsius(double kelvin){
+    public  int convertKelvinToCelsius(double kelvin){
         return (int) Math.round(kelvin)-273;
     }
 

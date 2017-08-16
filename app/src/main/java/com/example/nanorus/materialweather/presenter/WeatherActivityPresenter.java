@@ -5,7 +5,7 @@ import com.example.nanorus.materialweather.model.DataManager;
 import com.example.nanorus.materialweather.model.pojo.CurrentTimeWeatherPojo;
 import com.example.nanorus.materialweather.model.pojo.ShortDayWeatherPojo;
 import com.example.nanorus.materialweather.model.pojo.forecast.api.five_days.FiveDaysRequestPojo;
-import com.example.nanorus.materialweather.view.IWeatherActivity;
+import com.example.nanorus.materialweather.view.weather.IWeatherActivity;
 
 import javax.inject.Inject;
 
@@ -20,12 +20,14 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
     private DataManager mDataManager;
     private AppPreferencesManager mAppPreferencesManager;
 
-    private Observable<ShortDayWeatherPojo> mShortDayWeatherPojoObservable;
+    // private Observable<ShortDayWeatherPojo> mShortDayWeatherPojoOnlineObservable;
     private Observable<FiveDaysRequestPojo> mRequestPojoObservable;
     private Observable<CurrentTimeWeatherPojo> mCurrentRequestPojoObservable;
+    private Observable<ShortDayWeatherPojo> mShortDayWeatherPojoOfflineObservable;
     private Subscription mRequestPojoSubscription;
     private Subscription mCurrentRequestPojoSubscription;
-    private Subscription mShortDayWeatherPojoSubscription;
+    private Subscription mShortDayWeatherPojoOnlineSubscription;
+    private Subscription mShortDayWeatherPojoOfflineSubscription;
 
     @Inject
     public WeatherActivityPresenter(DataManager dataManager, AppPreferencesManager appPreferencesManager) {
@@ -48,34 +50,31 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
 
     @Override
     public void loadData() {
-        mRequestPojoObservable = mDataManager.getFullForecastData(getPlaceFromPref());
-        mShortDayWeatherPojoObservable = mDataManager.getShortDayWeatherPojos(getPlaceFromPref());
+        mRequestPojoObservable = mDataManager.getFullWeatherOnline(getPlaceFromPref());
+        //  mShortDayWeatherPojoOnlineObservable = mDataManager.getDaysWeatherOnline(getPlaceFromPref());
         mCurrentRequestPojoObservable = mDataManager.getCurrentWeather(getPlaceFromPref());
-    }
-
-    @Override
-    public void showData() {
-        mView.createWeatherList();
-        mView.setAdapter();
 
         if (mRequestPojoSubscription != null && !mRequestPojoSubscription.isUnsubscribed())
             mRequestPojoSubscription.unsubscribe();
-        if (mShortDayWeatherPojoSubscription != null && !mShortDayWeatherPojoSubscription.isUnsubscribed())
-            mShortDayWeatherPojoSubscription.unsubscribe();
+        if (mShortDayWeatherPojoOnlineSubscription != null && !mShortDayWeatherPojoOnlineSubscription.isUnsubscribed())
+            mShortDayWeatherPojoOnlineSubscription.unsubscribe();
         if (mCurrentRequestPojoSubscription != null && !mCurrentRequestPojoSubscription.isUnsubscribed())
             mCurrentRequestPojoSubscription.unsubscribe();
 
-        mShortDayWeatherPojoSubscription = mShortDayWeatherPojoObservable
+/*
+        mShortDayWeatherPojoOnlineSubscription = mShortDayWeatherPojoOnlineObservable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         shortDayWeatherPojo -> {
+                            /*
                             mView.addToWeatherList(shortDayWeatherPojo);
                             mView.updateAdapter();
+
                         },
                         Throwable::printStackTrace
                 );
-
+*/
         mCurrentRequestPojoSubscription = mCurrentRequestPojoObservable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -93,12 +92,36 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         requestPojo -> {
+                            /*
                             mView.setWebPlace(requestPojo.getCity().getName() + ", " +
                                     requestPojo.getCity().getCountry());
+                            */
+                            mDataManager.putFullWeatherData(requestPojo);
                         },
                         Throwable::printStackTrace
                 );
 
+
+    }
+
+    @Override
+    public void showData() {
+        mShortDayWeatherPojoOfflineObservable = mDataManager.getDaysWeatherOffline();
+        mView.createWeatherList();
+        mView.setAdapter();
+        mShortDayWeatherPojoOfflineSubscription = mShortDayWeatherPojoOfflineObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        shortDayWeatherPojo -> {
+                            mView.addToWeatherList(shortDayWeatherPojo);
+                            mView.updateAdapter();
+                        },
+                        Throwable::printStackTrace,
+                        () -> {
+                            System.out.println("presenter: SHOW COMPLETED");
+                        }
+                );
     }
 
 
@@ -123,8 +146,8 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
     public void releasePresenter() {
         if (mRequestPojoSubscription != null && !mRequestPojoSubscription.isUnsubscribed())
             mRequestPojoSubscription.unsubscribe();
-        if (mShortDayWeatherPojoSubscription != null && !mShortDayWeatherPojoSubscription.isUnsubscribed())
-            mShortDayWeatherPojoSubscription.unsubscribe();
+        if (mShortDayWeatherPojoOnlineSubscription != null && !mShortDayWeatherPojoOnlineSubscription.isUnsubscribed())
+            mShortDayWeatherPojoOnlineSubscription.unsubscribe();
         if (mCurrentRequestPojoSubscription != null && !mCurrentRequestPojoSubscription.isUnsubscribed())
             mCurrentRequestPojoSubscription.unsubscribe();
 

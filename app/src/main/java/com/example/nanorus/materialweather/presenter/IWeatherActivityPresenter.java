@@ -1,6 +1,6 @@
 package com.example.nanorus.materialweather.presenter;
 
-import com.example.nanorus.materialweather.view.IWeatherActivity;
+import com.example.nanorus.materialweather.view.weather.IWeatherActivity;
 
 public interface IWeatherActivityPresenter {
 

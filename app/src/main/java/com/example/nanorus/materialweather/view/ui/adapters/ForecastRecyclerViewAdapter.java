@@ -56,12 +56,12 @@ public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRe
 
         if (singleData.getMinTemp() > 0)
             tempMin = "+" + String.valueOf(singleData.getMinTemp());
-        else if (singleData.getMinTemp() < 0)
+        else if (singleData.getMinTemp() <= 0)
             tempMin = String.valueOf(singleData.getMinTemp());
 
         if (singleData.getMaxTemp() > 0)
             tempMax = "+" + String.valueOf(singleData.getMaxTemp());
-        else if (singleData.getMaxTemp() < 0)
+        else if (singleData.getMaxTemp() <= 0)
             tempMax = String.valueOf(singleData.getMaxTemp());
 
         holder.forecast_list_item_tv_temperature.setText(tempMin + "°C" + " / " + tempMax + "°C");

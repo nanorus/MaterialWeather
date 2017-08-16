@@ -1,4 +1,4 @@
-package com.example.nanorus.materialweather.view;
+package com.example.nanorus.materialweather.view.weather;
 
 import android.app.Activity;
 

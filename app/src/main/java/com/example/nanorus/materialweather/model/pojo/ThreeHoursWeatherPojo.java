@@ -1,5 +1,7 @@
 package com.example.nanorus.materialweather.model.pojo;
 
+import java.util.Date;
+
 public class ThreeHoursWeatherPojo {
 
     private int mTemp;
@@ -16,13 +18,9 @@ public class ThreeHoursWeatherPojo {
 
     private int mWindDirection;
 
-    private int mHour;
+    private Date mDate;
 
-    private int mMinute;
-
-
-
-    public ThreeHoursWeatherPojo(int temp, String description, int pressure, int humidity, int cloudiness, double windSpeed, int windDirection, int hour, int minute) {
+    public ThreeHoursWeatherPojo(int temp, String description, int pressure, int humidity, int cloudiness, double windSpeed, int windDirection, Date date) {
         mTemp = temp;
         mDescription = description;
         mPressure = pressure;
@@ -30,8 +28,7 @@ public class ThreeHoursWeatherPojo {
         mCloudiness = cloudiness;
         mWindSpeed = windSpeed;
         mWindDirection = windDirection;
-        mHour = hour;
-        mMinute = minute;
+        mDate = date;
     }
 
     public int getTemp() {
@@ -90,19 +87,11 @@ public class ThreeHoursWeatherPojo {
         mWindDirection = windDirection;
     }
 
-    public int getHour() {
-        return mHour;
+    public Date getDate() {
+        return mDate;
     }
 
-    public void setHour(int hour) {
-        mHour = hour;
-    }
-
-    public int getMinute() {
-        return mMinute;
-    }
-
-    public void setMinute(int minute) {
-        mMinute = minute;
+    public void setDate(Date date) {
+        mDate = date;
     }
 }

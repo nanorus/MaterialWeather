@@ -8,7 +8,6 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-@Singleton
 public class AppModule {
 
     private Context mContext;
@@ -19,6 +18,7 @@ public class AppModule {
 
 
     @Provides
+    @Singleton
     Context provideContext() {
         return mContext;
     }

@@ -1,5 +1,8 @@
 package com.example.nanorus.materialweather.di.app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.example.nanorus.materialweather.model.api.services.CurrentTimeForecastService;
 import com.example.nanorus.materialweather.model.api.services.FiveDaysForecastService;
 
@@ -12,10 +15,10 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
-@Singleton
 public class RepositoryModule {
 
     @Provides
+    @Singleton
     Retrofit provideRetroClient() {
         return new Retrofit.Builder()
                 .baseUrl("http://api.openweathermap.org/data/2.5/")
@@ -32,5 +35,11 @@ public class RepositoryModule {
     @Provides
     FiveDaysForecastService provideFiveDaysForecastService(Retrofit retroClient) {
         return retroClient.create(FiveDaysForecastService.class);
+    }
+
+    @Provides
+    @Singleton
+    SharedPreferences provideSharedPreferences(Context context){
+        return context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE);
     }
 }

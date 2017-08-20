@@ -15,7 +15,6 @@ import com.example.nanorus.materialweather.model.pojo.ShortDayWeatherPojo;
 import com.example.nanorus.materialweather.presenter.IWeatherActivityPresenter;
 import com.example.nanorus.materialweather.view.ui.adapters.ForecastRecyclerViewAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -64,17 +63,10 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     }
 
     @Override
-    public void createWeatherList() {
-        if (mWeatherDaysList != null)
-            mWeatherDaysList.clear();
-        else
-            mWeatherDaysList = new ArrayList<>();
+    public void createWeatherList(List<ShortDayWeatherPojo> weatherDaysList) {
+            mWeatherDaysList = weatherDaysList;
     }
 
-    @Override
-    public void addToWeatherList(ShortDayWeatherPojo shortDayWeatherPojo) {
-        mWeatherDaysList.add(shortDayWeatherPojo);
-    }
 
     @Override
     public void setAdapter() {

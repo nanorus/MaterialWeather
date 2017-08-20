@@ -1,6 +1,6 @@
 package com.example.nanorus.materialweather.model.pojo;
 
-public class CurrentTimeWeatherPojo {
+public class NowWeatherPojo {
 
     private int mTemp;
 
@@ -18,7 +18,7 @@ public class CurrentTimeWeatherPojo {
 
     private String mPlace;
 
-    public CurrentTimeWeatherPojo(int temp, String description, int pressure, int humidity, int cloudiness, double windSpeed, int windDirection, String place) {
+    public NowWeatherPojo(int temp, String description, int pressure, int humidity, int cloudiness, double windSpeed, int windDirection, String place) {
         mTemp = temp;
         mDescription = description;
         mPressure = pressure;

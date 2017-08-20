@@ -15,6 +15,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "Database.db";
     private static final int DB_VERSION = 1;
 
+    public static int DBConnectionsCount = 0;
+
+    public SQLiteDatabase getReadableDB() {
+        DBConnectionsCount++;
+        return this.getReadableDatabase();
+    }
+
+    public SQLiteDatabase getWritableDB() {
+        DBConnectionsCount++;
+        return this.getWritableDatabase();
+    }
+
+    public void closeDB() {
+        DBConnectionsCount--;
+        if (DBConnectionsCount == 0)
+            this.close();
+    }
+
     @Inject
     public DatabaseHelper(Context context, DatabaseContract databaseContract) {
         super(context, DB_NAME, null, DB_VERSION);

@@ -8,9 +8,9 @@ public interface IWeatherActivityPresenter {
 
     void startWork();
 
-    void loadData();
+    void updateDataOnline();
 
-    void showData();
+    void updateDataOffline();
 
     void setPlaceToPref();
 

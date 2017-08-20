@@ -61,7 +61,6 @@ public class DataMapper {
                             currentGroupOfHours = new ArrayList<>();
                             calendar.setTime(currentHour.getDate());
                             currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-                            System.out.println(currentDay);
                         } else {
                             // old day
                             currentGroupOfHours.add(threeHoursWeatherPojos.get(i));

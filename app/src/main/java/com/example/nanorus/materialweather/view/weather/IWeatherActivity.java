@@ -4,11 +4,12 @@ import android.app.Activity;
 
 import com.example.nanorus.materialweather.model.pojo.ShortDayWeatherPojo;
 
+import java.util.List;
+
 public interface IWeatherActivity {
 
-        void createWeatherList();
+        void createWeatherList(List<ShortDayWeatherPojo> weatherDaysList);
 
-        void addToWeatherList(ShortDayWeatherPojo shortDayWeatherPojo);
 
         void setAdapter();
 

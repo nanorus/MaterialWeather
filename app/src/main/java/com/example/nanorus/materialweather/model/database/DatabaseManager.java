@@ -19,6 +19,8 @@ import javax.inject.Singleton;
 import rx.Emitter;
 import rx.Observable;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @Singleton
 public class DatabaseManager {
@@ -26,7 +28,7 @@ public class DatabaseManager {
     private DatabaseHelper mDatabaseHelper;
     private DatabaseContract mDatabaseContract;
     private DataMapper mDataMapper;
-    private Subscription getDaysWeatherSubscription;
+    private Subscription mDaysWeatherSubscription;
 
     @Inject
     public DatabaseManager(DatabaseHelper databaseHelper, DatabaseContract databaseContract,
@@ -44,15 +46,15 @@ public class DatabaseManager {
     public Observable<ShortDayWeatherPojo> getDaysWeather() {
         return Observable.create(
                 subscriber -> {
-                    SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
+                    SQLiteDatabase db = mDatabaseHelper.getReadableDB();
 
                     Cursor cursorAllData = db.rawQuery("SELECT * FROM " + mDatabaseContract.TABLE_NAME_WEATHER, null);
 
+                    System.out.println("databaseManager: READ FROM DB");
                     // list of hours weather from db
                     ArrayList<ThreeHoursWeatherPojo> threeHoursWeatherPojos = new ArrayList<>();
                     if (cursorAllData.moveToFirst()) {
                         do {
-                            System.out.println("databaseManager: new pojo");
                             threeHoursWeatherPojos.add(new ThreeHoursWeatherPojo(
                                     mDataMapper.kelvinToCelsius(cursorAllData.getDouble(
                                             cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_TEMPERATURE)
@@ -68,28 +70,18 @@ public class DatabaseManager {
                         } while (cursorAllData.moveToNext());
                     }
                     cursorAllData.close();
-                    System.out.println("databaseManager: getDaysWeather()");
-                    System.out.println("databaseManager: threeHoursWeatherPojos: size: " + threeHoursWeatherPojos.size());
+                    mDatabaseHelper.closeDB();
                     // mapping list of hours weather to days weather observable
-                    Observable<ShortDayWeatherPojo> shortDayWeatherPojoObservable =
-                            mDataMapper.threeHoursWeatherPojoToShortDayWeatherPojoObservable(
-                                    threeHoursWeatherPojos
+                    Observable<ShortDayWeatherPojo> daysWeatherObservable =
+                            mDataMapper.threeHoursWeatherPojoToShortDayWeatherPojoObservable(threeHoursWeatherPojos);
+                    mDaysWeatherSubscription = daysWeatherObservable
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    subscriber::onNext,
+                                    subscriber::onError,
+                                    subscriber::onCompleted
                             );
-                    getDaysWeatherSubscription = shortDayWeatherPojoObservable.subscribe(
-                            shortDayWeatherPojo -> {
-                                subscriber.onNext(shortDayWeatherPojo);
-                                System.out.println("databaseManager: getDaysWeather: temp: " +
-                                        shortDayWeatherPojo.getMinTemp() + " - " +
-                                        shortDayWeatherPojo.getMaxTemp()
-                                );
-                                System.out.println("databaseManager: getDaysWeather: onNext");
-                            },
-                            throwable -> {
-                                subscriber.onError(throwable);
-                                //getDaysWeatherSubscription.unsubscribe();
-                            },
-                            subscriber::onCompleted
-                    );
 
                 },
                 Emitter.BackpressureMode.BUFFER
@@ -97,14 +89,13 @@ public class DatabaseManager {
     }
 
     public void putFullWeatherData(FiveDaysRequestPojo data) {
-        SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+        System.out.println("databaseManager: WRITE TO DB");
+        SQLiteDatabase db = mDatabaseHelper.getWritableDB();
         FiveDaysListPojo list;
         ContentValues cv = new ContentValues();
         db.delete(mDatabaseContract.TABLE_NAME_WEATHER, null, null);
         for (int i = 0; i < data.getList().size(); i++) {
             list = data.getList().get(i);
-            System.out.println(list.getDtTxt());
-
             cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_DATE, list.getDtTxt());
             cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_TEMPERATURE, list.getMain().getTemp());
             cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_DESCRIPTION, list.getWeather().get(0).getDescription());
@@ -117,11 +108,12 @@ public class DatabaseManager {
             db.insert(mDatabaseContract.TABLE_NAME_WEATHER, null, cv);
             cv.clear();
         }
+        mDatabaseHelper.closeDB();
     }
 
     public void releaseDatabaseManager() {
-        getDaysWeatherSubscription.unsubscribe();
-        getDaysWeatherSubscription = null;
+        mDaysWeatherSubscription.unsubscribe();
+        mDaysWeatherSubscription = null;
     }
 
 }

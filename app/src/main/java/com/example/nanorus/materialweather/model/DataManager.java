@@ -5,7 +5,7 @@ import android.text.format.DateFormat;
 import com.example.nanorus.materialweather.model.api.services.CurrentTimeForecastService;
 import com.example.nanorus.materialweather.model.api.services.FiveDaysForecastService;
 import com.example.nanorus.materialweather.model.database.DatabaseManager;
-import com.example.nanorus.materialweather.model.pojo.CurrentTimeWeatherPojo;
+import com.example.nanorus.materialweather.model.pojo.NowWeatherPojo;
 import com.example.nanorus.materialweather.model.pojo.ShortDayWeatherPojo;
 import com.example.nanorus.materialweather.model.pojo.forecast.api.current_time.CurrentRequestPojo;
 import com.example.nanorus.materialweather.model.pojo.forecast.api.five_days.FiveDaysListPojo;
@@ -18,9 +18,8 @@ import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import rx.Completable;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
+import rx.Single;
 import rx.schedulers.Schedulers;
 
 @Singleton
@@ -30,19 +29,22 @@ public class DataManager {
     private DataMapper mDataConverter;
     private CurrentTimeForecastService mCurrentTimeForecastService;
     private FiveDaysForecastService mFiveDaysForecastService;
+    private AppPreferencesManager mAppPreferencesManager;
 
     @Inject
     public DataManager(DataMapper dataConverter, CurrentTimeForecastService currentTimeForecastService,
-                       FiveDaysForecastService fiveDaysForecastService, DatabaseManager databaseManager) {
+                       FiveDaysForecastService fiveDaysForecastService, DatabaseManager databaseManager,
+                       AppPreferencesManager appPreferencesManager) {
         mDataConverter = dataConverter;
         mCurrentTimeForecastService = currentTimeForecastService;
         mFiveDaysForecastService = fiveDaysForecastService;
         mDatabaseManager = databaseManager;
+        mAppPreferencesManager = appPreferencesManager;
     }
 
-    public Observable<CurrentTimeWeatherPojo> getCurrentWeather(String place) {
-        return getCurrentWeatherRequest(place)
-                .map(currentRequestPojo -> new CurrentTimeWeatherPojo(
+    public Observable<NowWeatherPojo> getNowWeatherOnline(String place) {
+        return getNowWeatherRequestOnline(place)
+                .map(currentRequestPojo -> new NowWeatherPojo(
                         mDataConverter.kelvinToCelsius(currentRequestPojo.getMain().getTemp()),
                         currentRequestPojo.getWeather().get(0).getDescription(),
                         (int) currentRequestPojo.getMain().getPressure(),
@@ -54,13 +56,13 @@ public class DataManager {
                 ));
     }
 
-    public Observable<CurrentRequestPojo> getCurrentWeatherRequest(String place) {
+    public Observable<CurrentRequestPojo> getNowWeatherRequestOnline(String place) {
         return mCurrentTimeForecastService.getRequestPojoObservable(place);
     }
 
     /*
     public Observable<ThreeHoursWeatherPojo> getThreeHoursWeatherPojosByDay(String place, int day) {
-        return getFullWeatherThreeHoursOnline(place)
+        return loadFullWeatherThreeHoursOnline(place)
                 .filter(listPojo ->
                         Integer.parseInt((String) DateFormat.format("dd", mDataConverter.stringToDate(listPojo.getDtTxt())))
                                 == day)
@@ -91,7 +93,7 @@ public class DataManager {
             final int[] dayOfWeek = {0};
             final int[] minTemp = {0};
             final int[] maxTemp = {0};
-            getFullWeatherThreeHoursOnline(place)
+            loadFullWeatherThreeHoursOnline(place)
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.io())
                     .subscribe(
@@ -151,28 +153,27 @@ public class DataManager {
         return mDatabaseManager.getDaysWeather();
     }
 
-    public Observable<FiveDaysRequestPojo> getFullWeatherOnline(String place) {
+    public Observable<FiveDaysRequestPojo> getFiveDaysWeatherOnline(String place) {
         return mFiveDaysForecastService.getRequestPojoObservable(place);
     }
 
-    public Observable<FiveDaysListPojo> getFullWeatherThreeHoursOnline(String place) {
+    public Observable<FiveDaysListPojo> loadFullWeatherThreeHoursOnline(String place) {
         // list for 3 hours each (ListPojo)
-        return getFullWeatherOnline(place)
+        return getFiveDaysWeatherOnline(place)
                 .map(requestPojo -> (requestPojo.getList()))
                 .flatMap(Observable::from);
     }
 
-    public void putFullWeatherData(FiveDaysRequestPojo data) {
-        Completable.create(completableSubscriber -> {
+    public void saveFullWeatherData(FiveDaysRequestPojo data) {
             mDatabaseManager.putFullWeatherData(data);
-            completableSubscriber.onCompleted();
-        })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        () -> {
-                        }, Throwable::printStackTrace
-                );
+    }
+
+    public void saveNowWeatherData(NowWeatherPojo currentTimeWeatherPojo) {
+    mAppPreferencesManager.saveNowWeatherData(currentTimeWeatherPojo);
+    }
+
+    public Single<NowWeatherPojo> loadNowWeatherData(){
+        return mAppPreferencesManager.loadNowWeatherData();
     }
 
 }

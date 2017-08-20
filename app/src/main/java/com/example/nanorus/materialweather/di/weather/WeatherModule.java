@@ -1,9 +1,9 @@
 package com.example.nanorus.materialweather.di.weather;
 
-import com.example.nanorus.materialweather.model.AppPreferencesManager;
-import com.example.nanorus.materialweather.model.DataManager;
-import com.example.nanorus.materialweather.presenter.IWeatherActivityPresenter;
-import com.example.nanorus.materialweather.presenter.WeatherActivityPresenter;
+import com.example.nanorus.materialweather.data.AppPreferencesManager;
+import com.example.nanorus.materialweather.data.weather.WeatherRepository;
+import com.example.nanorus.materialweather.presentation.weather.presenter.IWeatherActivityPresenter;
+import com.example.nanorus.materialweather.presentation.weather.presenter.WeatherActivityPresenter;
 
 import dagger.Module;
 import dagger.Provides;
@@ -12,7 +12,7 @@ import dagger.Provides;
 public class WeatherModule {
 
     @Provides
-    IWeatherActivityPresenter bindWeatherActivityPresenter(DataManager dataManager, AppPreferencesManager appPreferencesManager) {
+    IWeatherActivityPresenter bindWeatherActivityPresenter(WeatherRepository dataManager, AppPreferencesManager appPreferencesManager) {
         return new WeatherActivityPresenter(dataManager, appPreferencesManager);
     }
 

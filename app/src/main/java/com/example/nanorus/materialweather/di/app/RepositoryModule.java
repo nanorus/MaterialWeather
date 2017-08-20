@@ -3,8 +3,8 @@ package com.example.nanorus.materialweather.di.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.nanorus.materialweather.model.api.services.CurrentTimeForecastService;
-import com.example.nanorus.materialweather.model.api.services.FiveDaysForecastService;
+import com.example.nanorus.materialweather.data.api.services.CurrentTimeForecastService;
+import com.example.nanorus.materialweather.data.api.services.FiveDaysForecastService;
 
 import javax.inject.Singleton;
 

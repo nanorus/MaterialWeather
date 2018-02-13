@@ -5,6 +5,8 @@ import android.app.Application;
 import com.example.nanorus.materialweather.di.app.AppComponent;
 import com.example.nanorus.materialweather.di.app.AppModule;
 import com.example.nanorus.materialweather.di.app.DaggerAppComponent;
+import com.example.nanorus.materialweather.di.settings.SettingsComponent;
+import com.example.nanorus.materialweather.di.settings.SettingsModule;
 import com.example.nanorus.materialweather.di.weather.WeatherComponent;
 import com.example.nanorus.materialweather.di.weather.WeatherModule;
 
@@ -29,6 +31,7 @@ public class App extends Application {
     AppComponent mAppComponent;
 
     WeatherComponent mWeatherComponent;
+    SettingsComponent mSettingsComponent;
 
     public AppComponent getAppComponent() {
         if (mAppComponent == null) {
@@ -48,6 +51,12 @@ public class App extends Application {
             mWeatherComponent = getAppComponent().plusWeatherComponent(new WeatherModule());
         }
         return mWeatherComponent;
+    }
+
+    public SettingsComponent getSettingsComponent() {
+        if (mSettingsComponent == null)
+            mSettingsComponent = getAppComponent().plusSettingsComponent(new SettingsModule());
+        return mSettingsComponent;
     }
 
 }

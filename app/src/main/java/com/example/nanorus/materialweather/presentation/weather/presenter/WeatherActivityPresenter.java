@@ -7,6 +7,7 @@ import com.example.nanorus.materialweather.data.entity.NowWeatherPojo;
 import com.example.nanorus.materialweather.data.entity.ShortDayWeatherPojo;
 import com.example.nanorus.materialweather.data.entity.forecast.api.five_days.FiveDaysRequestPojo;
 import com.example.nanorus.materialweather.data.weather.WeatherRepository;
+import com.example.nanorus.materialweather.navigation.Router;
 import com.example.nanorus.materialweather.presentation.weather.view.IWeatherActivity;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
     private IWeatherActivity mView;
     private WeatherRepository mDataManager;
     private AppPreferencesManager mAppPreferencesManager;
+    private Router mRouter;
 
     private List<ShortDayWeatherPojo> mWeatherDaysList;
 
@@ -41,9 +43,10 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
     private Subscription mSaveDataSubscription;
 
     @Inject
-    public WeatherActivityPresenter(WeatherRepository dataManager, AppPreferencesManager appPreferencesManager) {
+    public WeatherActivityPresenter(WeatherRepository dataManager, AppPreferencesManager appPreferencesManager, Router router) {
         mDataManager = dataManager;
         mAppPreferencesManager = appPreferencesManager;
+        mRouter = router;
     }
 
     @Override
@@ -190,5 +193,10 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
         mNowWeatherOnlineObservable = null;
         mFiveDaysWeatherShortOfflineObservable = null;
         mNowWeatherOfflineSingle = null;
+    }
+
+    @Override
+    public void onSettingsClick() {
+        mRouter.startSettingsActivity(mView.getActivity());
     }
 }

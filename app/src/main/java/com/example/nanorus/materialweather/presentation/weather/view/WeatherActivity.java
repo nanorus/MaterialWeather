@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -35,21 +36,23 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     IWeatherActivityPresenter mPresenter;
 
     @BindView(R.id.drawer_layout)
-    DrawerLayout drawerLayout;
+    DrawerLayout mDrawerLayout;
+    @BindView(R.id.navigation_view)
+    NavigationView mNavigationView;
     ActionBarDrawerToggle mDrawerToggle;
 
     @BindView(R.id.weather_et_place)
-    EditText placeEditText;
+    EditText mPlaceEditText;
     @BindView(R.id.weather_iv_search)
-    ImageView searchImageView;
+    ImageView mSearchImageView;
     @BindView(R.id.weather_tv_place)
-    TextView placeTextView;
+    TextView mPlaceTextView;
     @BindView(R.id.weather_rv_weatherList)
-    RecyclerView weatherRecyclerView;
+    RecyclerView mWeatherRecyclerView;
     @BindView(R.id.weather_now_tv_sky)
-    TextView skyTextView;
+    TextView mSkyTextView;
     @BindView(R.id.weather_now_tv_temperature)
-    TextView temperatureTextView;
+    TextView mTemperatureTextView;
 
     private ForecastRecyclerViewAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -88,21 +91,21 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     @Override
     public void setAdapter() {
         mAdapter = new ForecastRecyclerViewAdapter(mWeatherDaysList);
-        weatherRecyclerView.setAdapter(mAdapter);
+        mWeatherRecyclerView.setAdapter(mAdapter);
         if (mLayoutManager == null) {
             mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-            weatherRecyclerView.setLayoutManager(mLayoutManager);
+            mWeatherRecyclerView.setLayoutManager(mLayoutManager);
         }
     }
 
     @Override
     public void setNowTemperature(String temperature) {
-        temperatureTextView.setText(temperature);
+        mTemperatureTextView.setText(temperature);
     }
 
     @Override
     public void setNowSky(String sky) {
-        skyTextView.setText(sky);
+        mSkyTextView.setText(sky);
     }
 
     @Override
@@ -114,7 +117,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     @Override
     public void setUserEnteredPlace(String place) {
         try {
-            placeEditText.setText(place);
+            mPlaceEditText.setText(place);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -122,12 +125,12 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
     @Override
     public String getUserEnteredPlace() {
-        return placeEditText.getText().toString();
+        return mPlaceEditText.getText().toString();
     }
 
     @Override
     public void setWebPlace(String place) {
-        placeTextView.setText(place);
+        mPlaceTextView.setText(place);
     }
 
     @Override
@@ -141,7 +144,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     }
 
     private void setListeners() {
-        searchImageView.setOnClickListener(view -> mPresenter.onSearchButtonPressed());
+        mSearchImageView.setOnClickListener(view -> mPresenter.onSearchButtonPressed());
     }
 
     @Override
@@ -165,7 +168,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     private void setupNavigationDrawer() {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.drawer_open, R.string.drawer_close) {
 
             public void onDrawerClosed(View view) {
@@ -181,6 +184,15 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
             }
         };
         mDrawerToggle.setDrawerIndicatorEnabled(true);
-        drawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+
+        mNavigationView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.menu_item_settings:
+                    mPresenter.onSettingsClick();
+                    break;
+            }
+            return false;
+        });
     }
 }

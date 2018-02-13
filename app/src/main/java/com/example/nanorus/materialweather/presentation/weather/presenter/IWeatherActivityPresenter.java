@@ -17,4 +17,6 @@ public interface IWeatherActivityPresenter {
     void onSearchButtonPressed();
 
     void releasePresenter();
+
+    void onSettingsClick();
 }

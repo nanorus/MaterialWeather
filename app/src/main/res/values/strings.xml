@@ -12,4 +12,7 @@
     <string name="drawer_open">open drawer</string>
     <string name="drawer_close">close drawer</string>
 
+    <!-- settings screen -->
+    <string name="locality">Locality</string>
+
 </resources>

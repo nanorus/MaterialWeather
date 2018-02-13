@@ -124,5 +124,7 @@
 
     </RelativeLayout>
 
-    <include layout="@layout/navigation_view"/>
+    <include
+        android:id="@+id/navigation_view"
+        layout="@layout/navigation_view"/>
 </android.support.v4.widget.DrawerLayout>

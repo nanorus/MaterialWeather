@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">MaterialWeather</string>
+
+    <!-- Main screen -->
+    <string name="c">°C</string>
+
+    <!-- menu -->
+    <string name="settings">Settings</string>
+    <string name="change">change</string>
+    <string name="drawer_open">open drawer</string>
+    <string name="drawer_close">close drawer</string>
+
 </resources>

@@ -14,8 +14,6 @@ public interface IWeatherActivityPresenter {
 
     void setPlaceToPref();
 
-    String getPlaceFromPref();
-
     void onSearchButtonPressed();
 
     void releasePresenter();

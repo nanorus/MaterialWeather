@@ -10,7 +10,6 @@ public interface IWeatherActivity {
 
         void createWeatherList(List<ShortDayWeatherPojo> weatherDaysList);
 
-
         void setAdapter();
 
         void setNowTemperature(String temperature);

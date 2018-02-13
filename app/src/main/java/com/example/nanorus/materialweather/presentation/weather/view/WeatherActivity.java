@@ -29,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class WeatherActivity extends AppCompatActivity implements IWeatherActivity {
+    private final String TAG = this.getClass().getSimpleName();
 
     @Inject
     IWeatherActivityPresenter mPresenter;
@@ -58,9 +59,10 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
         ButterKnife.bind(this);
+        getSupportActionBar().setTitle(getString(R.string.weather));
 
         setupNavigationDrawer();
-        
+
         App.getApp().getWeatherComponent().inject(this);
         mPresenter.bindView(getView());
         mPresenter.startWork();
@@ -168,13 +170,13 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getSupportActionBar().setTitle("xaxa");
+                getSupportActionBar().setTitle(getString(R.string.weather));
                 invalidateOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Navigation!");
+                getSupportActionBar().setTitle(getString(R.string.menu));
                 invalidateOptionsMenu();
             }
         };

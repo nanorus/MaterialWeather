@@ -1,10 +1,12 @@
 package com.example.nanorus.materialweather.presentation.weather.presenter;
 
+import android.util.Log;
+
 import com.example.nanorus.materialweather.data.AppPreferencesManager;
-import com.example.nanorus.materialweather.data.weather.WeatherRepository;
 import com.example.nanorus.materialweather.data.entity.NowWeatherPojo;
 import com.example.nanorus.materialweather.data.entity.ShortDayWeatherPojo;
 import com.example.nanorus.materialweather.data.entity.forecast.api.five_days.FiveDaysRequestPojo;
+import com.example.nanorus.materialweather.data.weather.WeatherRepository;
 import com.example.nanorus.materialweather.presentation.weather.view.IWeatherActivity;
 
 import java.util.ArrayList;
@@ -20,8 +22,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class WeatherActivityPresenter implements IWeatherActivityPresenter {
-    private IWeatherActivity mView;
+    private final String TAG = this.getClass().getSimpleName();
 
+    private IWeatherActivity mView;
     private WeatherRepository mDataManager;
     private AppPreferencesManager mAppPreferencesManager;
 
@@ -56,7 +59,7 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
 
     @Override
     public void updateDataOnline() {
-        System.out.println("\n\n= PRESENTER: ONLINE LOADING =");
+        Log.d(TAG, "updateDataOnline()");
         mFiveDaysWeatherFullOnlineObservable = mDataManager.getFiveDaysWeatherOnline(getPlaceFromPref());
         mNowWeatherOnlineObservable = mDataManager.getNowWeatherOnline(getPlaceFromPref());
 
@@ -72,7 +75,7 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
                         nowWeatherPojo -> mAppPreferencesManager.saveNowWeatherData(nowWeatherPojo),
                         Throwable::printStackTrace,
                         () -> {
-                            System.out.println("presenter: updateDataOnline(): Now Online loaded;");
+                            Log.d(TAG, "Now Online loaded");
                             if (mFiveDaysWeatherFullOnlineSubscription.isUnsubscribed())
                                 updateDataOffline();
                         }
@@ -82,13 +85,13 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         requestPojo -> {
-                            System.out.println("presenter: updateDataOnline(): Full Online loaded;");
+                            Log.d(TAG, "Full Online loaded");
                             if (mSaveDataSubscription != null && !mSaveDataSubscription.isUnsubscribed()) {
                                 mSaveDataSubscription.unsubscribe();
                             }
                             mSaveDataSubscription =
                                     Completable.create(completableSubscriber -> {
-                                        System.out.println("= PRESENTER: SAVING =");
+                                        Log.d(TAG, "Saving");
                                         mDataManager.saveFullWeatherData(requestPojo);
                                         completableSubscriber.onCompleted();
                                     })
@@ -96,7 +99,7 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
                                             .observeOn(AndroidSchedulers.mainThread())
                                             .subscribe(
                                                     () -> {
-                                                        System.out.println("presenter: updateDataOnline(): saving completed;");
+                                                        Log.d(TAG, "saving completed");
                                                         if (mNowWeatherOnlineSubscription.isUnsubscribed())
                                                             updateDataOffline();
                                                     }, Throwable::printStackTrace
@@ -110,7 +113,7 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
 
     @Override
     public void updateDataOffline() {
-        System.out.println("= PRESENTER: OFFLINE LOADING =");
+        Log.d(TAG, "updateDataOffline()");
         if (mWeatherDaysList != null)
             mWeatherDaysList.clear();
         else
@@ -131,7 +134,7 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         nowWeatherPojo -> {
-                            System.out.println("presenter: load now offline: place: " + nowWeatherPojo.getPlace());
+                            Log.d(TAG, "load now offline: place: " + nowWeatherPojo.getPlace());
                             mView.setNowSky(nowWeatherPojo.getDescription());
                             mView.setNowTemperature(String.valueOf(nowWeatherPojo.getTemp()));
                             mView.setWebPlace(nowWeatherPojo.getPlace());
@@ -142,12 +145,12 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         shortDayWeatherPojo -> {
-                            System.out.println("presenter:update list: " + mWeatherDaysList.size());
+                            Log.d(TAG, "update list: " + mWeatherDaysList.size());
                             mWeatherDaysList.add(shortDayWeatherPojo);
                             mView.updateAdapter();
                         }, Throwable::printStackTrace,
                         () -> {
-                            System.out.println("presenter:list size: " + mWeatherDaysList.size());
+                            Log.d(TAG, "list size: " + mWeatherDaysList.size());
                             if (mWeatherDaysList.size() < 4)
                                 updateDataOnline();
                         });
@@ -165,8 +168,8 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
         mAppPreferencesManager.savePlace(mView.getUserEnteredPlace());
     }
 
-    @Override
-    public String getPlaceFromPref() {
+
+    private String getPlaceFromPref() {
         return mAppPreferencesManager.loadPlace();
     }
 

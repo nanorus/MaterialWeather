@@ -1,5 +1,6 @@
 package com.example.nanorus.materialweather.di.settings;
 
+import com.example.nanorus.materialweather.data.api.services.SearchPossibleCitiesService;
 import com.example.nanorus.materialweather.presentation.settings.presenter.ISettingsPresenter;
 import com.example.nanorus.materialweather.presentation.settings.presenter.SettingsPresenter;
 
@@ -10,8 +11,8 @@ import dagger.Provides;
 public class SettingsModule {
 
     @Provides
-    ISettingsPresenter bindSettingsPresenter(){
-        return new SettingsPresenter();
+    ISettingsPresenter bindSettingsPresenter(SearchPossibleCitiesService searchPossibleCitiesService){
+        return new SettingsPresenter(searchPossibleCitiesService);
     }
 
 }

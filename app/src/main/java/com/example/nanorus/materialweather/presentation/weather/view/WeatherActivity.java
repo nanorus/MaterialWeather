@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -39,6 +40,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     DrawerLayout mDrawerLayout;
     @BindView(R.id.navigation_view)
     NavigationView mNavigationView;
+    ConstraintLayout mNavigationHeader;
     ActionBarDrawerToggle mDrawerToggle;
 
     @BindView(R.id.weather_et_place)
@@ -168,6 +170,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     private void setupNavigationDrawer() {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mNavigationHeader = (ConstraintLayout) mNavigationView.getHeaderView(0);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.drawer_open, R.string.drawer_close) {
 
@@ -194,5 +197,6 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
             }
             return false;
         });
+        mNavigationHeader.findViewById(R.id.button_menu_changeCity).setOnClickListener(view -> mPresenter.onSettingsClick());
     }
 }

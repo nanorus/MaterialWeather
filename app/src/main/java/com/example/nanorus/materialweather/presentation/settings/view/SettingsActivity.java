@@ -9,7 +9,7 @@ import com.example.nanorus.materialweather.R;
 import com.example.nanorus.materialweather.app.App;
 import com.example.nanorus.materialweather.presentation.custom.DelayAutoCompleteTextView;
 import com.example.nanorus.materialweather.presentation.settings.presenter.ISettingsPresenter;
-import com.example.nanorus.materialweather.presentation.ui.adapters.CitiesAutoCompleteAdapter;
+import com.example.nanorus.materialweather.presentation.ui.adapters.auto_complete_text_view.view.cities.CitiesAutoCompleteTextViewAdapter;
 
 import javax.inject.Inject;
 
@@ -27,7 +27,7 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
     @BindView(R.id.progress_bar)
     ProgressBar mProgressBar;
 
-    CitiesAutoCompleteAdapter mPossibleCitiesAdapter;
+    CitiesAutoCompleteTextViewAdapter mCityAutoCompleteAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +42,10 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
         mPresenter.startWork();
 
 
-        mPossibleCitiesAdapter = new CitiesAutoCompleteAdapter(getView());
+        mCityAutoCompleteAdapter = new CitiesAutoCompleteTextViewAdapter(getView());
         mCityAutoCompleteTextView.setThreshold(1);
-        mCityAutoCompleteTextView.setAdapter(mPossibleCitiesAdapter);
         mCityAutoCompleteTextView.setLoadingIndicator(mProgressBar);
-
+        mCityAutoCompleteTextView.setAdapter(mCityAutoCompleteAdapter);
     }
 
 

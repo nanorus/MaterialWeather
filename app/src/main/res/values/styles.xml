@@ -32,7 +32,9 @@
     </style>
 
     <style name="PrimaryEditText">
-        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:textColorHint">@color/white_90</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@color/white</item>
     </style>
 
 </resources>

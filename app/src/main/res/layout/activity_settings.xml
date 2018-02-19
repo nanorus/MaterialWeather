@@ -14,7 +14,30 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary">
+            android:background="@color/colorPrimary"
+            android:paddingBottom="16dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/textView_city"
+                style="@style/PrimaryTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/textView_locality_label"
+                app:layout_constraintTop_toBottomOf="@+id/textView_locality_label"
+                tools:text="city"/>
 
             <TextView
                 android:id="@+id/textView_locality_label"
@@ -33,14 +56,28 @@
             <com.example.nanorus.materialweather.presentation.custom.DelayAutoCompleteTextView
                 android:id="@+id/autoCompleteTextView_city"
                 style="@style/PrimaryEditText"
-                android:layout_width="300dp"
+                android:layout_width="276dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginStart="8dp"
+                android:completionThreshold="1"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 "
+                android:hint="@string/example_london_uk"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textView_locality_label"/>
+                app:layout_constraintTop_toBottomOf="@id/textView_city"/>
 
+            <ImageView
+
+                android:id="@+id/imageView_city_entered_success_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/autoCompleteTextView_city"
+                app:layout_constraintStart_toEndOf="@+id/progress_bar"
+                app:layout_constraintTop_toTopOf="@+id/autoCompleteTextView_city"/>
 
             <ProgressBar
                 android:id="@+id/progress_bar"
@@ -49,7 +86,7 @@
                 android:layout_height="28dp"
                 android:layout_marginBottom="4dp"
 
-                android:visibility="gone"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="@id/autoCompleteTextView_city"
                 app:layout_constraintRight_toRightOf="@id/autoCompleteTextView_city"
                 app:layout_constraintTop_toTopOf="@id/autoCompleteTextView_city"/>

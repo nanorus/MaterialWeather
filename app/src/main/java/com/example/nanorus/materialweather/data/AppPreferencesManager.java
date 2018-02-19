@@ -1,6 +1,7 @@
 package com.example.nanorus.materialweather.data;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.example.nanorus.materialweather.data.entity.NowWeatherPojo;
 
@@ -11,6 +12,8 @@ import rx.Single;
 
 @Singleton
 public class AppPreferencesManager {
+    private final String TAG = this.getClass().getSimpleName();
+
     private SharedPreferences mPreferences;
 
     @Inject
@@ -18,18 +21,18 @@ public class AppPreferencesManager {
         mPreferences = sharedPreferences;
     }
 
-    public void savePlace(String place) {
+    public void setPlace(String place) {
         SharedPreferences.Editor editor = getPreferences().edit();
         editor.putString("place", place);
         editor.apply();
     }
 
-    public String loadPlace() {
+    public String getPlace() {
         return getPreferences().getString("place", "Moscow");
     }
 
-    public void saveNowWeatherData(NowWeatherPojo nowWeatherPojo) {
-        System.out.println("prefManager: saving nowWeather: place: " + nowWeatherPojo.getPlace());
+    public void setNowWeatherData(NowWeatherPojo nowWeatherPojo) {
+        Log.d(TAG, "setNowWeatherData() place: "+ nowWeatherPojo.getPlace());
         SharedPreferences.Editor editor = getPreferences().edit();
         editor.putString("now_place", nowWeatherPojo.getPlace());
         editor.putInt("now_temperature", nowWeatherPojo.getTemp());
@@ -42,8 +45,8 @@ public class AppPreferencesManager {
         editor.apply();
     }
 
-    public Single<NowWeatherPojo> loadNowWeatherData() {
-        System.out.println("prefManager: loading nowWeather: place: " + mPreferences.getString("now_place", null));
+    public Single<NowWeatherPojo> getNowWeatherData() {
+        Log.d(TAG, "getNowWeatherData() place: "+ mPreferences.getString("now_place", null));
         return Single.create(singleSubscriber -> singleSubscriber.onSuccess(new NowWeatherPojo(
                 mPreferences.getInt("now_temperature", 0),
                 mPreferences.getString("now_description", "null"),

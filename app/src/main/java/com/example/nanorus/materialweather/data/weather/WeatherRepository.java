@@ -16,6 +16,7 @@ import com.example.nanorus.materialweather.data.mapper.DataMapper;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -42,7 +43,7 @@ public class WeatherRepository {
         mAppPreferencesManager = appPreferencesManager;
     }
 
-    public Observable<NowWeatherPojo> getNowWeatherOnline(String place) {
+    public Single<NowWeatherPojo> getNowWeatherOnline(String place) {
         return getNowWeatherRequestOnline(place)
                 .map(currentRequestPojo -> new NowWeatherPojo(
                         mDataConverter.kelvinToCelsius(currentRequestPojo.getMain().getTemp()),
@@ -52,11 +53,12 @@ public class WeatherRepository {
                         currentRequestPojo.getClouds().getAll(),
                         currentRequestPojo.getWind().getSpeed(),
                         currentRequestPojo.getCod(),
-                        currentRequestPojo.getName() + ", " + currentRequestPojo.getSys().getCountry()
+                        currentRequestPojo.getName() + ", " +
+                                (new Locale("en", currentRequestPojo.getSys().getCountry())).getDisplayCountry()
                 ));
     }
 
-    public Observable<CurrentRequestPojo> getNowWeatherRequestOnline(String place) {
+    public Single<CurrentRequestPojo> getNowWeatherRequestOnline(String place) {
         return mCurrentTimeForecastService.getRequestPojoObservable(place);
     }
 
@@ -169,11 +171,11 @@ public class WeatherRepository {
     }
 
     public void saveNowWeatherData(NowWeatherPojo currentTimeWeatherPojo) {
-    mAppPreferencesManager.saveNowWeatherData(currentTimeWeatherPojo);
+    mAppPreferencesManager.setNowWeatherData(currentTimeWeatherPojo);
     }
 
     public Single<NowWeatherPojo> loadNowWeatherData(){
-        return mAppPreferencesManager.loadNowWeatherData();
+        return mAppPreferencesManager.getNowWeatherData();
     }
 
 }

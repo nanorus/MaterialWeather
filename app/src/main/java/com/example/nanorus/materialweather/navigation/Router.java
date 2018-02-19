@@ -12,4 +12,11 @@ public class Router {
         activity.startActivity(intent);
     }
 
+    public void finishActivity(Activity activity) {
+        activity.finish();
+    }
+
+    public void backPress(Activity activity) {
+        activity.onBackPressed();
+    }
 }

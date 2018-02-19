@@ -14,5 +14,8 @@
 
     <!-- settings screen -->
     <string name="locality">Locality</string>
+    <string name="example_london_uk">London, UK</string>
+    <string name="enter_locality">Enter and select the valid locality</string>
+    <string name="city_not_found">No weather found for this city</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.example.nanorus.materialweather.presentation.ui.adapters.auto_complete_text_view.view.cities;
 
 import android.content.Context;
+import android.widget.ProgressBar;
 
 import com.example.nanorus.materialweather.app.App;
 import com.example.nanorus.materialweather.presentation.ui.adapters.auto_complete_text_view.presenter.base.IAutoCompleteTextViewAdapterPresenter;
@@ -17,8 +18,9 @@ public class CitiesAutoCompleteTextViewAdapter extends BaseAutoCompleteTextViewA
     @Named("CitiesAutoCompleteTextViewAdapterPresenter")
     IAutoCompleteTextViewAdapterPresenter mPresenter;
 
-    public CitiesAutoCompleteTextViewAdapter(Context context) {
-        super(context);
+
+    public CitiesAutoCompleteTextViewAdapter(Context context, ProgressBar progressBar) {
+        super(context, progressBar);
         App.getApp().getAutoCompleteTextViewComponent().inject(this);
         setPresenter(mPresenter);
         mPresenter.bindView(this);

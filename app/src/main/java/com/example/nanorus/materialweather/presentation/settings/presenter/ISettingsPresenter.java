@@ -8,4 +8,12 @@ public interface ISettingsPresenter {
     void bindView(ISettingsActivity settingsActivity);
 
     void startWork();
+
+    void onSaveClicked(String locality);
+
+    void onCitiesAutoCompleteItemClicked(String selectedCity);
+
+    void onCitiesAutoCompleteTextChanged(String text);
+
+    void onHomeClicked();
 }

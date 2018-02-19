@@ -2,7 +2,7 @@ package com.example.nanorus.materialweather.presentation.weather.presenter;
 
 import com.example.nanorus.materialweather.presentation.weather.view.IWeatherActivity;
 
-public interface IWeatherActivityPresenter {
+public interface IWeatherPresenter {
 
     void bindView(IWeatherActivity activity);
 
@@ -12,11 +12,9 @@ public interface IWeatherActivityPresenter {
 
     void updateDataOffline();
 
-    void setPlaceToPref();
-
-    void onSearchButtonPressed();
-
     void releasePresenter();
 
     void onSettingsClick();
+
+    void onResumeView(String showingCity);
 }

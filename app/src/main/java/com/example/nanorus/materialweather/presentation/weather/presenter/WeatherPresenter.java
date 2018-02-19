@@ -3,6 +3,7 @@ package com.example.nanorus.materialweather.presentation.weather.presenter;
 import android.util.Log;
 
 import com.example.nanorus.materialweather.data.AppPreferencesManager;
+import com.example.nanorus.materialweather.data.Utils;
 import com.example.nanorus.materialweather.data.entity.NowWeatherPojo;
 import com.example.nanorus.materialweather.data.entity.ShortDayWeatherPojo;
 import com.example.nanorus.materialweather.data.entity.forecast.api.five_days.FiveDaysRequestPojo;
@@ -22,7 +23,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class WeatherActivityPresenter implements IWeatherActivityPresenter {
+public class WeatherPresenter implements IWeatherPresenter {
     private final String TAG = this.getClass().getSimpleName();
 
     private IWeatherActivity mView;
@@ -33,7 +34,7 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
     private List<ShortDayWeatherPojo> mWeatherDaysList;
 
     private Observable<FiveDaysRequestPojo> mFiveDaysWeatherFullOnlineObservable;
-    private Observable<NowWeatherPojo> mNowWeatherOnlineObservable;
+    private Single<NowWeatherPojo> mNowWeatherOnlineSingle;
     private Observable<ShortDayWeatherPojo> mFiveDaysWeatherShortOfflineObservable;
     private Single<NowWeatherPojo> mNowWeatherOfflineSingle;
     private Subscription mFiveDaysWeatherFullOnlineSubscription;
@@ -43,7 +44,7 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
     private Subscription mSaveDataSubscription;
 
     @Inject
-    public WeatherActivityPresenter(WeatherRepository dataManager, AppPreferencesManager appPreferencesManager, Router router) {
+    public WeatherPresenter(WeatherRepository dataManager, AppPreferencesManager appPreferencesManager, Router router) {
         mDataManager = dataManager;
         mAppPreferencesManager = appPreferencesManager;
         mRouter = router;
@@ -56,7 +57,6 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
 
     @Override
     public void startWork() {
-        mView.setUserEnteredPlace(getPlaceFromPref());
         updateDataOnline();
     }
 
@@ -64,25 +64,24 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
     public void updateDataOnline() {
         Log.d(TAG, "updateDataOnline()");
         mFiveDaysWeatherFullOnlineObservable = mDataManager.getFiveDaysWeatherOnline(getPlaceFromPref());
-        mNowWeatherOnlineObservable = mDataManager.getNowWeatherOnline(getPlaceFromPref());
+        mNowWeatherOnlineSingle = mDataManager.getNowWeatherOnline(getPlaceFromPref());
 
         if (mFiveDaysWeatherFullOnlineSubscription != null && !mFiveDaysWeatherFullOnlineSubscription.isUnsubscribed())
             mFiveDaysWeatherFullOnlineSubscription.unsubscribe();
         if (mNowWeatherOnlineSubscription != null && !mNowWeatherOnlineSubscription.isUnsubscribed())
             mNowWeatherOnlineSubscription.unsubscribe();
 
-        mNowWeatherOnlineSubscription = mNowWeatherOnlineObservable
+        mNowWeatherOnlineSubscription = mNowWeatherOnlineSingle
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        nowWeatherPojo -> mAppPreferencesManager.saveNowWeatherData(nowWeatherPojo),
-                        Throwable::printStackTrace,
-                        () -> {
-                            Log.d(TAG, "Now Online loaded");
-                            if (mFiveDaysWeatherFullOnlineSubscription.isUnsubscribed())
-                                updateDataOffline();
-                        }
-                );
+                .subscribe(nowWeatherPojo -> mAppPreferencesManager.setNowWeatherData(nowWeatherPojo),
+                        throwable -> {
+                            if (Utils.check404Error(throwable)) {
+                                // TODO: online loading ip city
+                                mAppPreferencesManager.setPlace("Moscow");
+                                updateDataOnline();
+                            }
+                        });
         mFiveDaysWeatherFullOnlineSubscription = mFiveDaysWeatherFullOnlineObservable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -109,7 +108,9 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
                                             );
 
                         },
-                        Throwable::printStackTrace,
+                        (throwable -> {
+                            // TODO: online loading ip city
+                        }),
                         () -> {
                         });
     }
@@ -159,21 +160,8 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
                         });
     }
 
-
-    @Override
-    public void onSearchButtonPressed() {
-        setPlaceToPref();
-        updateDataOnline();
-    }
-
-    @Override
-    public void setPlaceToPref() {
-        mAppPreferencesManager.savePlace(mView.getUserEnteredPlace());
-    }
-
-
     private String getPlaceFromPref() {
-        return mAppPreferencesManager.loadPlace();
+        return mAppPreferencesManager.getPlace();
     }
 
     @Override
@@ -190,13 +178,21 @@ public class WeatherActivityPresenter implements IWeatherActivityPresenter {
 
         mView = null;
         mFiveDaysWeatherFullOnlineObservable = null;
-        mNowWeatherOnlineObservable = null;
+        mNowWeatherOnlineSingle = null;
         mFiveDaysWeatherShortOfflineObservable = null;
         mNowWeatherOfflineSingle = null;
     }
 
     @Override
     public void onSettingsClick() {
+        mView.closeDrawer();
         mRouter.startSettingsActivity(mView.getActivity());
+    }
+
+    @Override
+    public void onResumeView(String showingCity) {
+        String savedCity = mAppPreferencesManager.getPlace();
+        if (!savedCity.equals(showingCity))
+            updateDataOnline();
     }
 }

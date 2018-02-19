@@ -18,14 +18,11 @@ public interface IWeatherActivity {
 
         void updateAdapter();
 
-        void setUserEnteredPlace(String place);
-
-        String getUserEnteredPlace();
-
         void setWebPlace(String place);
 
         IWeatherActivity getView();
 
         Activity getActivity();
 
+    void closeDrawer();
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.nanorus.materialweather.presentation.ui.adapters.auto_complete_text_view.presenter.base.IAutoCompleteTextViewAdapterPresenter;
@@ -16,13 +17,15 @@ import java.util.List;
 
 public abstract class BaseAutoCompleteTextViewAdapter extends BaseAdapter implements Filterable, IAutoCompleteTextViewAdapter {
 
-    public Context mContext;
-    public List<String> mResults;
-    public IAutoCompleteTextViewAdapterPresenter mPresenter;
+    private Context mContext;
+    private List<String> mResults;
+    private IAutoCompleteTextViewAdapterPresenter mPresenter;
+    private ProgressBar mProgressBar;
 
-    public BaseAutoCompleteTextViewAdapter(Context context) {
+    public BaseAutoCompleteTextViewAdapter(Context context, ProgressBar progressBar) {
         mContext = context;
         mResults = new ArrayList<>();
+        mProgressBar = progressBar;
     }
 
     public void setPresenter(IAutoCompleteTextViewAdapterPresenter presenter) {
@@ -83,5 +86,21 @@ public abstract class BaseAutoCompleteTextViewAdapter extends BaseAdapter implem
     @Override
     public void addResult(String result) {
         mResults.add(result);
+    }
+
+    @Override
+    public void startProgressBar() {
+        if (!mProgressBar.isEnabled() || mProgressBar.getVisibility() != View.VISIBLE) {
+            mProgressBar.setVisibility(View.VISIBLE);
+            mProgressBar.setEnabled(true);
+        }
+    }
+
+    @Override
+    public void stopProgressBar() {
+        if (mProgressBar.isEnabled() || mProgressBar.getVisibility() == View.VISIBLE) {
+            mProgressBar.setEnabled(false);
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
     }
 }

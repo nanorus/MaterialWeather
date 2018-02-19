@@ -13,4 +13,7 @@ public interface IAutoCompleteTextViewAdapter {
 
     void notifyDataSetInvalidated();
 
+    void startProgressBar();
+
+    void stopProgressBar();
 }

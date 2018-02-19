@@ -11,17 +11,16 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.nanorus.materialweather.R;
 import com.example.nanorus.materialweather.app.App;
 import com.example.nanorus.materialweather.data.entity.ShortDayWeatherPojo;
 import com.example.nanorus.materialweather.presentation.ui.adapters.ForecastRecyclerViewAdapter;
-import com.example.nanorus.materialweather.presentation.weather.presenter.IWeatherActivityPresenter;
+import com.example.nanorus.materialweather.presentation.weather.presenter.IWeatherPresenter;
 
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     private final String TAG = this.getClass().getSimpleName();
 
     @Inject
-    IWeatherActivityPresenter mPresenter;
+    IWeatherPresenter mPresenter;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -43,10 +42,6 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     ConstraintLayout mNavigationHeader;
     ActionBarDrawerToggle mDrawerToggle;
 
-    @BindView(R.id.weather_et_place)
-    EditText mPlaceEditText;
-    @BindView(R.id.weather_iv_search)
-    ImageView mSearchImageView;
     @BindView(R.id.weather_tv_place)
     TextView mPlaceTextView;
     @BindView(R.id.weather_rv_weatherList)
@@ -71,10 +66,13 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         App.getApp().getWeatherComponent().inject(this);
         mPresenter.bindView(getView());
         mPresenter.startWork();
-
-        setListeners();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPresenter.onResumeView(mPlaceTextView.getText().toString());
+    }
 
     @Override
     protected void onDestroy() {
@@ -117,20 +115,6 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     }
 
     @Override
-    public void setUserEnteredPlace(String place) {
-        try {
-            mPlaceEditText.setText(place);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public String getUserEnteredPlace() {
-        return mPlaceEditText.getText().toString();
-    }
-
-    @Override
     public void setWebPlace(String place) {
         mPlaceTextView.setText(place);
     }
@@ -143,10 +127,6 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     @Override
     public Activity getActivity() {
         return this;
-    }
-
-    private void setListeners() {
-        mSearchImageView.setOnClickListener(view -> mPresenter.onSearchButtonPressed());
     }
 
     @Override
@@ -165,6 +145,12 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void closeDrawer() {
+        if (mDrawerLayout != null)
+            mDrawerLayout.closeDrawer(Gravity.LEFT);
     }
 
     private void setupNavigationDrawer() {
@@ -199,4 +185,6 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         });
         mNavigationHeader.findViewById(R.id.button_menu_changeCity).setOnClickListener(view -> mPresenter.onSettingsClick());
     }
+
+
 }

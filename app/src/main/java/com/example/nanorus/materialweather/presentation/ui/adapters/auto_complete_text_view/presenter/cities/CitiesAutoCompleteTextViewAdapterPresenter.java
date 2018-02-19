@@ -10,6 +10,7 @@ import com.example.nanorus.materialweather.presentation.ui.adapters.auto_complet
 
 import javax.inject.Inject;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -29,25 +30,31 @@ public class CitiesAutoCompleteTextViewAdapterPresenter extends BaseAutoComplete
 
     @Override
     public void onPerformFiltering(CharSequence input) {
-        if (input != null) {
-            mAdapter.clearResults();
+        String searcePlace = input.toString();
+        mAdapter.clearResults();
+        if (!searcePlace.isEmpty()) {
 
             Observable<String> citiesObservable = ipLocationService.getIpLocation()
                     .toObservable()
-                    .flatMap(ipLocation -> searchPossibleCitiesService.getPossibleCities(input.toString(), ipLocation.getLat() + "," + ipLocation.getLon()))
+                    .flatMap(ipLocation -> searchPossibleCitiesService.getPossibleCities(searcePlace, ipLocation.getLat() + "," + ipLocation.getLon()))
                     .flatMap(predictionList -> Observable.from(predictionList.getPredictions()))
                     .map(Prediction::getDescription);
+            Completable startProgressBarCompletable = Completable.create(completableSubscriber -> mAdapter.startProgressBar());
+            startProgressBarCompletable.observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(AndroidSchedulers.mainThread()).subscribe();
 
             citiesObservable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<String>() {
                         @Override
                         public void onCompleted() {
                             Log.d(TAG, "get cities onCompleted");
+                            mAdapter.stopProgressBar();
                         }
 
                         @Override
                         public void onError(Throwable e) {
                             Log.d(TAG, "get cities onError: " + e.getMessage());
+                            mAdapter.stopProgressBar();
                             mAdapter.notifyDataSetInvalidated();
                         }
 

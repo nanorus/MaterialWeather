@@ -19,4 +19,12 @@ public class ResourceManager {
     public String cityNotFound() {
         return mContext.getString(R.string.city_not_found);
     }
+
+    public String apiPlaceNotFound(){
+        return mContext.getString(R.string.api_place_not_found);
+    }
+
+    public String networkError() {
+        return mContext.getString(R.string.network_error);
+    }
 }

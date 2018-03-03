@@ -1,7 +1,5 @@
 package com.example.nanorus.materialweather.data.weather;
 
-import android.text.format.DateFormat;
-
 import com.example.nanorus.materialweather.data.AppPreferencesManager;
 import com.example.nanorus.materialweather.data.api.services.CurrentTimeForecastService;
 import com.example.nanorus.materialweather.data.api.services.FiveDaysForecastService;
@@ -9,20 +7,15 @@ import com.example.nanorus.materialweather.data.database.DatabaseManager;
 import com.example.nanorus.materialweather.data.entity.NowWeatherPojo;
 import com.example.nanorus.materialweather.data.entity.ShortDayWeatherPojo;
 import com.example.nanorus.materialweather.data.entity.forecast.api.current_time.CurrentRequestPojo;
-import com.example.nanorus.materialweather.data.entity.forecast.api.five_days.FiveDaysListPojo;
 import com.example.nanorus.materialweather.data.entity.forecast.api.five_days.FiveDaysRequestPojo;
 import com.example.nanorus.materialweather.data.mapper.DataMapper;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Single;
-import rx.schedulers.Schedulers;
 
 public class WeatherRepository {
 
@@ -86,7 +79,7 @@ public class WeatherRepository {
     }
     */
 
-    public Observable<ShortDayWeatherPojo> getDaysWeatherOnline(String place) {
+ /*   public Observable<ShortDayWeatherPojo> getDaysWeatherOnline(String place) {
         return Observable.create(subscriber -> {
             ArrayList<Integer> temperaturesList = new ArrayList<>();
             final int[] previousDay = {0};
@@ -150,21 +143,21 @@ public class WeatherRepository {
                     );
         });
     }
-
+*/
     public Observable<ShortDayWeatherPojo> getDaysWeatherOffline() {
         return mDatabaseManager.getDaysWeather();
     }
 
-    public Observable<FiveDaysRequestPojo> getFiveDaysWeatherOnline(String place) {
-        return mFiveDaysForecastService.getRequestPojoObservable(place);
+    public Single<FiveDaysRequestPojo> getFiveDaysWeatherOnline(String place) {
+        return mFiveDaysForecastService.getRequestPojoSingle(place);
     }
 
-    public Observable<FiveDaysListPojo> loadFullWeatherThreeHoursOnline(String place) {
+/*    public Observable<FiveDaysListPojo> loadFullWeatherThreeHoursOnline(String place) {
         // list for 3 hours each (ListPojo)
         return getFiveDaysWeatherOnline(place)
                 .map(requestPojo -> (requestPojo.getList()))
                 .flatMap(Observable::from);
-    }
+    }*/
 
     public void saveFullWeatherData(FiveDaysRequestPojo data) {
             mDatabaseManager.putFullWeatherData(data);

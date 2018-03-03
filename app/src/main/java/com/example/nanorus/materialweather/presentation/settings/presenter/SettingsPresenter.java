@@ -24,8 +24,6 @@ public class SettingsPresenter implements ISettingsPresenter {
     private final String TAG = this.getClass().getSimpleName();
 
     @Inject
-    Toaster mToaster;
-    @Inject
     ResourceManager mResourceManager;
     @Inject
     AppPreferencesManager mPreferencesManager;
@@ -61,7 +59,7 @@ public class SettingsPresenter implements ISettingsPresenter {
             mPreferencesManager.setPlace(locality);
             mRouter.finishActivity(mView.getView());
         } else {
-            mToaster.shortToast(mResourceManager.enterLocalityText());
+            Toaster.shortToast(mResourceManager.enterLocalityText());
         }
     }
 
@@ -98,10 +96,12 @@ public class SettingsPresenter implements ISettingsPresenter {
                     public void onError(Throwable error) {
                         Log.d(TAG, "setCity(). get current city Error: " + error.getMessage());
                         if (Utils.check404Error(error)) {
-                            mToaster.shortToast(mResourceManager.cityNotFound());
+                            Toaster.shortToast(mResourceManager.cityNotFound());
                             mView.setEnteredCity(mPreviousEnteredCity.toString());
                             mView.playEnteredTextFailAnimation();
                             mView.setEnteredCitySuccess(false);
+                        } else if (Utils.checkNetWorkError(error)) {
+                            Toaster.shortToast(mResourceManager.networkError());
                         }
                     }
                 });

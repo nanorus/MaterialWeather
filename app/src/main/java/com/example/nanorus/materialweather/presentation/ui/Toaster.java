@@ -1,22 +1,17 @@
 package com.example.nanorus.materialweather.presentation.ui;
 
-import android.content.Context;
 import android.widget.Toast;
+
+import com.example.nanorus.materialweather.app.App;
 
 public class Toaster {
 
-    private Context mContext;
-
-    public Toaster(Context context) {
-        mContext = context;
+    public static void shortToast(String text) {
+        Toast.makeText(App.getApp(), text, Toast.LENGTH_SHORT).show();
     }
 
-    public void shortToast(String text) {
-        Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
-    }
-
-    public void shortToast(int resTextId) {
-        Toast.makeText(mContext, mContext.getText(resTextId), Toast.LENGTH_SHORT).show();
+    public static void shortToast(int resTextId) {
+        Toast.makeText(App.getApp(), App.getApp().getText(resTextId), Toast.LENGTH_SHORT).show();
     }
 
 }

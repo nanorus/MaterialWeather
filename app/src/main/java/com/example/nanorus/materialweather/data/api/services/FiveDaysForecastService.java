@@ -4,11 +4,11 @@ import com.example.nanorus.materialweather.data.entity.forecast.api.five_days.Fi
 
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import rx.Observable;
+import rx.Single;
 
 public interface FiveDaysForecastService {
 
     @GET("forecast?mode=json&appid=1c5db98abd4a84a894d55cda56a02f1c")
-    Observable<FiveDaysRequestPojo> getRequestPojoObservable (@Query("q") String place);
+    Single<FiveDaysRequestPojo> getRequestPojoSingle (@Query("q") String place);
 
 }

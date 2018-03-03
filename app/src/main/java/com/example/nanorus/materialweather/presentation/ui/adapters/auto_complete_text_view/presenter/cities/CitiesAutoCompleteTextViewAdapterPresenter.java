@@ -3,9 +3,12 @@ package com.example.nanorus.materialweather.presentation.ui.adapters.auto_comple
 import android.util.Log;
 
 import com.example.nanorus.materialweather.app.App;
+import com.example.nanorus.materialweather.data.ResourceManager;
+import com.example.nanorus.materialweather.data.Utils;
 import com.example.nanorus.materialweather.data.api.services.IpLocationService;
 import com.example.nanorus.materialweather.data.api.services.SearchPossibleCitiesService;
 import com.example.nanorus.materialweather.data.entity.search_possible_cities.Prediction;
+import com.example.nanorus.materialweather.presentation.ui.Toaster;
 import com.example.nanorus.materialweather.presentation.ui.adapters.auto_complete_text_view.presenter.base.BaseAutoCompleteTextViewAdapterPresenter;
 
 import javax.inject.Inject;
@@ -23,6 +26,8 @@ public class CitiesAutoCompleteTextViewAdapterPresenter extends BaseAutoComplete
     SearchPossibleCitiesService searchPossibleCitiesService;
     @Inject
     IpLocationService ipLocationService;
+    @Inject
+    ResourceManager mResourceManager;
 
     public CitiesAutoCompleteTextViewAdapterPresenter() {
         App.getApp().getAppComponent().inject(this);
@@ -39,8 +44,10 @@ public class CitiesAutoCompleteTextViewAdapterPresenter extends BaseAutoComplete
                     .flatMap(ipLocation -> searchPossibleCitiesService.getPossibleCities(searcePlace, ipLocation.getLat() + "," + ipLocation.getLon()))
                     .flatMap(predictionList -> Observable.from(predictionList.getPredictions()))
                     .map(Prediction::getDescription);
-            Completable startProgressBarCompletable = Completable.create(completableSubscriber -> mAdapter.startProgressBar());
-            startProgressBarCompletable.observeOn(AndroidSchedulers.mainThread())
+
+            // start progressbar animation
+            Completable.create(completableSubscriber -> mAdapter.startProgressBar())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(AndroidSchedulers.mainThread()).subscribe();
 
             citiesObservable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
@@ -56,6 +63,9 @@ public class CitiesAutoCompleteTextViewAdapterPresenter extends BaseAutoComplete
                             Log.d(TAG, "get cities onError: " + e.getMessage());
                             mAdapter.stopProgressBar();
                             mAdapter.notifyDataSetInvalidated();
+                            if (Utils.checkNetWorkError(e)) {
+                                Toaster.shortToast(mResourceManager.networkError());
+                            }
                         }
 
                         @Override

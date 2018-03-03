@@ -3,7 +3,7 @@ package com.example.nanorus.materialweather.data;
 public class Utils {
 
     public static boolean checkNetWorkError(Throwable throwable) {
-        return false;
+        return throwable.toString().contains("Unable to resolve host");
     }
 
     public static boolean check404Error(Throwable throwable) {

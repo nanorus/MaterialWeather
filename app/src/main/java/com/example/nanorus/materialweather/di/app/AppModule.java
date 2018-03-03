@@ -3,7 +3,6 @@ package com.example.nanorus.materialweather.di.app;
 import android.content.Context;
 
 import com.example.nanorus.materialweather.data.ResourceManager;
-import com.example.nanorus.materialweather.presentation.ui.Toaster;
 
 import javax.inject.Singleton;
 
@@ -19,17 +18,10 @@ public class AppModule {
         mContext = context;
     }
 
-
     @Provides
     @Singleton
     Context provideContext() {
         return mContext;
-    }
-
-    @Provides
-    @Singleton
-    Toaster provideToaster(Context context){
-        return new Toaster(context);
     }
 
     @Provides

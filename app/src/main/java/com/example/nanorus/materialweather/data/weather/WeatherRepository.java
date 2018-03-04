@@ -8,9 +8,6 @@ import com.example.nanorus.materialweather.data.entity.NowWeatherPojo;
 import com.example.nanorus.materialweather.data.entity.ShortDayWeatherPojo;
 import com.example.nanorus.materialweather.data.entity.forecast.api.current_time.CurrentRequestPojo;
 import com.example.nanorus.materialweather.data.entity.forecast.api.five_days.FiveDaysRequestPojo;
-import com.example.nanorus.materialweather.data.mapper.DataMapper;
-
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -20,16 +17,14 @@ import rx.Single;
 public class WeatherRepository {
 
     private DatabaseManager mDatabaseManager;
-    private DataMapper mDataConverter;
     private CurrentTimeForecastService mCurrentTimeForecastService;
     private FiveDaysForecastService mFiveDaysForecastService;
     private AppPreferencesManager mAppPreferencesManager;
 
     @Inject
-    public WeatherRepository(DataMapper dataConverter, CurrentTimeForecastService currentTimeForecastService,
+    public WeatherRepository(CurrentTimeForecastService currentTimeForecastService,
                              FiveDaysForecastService fiveDaysForecastService, DatabaseManager databaseManager,
                              AppPreferencesManager appPreferencesManager) {
-        mDataConverter = dataConverter;
         mCurrentTimeForecastService = currentTimeForecastService;
         mFiveDaysForecastService = fiveDaysForecastService;
         mDatabaseManager = databaseManager;
@@ -38,17 +33,7 @@ public class WeatherRepository {
 
     public Single<NowWeatherPojo> getNowWeatherOnline(String place) {
         return getNowWeatherRequestOnline(place)
-                .map(currentRequestPojo -> new NowWeatherPojo(
-                        mDataConverter.kelvinToCelsius(currentRequestPojo.getMain().getTemp()),
-                        currentRequestPojo.getWeather().get(0).getDescription(),
-                        (int) currentRequestPojo.getMain().getPressure(),
-                        currentRequestPojo.getMain().getHumidity(),
-                        currentRequestPojo.getClouds().getAll(),
-                        currentRequestPojo.getWind().getSpeed(),
-                        currentRequestPojo.getCod(),
-                        currentRequestPojo.getName() + ", " +
-                                (new Locale("en", currentRequestPojo.getSys().getCountry())).getDisplayCountry()
-                ));
+                .map(NowWeatherPojo::map);
     }
 
     public Single<CurrentRequestPojo> getNowWeatherRequestOnline(String place) {
@@ -79,71 +64,71 @@ public class WeatherRepository {
     }
     */
 
- /*   public Observable<ShortDayWeatherPojo> getDaysWeatherOnline(String place) {
-        return Observable.create(subscriber -> {
-            ArrayList<Integer> temperaturesList = new ArrayList<>();
-            final int[] previousDay = {0};
-            final int[] dayOfMonth = {0};
-            final int[] month = {0};
-            final int[] dayOfWeek = {0};
-            final int[] minTemp = {0};
-            final int[] maxTemp = {0};
-            loadFullWeatherThreeHoursOnline(place)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
-                    .subscribe(
-                            fiveDaysListPojo -> {
-                                Date date = mDataConverter.stringToDate(fiveDaysListPojo.getDtTxt());
-                                Calendar c = Calendar.getInstance();
-                                c.setTime(date);
-                                int day = Integer.parseInt((String) DateFormat.format("dd", date));
-                                if (previousDay[0] == 0) {  // start day
-                                    previousDay[0] = day;
-                                    temperaturesList.add(mDataConverter.kelvinToCelsius(fiveDaysListPojo.getMain().getTemp()));
-                                    dayOfMonth[0] = day;
-                                    month[0] = date.getMonth();
-                                    dayOfWeek[0] = c.get(Calendar.DAY_OF_WEEK);
-                                } else {
-                                    if (previousDay[0] == day) {  // next in this day
-                                        temperaturesList.add(mDataConverter.kelvinToCelsius(fiveDaysListPojo.getMain().getTemp()));
-                                    } else {  // end of day
-                                        minTemp[0] = temperaturesList.get(0);
-                                        maxTemp[0] = temperaturesList.get(0);
-                                        for (Integer i : temperaturesList) {
-                                            if (i < minTemp[0]) minTemp[0] = i;
-                                            if (i > maxTemp[0]) maxTemp[0] = i;
-                                        }
-                                        previousDay[0] = 0;
-                                        temperaturesList.clear();
+    /*   public Observable<ShortDayWeatherPojo> getDaysWeatherOnline(String place) {
+           return Observable.create(subscriber -> {
+               ArrayList<Integer> temperaturesList = new ArrayList<>();
+               final int[] previousDay = {0};
+               final int[] dayOfMonth = {0};
+               final int[] month = {0};
+               final int[] dayOfWeek = {0};
+               final int[] minTemp = {0};
+               final int[] maxTemp = {0};
+               loadFullWeatherThreeHoursOnline(place)
+                       .subscribeOn(Schedulers.io())
+                       .observeOn(Schedulers.io())
+                       .subscribe(
+                               fiveDaysListPojo -> {
+                                   Date date = mDataConverter.stringToDate(fiveDaysListPojo.getDtTxt());
+                                   Calendar c = Calendar.getInstance();
+                                   c.setTime(date);
+                                   int day = Integer.parseInt((String) DateFormat.format("dd", date));
+                                   if (previousDay[0] == 0) {  // start day
+                                       previousDay[0] = day;
+                                       temperaturesList.add(mDataConverter.kelvinToCelsius(fiveDaysListPojo.getMain().getTemp()));
+                                       dayOfMonth[0] = day;
+                                       month[0] = date.getMonth();
+                                       dayOfWeek[0] = c.get(Calendar.DAY_OF_WEEK);
+                                   } else {
+                                       if (previousDay[0] == day) {  // next in this day
+                                           temperaturesList.add(mDataConverter.kelvinToCelsius(fiveDaysListPojo.getMain().getTemp()));
+                                       } else {  // end of day
+                                           minTemp[0] = temperaturesList.get(0);
+                                           maxTemp[0] = temperaturesList.get(0);
+                                           for (Integer i : temperaturesList) {
+                                               if (i < minTemp[0]) minTemp[0] = i;
+                                               if (i > maxTemp[0]) maxTemp[0] = i;
+                                           }
+                                           previousDay[0] = 0;
+                                           temperaturesList.clear();
 
-                                        subscriber.onNext(new ShortDayWeatherPojo(dayOfMonth[0], month[0],
-                                                dayOfWeek[0], minTemp[0], maxTemp[0]));
-                                    }
-                                }
-                            },
+                                           subscriber.onNext(new ShortDayWeatherPojo(dayOfMonth[0], month[0],
+                                                   dayOfWeek[0], minTemp[0], maxTemp[0]));
+                                       }
+                                   }
+                               },
 
-                            Throwable::printStackTrace,
+                               Throwable::printStackTrace,
 
-                            () -> {
-                                // end of the last day
+                               () -> {
+                                   // end of the last day
 
-                                minTemp[0] = temperaturesList.get(0);
-                                maxTemp[0] = temperaturesList.get(0);
-                                for (Integer i : temperaturesList) {
-                                    if (i < minTemp[0]) minTemp[0] = i;
-                                    if (i > maxTemp[0]) maxTemp[0] = i;
-                                }
+                                   minTemp[0] = temperaturesList.get(0);
+                                   maxTemp[0] = temperaturesList.get(0);
+                                   for (Integer i : temperaturesList) {
+                                       if (i < minTemp[0]) minTemp[0] = i;
+                                       if (i > maxTemp[0]) maxTemp[0] = i;
+                                   }
 
-                                previousDay[0] = 0;
-                                temperaturesList.clear();
+                                   previousDay[0] = 0;
+                                   temperaturesList.clear();
 
-                                subscriber.onNext(new ShortDayWeatherPojo(dayOfMonth[0], month[0],
-                                        dayOfWeek[0], minTemp[0], maxTemp[0]));
-                            }
-                    );
-        });
-    }
-*/
+                                   subscriber.onNext(new ShortDayWeatherPojo(dayOfMonth[0], month[0],
+                                           dayOfWeek[0], minTemp[0], maxTemp[0]));
+                               }
+                       );
+           });
+       }
+   */
     public Observable<ShortDayWeatherPojo> getDaysWeatherOffline() {
         return mDatabaseManager.getDaysWeather();
     }
@@ -160,14 +145,14 @@ public class WeatherRepository {
     }*/
 
     public void saveFullWeatherData(FiveDaysRequestPojo data) {
-            mDatabaseManager.putFullWeatherData(data);
+        mDatabaseManager.putFullWeatherData(data);
     }
 
     public void saveNowWeatherData(NowWeatherPojo currentTimeWeatherPojo) {
-    mAppPreferencesManager.setNowWeatherData(currentTimeWeatherPojo);
+        mAppPreferencesManager.setNowWeatherData(currentTimeWeatherPojo);
     }
 
-    public Single<NowWeatherPojo> loadNowWeatherData(){
+    public Single<NowWeatherPojo> loadNowWeatherData() {
         return mAppPreferencesManager.getNowWeatherData();
     }
 

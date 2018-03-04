@@ -14,6 +14,7 @@ import com.example.nanorus.materialweather.presentation.ui.Toaster;
 import com.example.nanorus.materialweather.presentation.weather.view.IWeatherActivity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -66,6 +67,7 @@ public class WeatherPresenter implements IWeatherPresenter {
     @Override
     public void updateDataOnline() {
         Log.d(TAG, "updateDataOnline()");
+        mView.showRefresh(true);
         mOnlineWeekWeatherSingle = mDataManager.getFiveDaysWeatherOnline(getPlaceFromPref());
         mOnlineNowWeatherSingle = mDataManager.getNowWeatherOnline(getPlaceFromPref());
 
@@ -78,7 +80,13 @@ public class WeatherPresenter implements IWeatherPresenter {
         mOnlineNowWeatherSubscription = mOnlineNowWeatherSingle
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(nowWeatherPojo -> mAppPreferencesManager.setNowWeatherData(nowWeatherPojo),
+                .subscribe(nowWeatherPojo -> {
+                            mAppPreferencesManager.setNowWeatherData(nowWeatherPojo);
+                            if (mOnlineWeekWeatherSubscription.isUnsubscribed()) {
+                                updateDataOffline();
+                                mView.showRefresh(false);
+                            }
+                        },
                         throwable -> {
                             if (Utils.check404Error(throwable)) {
                                 Toaster.shortToast(mResourceManager.apiPlaceNotFound());
@@ -92,8 +100,11 @@ public class WeatherPresenter implements IWeatherPresenter {
                             Log.d(TAG, "saving weather started");
                             mDataManager.saveFullWeatherData(fiveDaysRequestPojo);
                             Log.d(TAG, "saving weather completed");
-                            if (mOnlineNowWeatherSubscription.isUnsubscribed())
+                            if (mOnlineNowWeatherSubscription.isUnsubscribed()) {
+                                mAppPreferencesManager.setLastWeatherUpdateTime(new Date());
                                 updateDataOffline();
+                                mView.showRefresh(false);
+                            }
                         },
                         (throwable -> {
                             if (Utils.check404Error(throwable)) {
@@ -123,6 +134,8 @@ public class WeatherPresenter implements IWeatherPresenter {
         if (mOfflineNowWeatherSubscription != null && !mOfflineNowWeatherSubscription.isUnsubscribed())
             mOfflineNowWeatherSubscription.unsubscribe();
 
+        mView.setLastWeatherUpdateTime(mAppPreferencesManager.getLastWeatherUpdateTime());
+
         mOfflineNowWeatherSubscription = mOfflineNowWeatherSingle
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -132,6 +145,7 @@ public class WeatherPresenter implements IWeatherPresenter {
                             mView.setNowSky(nowWeatherPojo.getDescription());
                             mView.setNowTemperature(String.valueOf(nowWeatherPojo.getTemp()));
                             mView.setWebPlace(nowWeatherPojo.getPlace());
+                            setWeatherIcon(nowWeatherPojo.getIcon());
                         }, Throwable::printStackTrace);
 
         mOfflineWeekWeatherSubscription = mOfflineWeekWeatherObservable
@@ -148,6 +162,10 @@ public class WeatherPresenter implements IWeatherPresenter {
                             if (mWeekWeatherList.size() < 4)
                                 updateDataOnline();
                         });
+    }
+
+    private void setWeatherIcon(String icon) {
+        mView.setWeatherIcon(mResourceManager.getWeatherIcon(icon));
     }
 
     private String getPlaceFromPref() {
@@ -184,5 +202,10 @@ public class WeatherPresenter implements IWeatherPresenter {
         String savedCity = mAppPreferencesManager.getPlace();
         if (!savedCity.equals(showingCity))
             updateDataOnline();
+    }
+
+    @Override
+    public void onRefresh() {
+        updateDataOnline();
     }
 }

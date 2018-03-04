@@ -17,4 +17,6 @@ public interface IWeatherPresenter {
     void onSettingsClick();
 
     void onResumeView(String showingCity);
+
+    void onRefresh();
 }

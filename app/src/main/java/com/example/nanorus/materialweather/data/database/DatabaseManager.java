@@ -27,15 +27,12 @@ public class DatabaseManager {
 
     private DatabaseHelper mDatabaseHelper;
     private DatabaseContract mDatabaseContract;
-    private DataMapper mDataMapper;
     private Subscription mDaysWeatherSubscription;
 
     @Inject
-    public DatabaseManager(DatabaseHelper databaseHelper, DatabaseContract databaseContract,
-                           DataMapper dataMapper) {
+    public DatabaseManager(DatabaseHelper databaseHelper, DatabaseContract databaseContract) {
         mDatabaseHelper = databaseHelper;
         mDatabaseContract = databaseContract;
-        mDataMapper = dataMapper;
     }
 
     public Observable<FullDayWeatherPojo> getSingleDayWeather(int id) {
@@ -56,7 +53,7 @@ public class DatabaseManager {
                     if (cursorAllData.moveToFirst()) {
                         do {
                             threeHoursWeatherPojos.add(new ThreeHoursWeatherPojo(
-                                    mDataMapper.kelvinToCelsius(cursorAllData.getDouble(
+                                    DataMapper.kelvinToCelsius(cursorAllData.getDouble(
                                             cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_TEMPERATURE)
                                     )),
                                     cursorAllData.getString(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_DESCRIPTION)),
@@ -65,7 +62,7 @@ public class DatabaseManager {
                                     cursorAllData.getInt(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_CLOUDINESS)),
                                     cursorAllData.getDouble(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_WIND_SPEED)),
                                     cursorAllData.getInt(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_WIND_DIRECTION)),
-                                    mDataMapper.stringToDate(cursorAllData.getString(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_DATE)))
+                                    DataMapper.stringToDate(cursorAllData.getString(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_DATE)))
                             ));
                         } while (cursorAllData.moveToNext());
                     }
@@ -73,7 +70,7 @@ public class DatabaseManager {
                     mDatabaseHelper.closeDB();
                     // mapping list of hours weather to days weather observable
                     Observable<ShortDayWeatherPojo> daysWeatherObservable =
-                            mDataMapper.threeHoursWeatherPojoToShortDayWeatherPojoObservable(threeHoursWeatherPojos);
+                            DataMapper.threeHoursWeatherPojoToShortDayWeatherPojoObservable(threeHoursWeatherPojos);
                     mDaysWeatherSubscription = daysWeatherObservable
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())

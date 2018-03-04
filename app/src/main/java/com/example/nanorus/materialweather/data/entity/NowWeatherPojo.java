@@ -1,5 +1,10 @@
 package com.example.nanorus.materialweather.data.entity;
 
+import com.example.nanorus.materialweather.data.entity.forecast.api.current_time.CurrentRequestPojo;
+import com.example.nanorus.materialweather.data.mapper.DataMapper;
+
+import java.util.Locale;
+
 public class NowWeatherPojo {
 
     private int mTemp;
@@ -18,7 +23,9 @@ public class NowWeatherPojo {
 
     private String mPlace;
 
-    public NowWeatherPojo(int temp, String description, int pressure, int humidity, int cloudiness, double windSpeed, int windDirection, String place) {
+    private String mIcon;
+
+    public NowWeatherPojo(int temp, String description, int pressure, int humidity, int cloudiness, double windSpeed, int windDirection, String place, String icon) {
         mTemp = temp;
         mDescription = description;
         mPressure = pressure;
@@ -27,6 +34,7 @@ public class NowWeatherPojo {
         mWindSpeed = windSpeed;
         mWindDirection = windDirection;
         mPlace = place;
+        mIcon = icon;
     }
 
     public String getPlace() {
@@ -91,5 +99,28 @@ public class NowWeatherPojo {
 
     public void setWindDirection(int windDirection) {
         mWindDirection = windDirection;
+    }
+
+    public String getIcon() {
+        return mIcon;
+    }
+
+    public void setIcon(String icon) {
+        mIcon = icon;
+    }
+
+    public static NowWeatherPojo map(CurrentRequestPojo currentRequestPojo){
+        return new NowWeatherPojo(
+                DataMapper.kelvinToCelsius(currentRequestPojo.getMain().getTemp()),
+                currentRequestPojo.getWeather().get(0).getDescription(),
+                (int) currentRequestPojo.getMain().getPressure(),
+                currentRequestPojo.getMain().getHumidity(),
+                currentRequestPojo.getClouds().getAll(),
+                currentRequestPojo.getWind().getSpeed(),
+                currentRequestPojo.getCod(),
+                currentRequestPojo.getName() + ", " +
+                        (new Locale("en", currentRequestPojo.getSys().getCountry())).getDisplayCountry(),
+                currentRequestPojo.getWeather().get(0).getIcon()
+        );
     }
 }

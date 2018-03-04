@@ -2,11 +2,13 @@ package com.example.nanorus.materialweather.presentation.weather.view;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.nanorus.materialweather.R;
@@ -50,6 +53,12 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     TextView mSkyTextView;
     @BindView(R.id.weather_now_tv_temperature)
     TextView mTemperatureTextView;
+    @BindView(R.id.swipe_refresh)
+    SwipeRefreshLayout mSwipeRefresh;
+    @BindView(R.id.textView_last_update_value)
+    TextView mLastWeatherUpdateTextView;
+    @BindView(R.id.imageView_weather_icon)
+    ImageView mWeatherIcon;
 
     private ForecastRecyclerViewAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -66,6 +75,8 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         App.getApp().getWeatherComponent().inject(this);
         mPresenter.bindView(getView());
         mPresenter.startWork();
+        mSwipeRefresh.setOnRefreshListener(() -> mPresenter.onRefresh());
+        mSwipeRefresh.setColorSchemeResources(R.color.swipe_refresh_color_1, R.color.swipe_refresh_color_2,R.color.swipe_refresh_color_3);
     }
 
     @Override
@@ -130,6 +141,15 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     }
 
     @Override
+    public void showRefresh(boolean show) {
+        if (show)
+            getSupportActionBar().setTitle(R.string.refreshing);
+        else
+            getSupportActionBar().setTitle(R.string.weather);
+        mSwipeRefresh.setRefreshing(show);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         mDrawerToggle.onOptionsItemSelected(item);
         return super.onOptionsItemSelected(item);
@@ -151,6 +171,16 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     public void closeDrawer() {
         if (mDrawerLayout != null)
             mDrawerLayout.closeDrawer(Gravity.LEFT);
+    }
+
+    @Override
+    public void setLastWeatherUpdateTime(String time) {
+        mLastWeatherUpdateTextView.setText(time);
+    }
+
+    @Override
+    public void setWeatherIcon(Bitmap icon) {
+        mWeatherIcon.setImageBitmap(icon);
     }
 
     private void setupNavigationDrawer() {

@@ -13,21 +13,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import rx.Emitter;
 import rx.Observable;
 
-@Singleton
 public class DataMapper {
 
-    @Inject
-    public DataMapper() {
 
-    }
-
-    public Date stringToDate(String string) {
+    public static Date stringToDate(String string) {
         Date date = null;
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         try {
@@ -38,11 +30,11 @@ public class DataMapper {
         return date;
     }
 
-    public int kelvinToCelsius(double kelvin) {
+    public static int kelvinToCelsius(double kelvin) {
         return (int) Math.round(kelvin) - 273;
     }
 
-    public Observable<ShortDayWeatherPojo> threeHoursWeatherPojoToShortDayWeatherPojoObservable(List<ThreeHoursWeatherPojo> threeHoursWeatherPojos) {
+    public static Observable<ShortDayWeatherPojo> threeHoursWeatherPojoToShortDayWeatherPojoObservable(List<ThreeHoursWeatherPojo> threeHoursWeatherPojos) {
         return Observable.create(
                 subscriber -> {
                     Calendar calendar = Calendar.getInstance();
@@ -89,6 +81,11 @@ public class DataMapper {
                     // converting completed
                     subscriber.onCompleted();
                 }, Emitter.BackpressureMode.BUFFER);
+    }
+
+    public static String dateToString(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM, HH:mm", Locale.ENGLISH);
+        return dateFormat.format(date);
     }
 
 }

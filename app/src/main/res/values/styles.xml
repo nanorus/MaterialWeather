@@ -9,7 +9,7 @@
     </style>
     
     <style name="VeryBigTextView">
-        <item name="android:textSize">50sp</item>
+        <item name="android:textSize">60sp</item>
     </style>
 
     <style name="PrimarySmallTextView">

@@ -3,11 +3,11 @@ package com.example.nanorus.materialweather.presentation.ui.adapters.auto_comple
 import android.util.Log;
 
 import com.example.nanorus.materialweather.app.App;
-import com.example.nanorus.materialweather.data.ResourceManager;
-import com.example.nanorus.materialweather.data.Utils;
-import com.example.nanorus.materialweather.data.api.services.IpLocationService;
-import com.example.nanorus.materialweather.data.api.services.SearchPossibleCitiesService;
-import com.example.nanorus.materialweather.data.entity.search_possible_cities.Prediction;
+import com.example.nanorus.materialweather.model.data.ResourceManager;
+import com.example.nanorus.materialweather.model.data.Utils;
+import com.example.nanorus.materialweather.model.data.api.services.IpLocationService;
+import com.example.nanorus.materialweather.model.data.api.services.SearchPossibleCitiesService;
+import com.example.nanorus.materialweather.entity.data.search_possible_cities.Prediction;
 import com.example.nanorus.materialweather.presentation.ui.Toaster;
 import com.example.nanorus.materialweather.presentation.ui.adapters.auto_complete_text_view.presenter.base.BaseAutoCompleteTextViewAdapterPresenter;
 

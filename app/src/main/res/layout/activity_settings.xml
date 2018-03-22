@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.nanorus.materialweather.presentation.settings.view.SettingsActivity">
+    tools:context=".presentation.view.settings.SettingsActivity">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -53,7 +53,7 @@
                 app:layout_constraintTop_toTopOf="parent"/>
 
 
-            <com.example.nanorus.materialweather.presentation.custom.DelayAutoCompleteTextView
+            <com.example.nanorus.materialweather.presentation.ui.custom.DelayAutoCompleteTextView
                 android:id="@+id/autoCompleteTextView_city"
                 style="@style/PrimaryEditText"
                 android:layout_width="276dp"

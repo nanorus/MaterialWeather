@@ -1,6 +1,6 @@
 package com.example.nanorus.materialweather.di.weather;
 
-import com.example.nanorus.materialweather.presentation.weather.view.WeatherActivity;
+import com.example.nanorus.materialweather.presentation.view.weather.WeatherActivity;
 
 import dagger.Subcomponent;
 

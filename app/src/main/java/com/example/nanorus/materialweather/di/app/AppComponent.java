@@ -6,7 +6,7 @@ import com.example.nanorus.materialweather.di.ui.auto_complete_text_view.AutoCom
 import com.example.nanorus.materialweather.di.ui.auto_complete_text_view.AutoCompleteTextViewModule;
 import com.example.nanorus.materialweather.di.weather.WeatherComponent;
 import com.example.nanorus.materialweather.di.weather.WeatherModule;
-import com.example.nanorus.materialweather.presentation.settings.presenter.SettingsPresenter;
+import com.example.nanorus.materialweather.presentation.presenter.settings.SettingsPresenter;
 import com.example.nanorus.materialweather.presentation.ui.adapters.auto_complete_text_view.presenter.cities.CitiesAutoCompleteTextViewAdapterPresenter;
 
 import javax.inject.Singleton;

@@ -1,8 +1,8 @@
 package com.example.nanorus.materialweather.di.settings;
 
-import com.example.nanorus.materialweather.data.api.services.SearchPossibleCitiesService;
-import com.example.nanorus.materialweather.presentation.settings.presenter.ISettingsPresenter;
-import com.example.nanorus.materialweather.presentation.settings.presenter.SettingsPresenter;
+import com.example.nanorus.materialweather.model.data.api.services.SearchPossibleCitiesService;
+import com.example.nanorus.materialweather.presentation.presenter.settings.ISettingsPresenter;
+import com.example.nanorus.materialweather.presentation.presenter.settings.SettingsPresenter;
 
 import dagger.Module;
 import dagger.Provides;

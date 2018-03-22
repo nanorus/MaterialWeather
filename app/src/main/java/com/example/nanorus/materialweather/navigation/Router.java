@@ -3,7 +3,7 @@ package com.example.nanorus.materialweather.navigation;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.example.nanorus.materialweather.presentation.settings.view.SettingsActivity;
+import com.example.nanorus.materialweather.presentation.view.settings.SettingsActivity;
 
 public class Router {
 

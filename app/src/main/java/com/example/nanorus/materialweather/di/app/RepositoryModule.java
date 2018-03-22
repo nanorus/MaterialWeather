@@ -3,10 +3,10 @@ package com.example.nanorus.materialweather.di.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.nanorus.materialweather.data.api.services.CurrentTimeForecastService;
-import com.example.nanorus.materialweather.data.api.services.FiveDaysForecastService;
-import com.example.nanorus.materialweather.data.api.services.IpLocationService;
-import com.example.nanorus.materialweather.data.api.services.SearchPossibleCitiesService;
+import com.example.nanorus.materialweather.model.data.api.services.CurrentTimeForecastService;
+import com.example.nanorus.materialweather.model.data.api.services.FiveDaysForecastService;
+import com.example.nanorus.materialweather.model.data.api.services.IpLocationService;
+import com.example.nanorus.materialweather.model.data.api.services.SearchPossibleCitiesService;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

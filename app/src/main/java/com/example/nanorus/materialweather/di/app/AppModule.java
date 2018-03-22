@@ -2,7 +2,7 @@ package com.example.nanorus.materialweather.di.app;
 
 import android.content.Context;
 
-import com.example.nanorus.materialweather.data.ResourceManager;
+import com.example.nanorus.materialweather.model.data.ResourceManager;
 
 import javax.inject.Singleton;
 

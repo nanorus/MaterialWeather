@@ -16,7 +16,7 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="com.example.nanorus.materialweather.presentation.weather.view.WeatherActivity"
+            tools:context=".presentation.view.weather.WeatherActivity"
             android:id="@+id/relativeLayout">
 
             <android.support.v4.widget.NestedScrollView

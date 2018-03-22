@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.nanorus.materialweather.R;
-import com.example.nanorus.materialweather.data.entity.ShortDayWeatherPojo;
+import com.example.nanorus.materialweather.entity.domain.weather.ShortDayWeatherPojo;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

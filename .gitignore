@@ -1,13 +1,10 @@
-*.iml
-.gradle
-.gradlew
-.gradle.properties
-.gradlew.bat
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.idea/vcs.xml
+# Build files and folders
+.gradle/
+build/
+
+# Properties
+local.properties
+
+# Idea
+.idea/
+**/*.iml

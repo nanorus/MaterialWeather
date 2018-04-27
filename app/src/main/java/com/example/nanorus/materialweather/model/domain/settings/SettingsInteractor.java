@@ -18,6 +18,7 @@ public class SettingsInteractor {
     private WeatherRepository mWeatherRepository;
     private CurrentTimeForecastService mCurrentTimeForecastService;
 
+    @Inject
     public SettingsInteractor(SettingsRepository settingsRepository, WeatherRepository weatherRepository) {
         mSettingsRepository = settingsRepository;
         mWeatherRepository = weatherRepository;

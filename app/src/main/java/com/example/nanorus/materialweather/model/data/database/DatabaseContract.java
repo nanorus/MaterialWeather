@@ -20,6 +20,7 @@ public class DatabaseContract {
     public final String COLUMN_NAME_WEATHER_WIND_SPEED = "wind_speed";
     public final String COLUMN_NAME_WEATHER_WIND_DIRECTION = "wind_direction";
     public final String COLUMN_NAME_WEATHER_DATE = "date";
+    public final String COLUMN_NAME_WEATHER_ICON = "icon";
 
     public final String COLUMN_NAME_ID = "_id";
     public final String COMMA = ",";
@@ -33,9 +34,10 @@ public class DatabaseContract {
             COLUMN_NAME_WEATHER_CLOUDINESS + " INTEGER" + COMMA +
             COLUMN_NAME_WEATHER_WIND_SPEED + " DOUBLE" + COMMA +
             COLUMN_NAME_WEATHER_WIND_DIRECTION + " DOUBLE" + COMMA +
-            COLUMN_NAME_WEATHER_DATE + " TEXT" +
+            COLUMN_NAME_WEATHER_DATE + " TEXT" + COMMA +
+            COLUMN_NAME_WEATHER_ICON + " TEXT" +
             ")";
 
-    public final String SQL_DELETE_TABLE_WEATHER = "DROP TABLE IF EXIST " + TABLE_NAME_WEATHER;
+    public final String SQL_DELETE_TABLE_WEATHER = "DROP TABLE IF EXISTS " + TABLE_NAME_WEATHER;
 
 }

@@ -8,10 +8,6 @@ public interface IWeatherPresenter {
 
     void startWork();
 
-    void updateDataOnline();
-
-    void updateDataOffline();
-
     void releasePresenter();
 
     void onSettingsClick();

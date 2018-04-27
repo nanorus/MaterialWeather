@@ -7,9 +7,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.nanorus.materialweather.R;
-import com.example.nanorus.materialweather.entity.domain.weather.ShortDayWeatherPojo;
+import com.example.nanorus.materialweather.entity.weather.repository.DayForecast;
+import com.example.nanorus.materialweather.model.data.TempUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -17,55 +19,47 @@ import java.util.Locale;
 
 public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRecyclerViewAdapter.ForecastRecyclerViewHolder> {
 
-    List<ShortDayWeatherPojo> mData;
+    private List<DayForecast> mData;
 
-    public ForecastRecyclerViewAdapter(List<ShortDayWeatherPojo> data) {
-        mData = data;
+    public ForecastRecyclerViewAdapter() {
+        mData = new ArrayList<>();
+    }
+
+    public void updateData(List<DayForecast> data) {
+        if (mData != null) {
+            mData.clear();
+            mData.addAll(data);
+        } else
+            mData = data;
     }
 
     @Override
     public ForecastRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.forecast_list_item, parent, false);
-
-        ForecastRecyclerViewHolder holder = new ForecastRecyclerViewHolder(view);
-        return holder;
+        return new ForecastRecyclerViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ForecastRecyclerViewHolder holder, int position) {
-        ShortDayWeatherPojo singleData = mData.get(position);
+        DayForecast dayForecast = mData.get(position);
 
-        // set date
-        String strDt = null;
-        Date date = new Date();
-        date.setDate(singleData.getDayOfMonth());
-        date.setMonth(singleData.getMonth());
-        if (position == 0) {
-            if (singleData.getDayOfMonth() == Integer.parseInt(new SimpleDateFormat("dd").format(Calendar.getInstance().getTime()))) {
-                strDt = "Today, " + (new SimpleDateFormat("dd MMMM", Locale.ENGLISH)).format(date);
-            }
-        } else {
-            strDt = (new SimpleDateFormat("EEEE, dd MMMM", Locale.ENGLISH)).format(date);
-        }
-        holder.forecast_list_item_tv_date.setText(strDt);
-
+        holder.dateTextView.setText(getDateString(dayForecast.getDate()));
         // set temperatures
-        String tempMin = null;
-        String tempMax = null;
+        int minTemp = dayForecast.getTemperaturesAmplitude().getMinTemperature();
+        int maxTemp = dayForecast.getTemperaturesAmplitude().getMaxTemperature();
+        String tempMin = TempUtils.temperatureToString(minTemp);
+        String tempMax = TempUtils.temperatureToString(maxTemp);
+        holder.temperatureTextView.setText(tempMin + "°C" + " / " + tempMax + "°C");
+    }
 
-        if (singleData.getMinTemp() > 0)
-            tempMin = "+" + String.valueOf(singleData.getMinTemp());
-        else if (singleData.getMinTemp() <= 0)
-            tempMin = String.valueOf(singleData.getMinTemp());
-
-        if (singleData.getMaxTemp() > 0)
-            tempMax = "+" + String.valueOf(singleData.getMaxTemp());
-        else if (singleData.getMaxTemp() <= 0)
-            tempMax = String.valueOf(singleData.getMaxTemp());
-
-        holder.forecast_list_item_tv_temperature.setText(tempMin + "°C" + " / " + tempMax + "°C");
-
+    private String getDateString(Date date) {
+        Calendar day = Calendar.getInstance();
+        day.setTime(date);
+        if (day.get(Calendar.DAY_OF_MONTH) == Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
+            return "Today, " + (new SimpleDateFormat("dd MMMM", Locale.ENGLISH)).format(date);
+        } else {
+            return (new SimpleDateFormat("EEEE, dd MMMM", Locale.ENGLISH)).format(date);
+        }
     }
 
     @Override
@@ -77,14 +71,13 @@ public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRe
     }
 
     public static class ForecastRecyclerViewHolder extends RecyclerView.ViewHolder {
-
-        TextView forecast_list_item_tv_date;
-        TextView forecast_list_item_tv_temperature;
+        TextView dateTextView;
+        TextView temperatureTextView;
 
         public ForecastRecyclerViewHolder(View itemView) {
             super(itemView);
-            forecast_list_item_tv_date = (TextView) itemView.findViewById(R.id.forecast_list_item_tv_date);
-            forecast_list_item_tv_temperature = (TextView) itemView.findViewById(R.id.forecast_list_item_tv_temperature);
+            dateTextView = itemView.findViewById(R.id.forecast_list_item_tv_date);
+            temperatureTextView = itemView.findViewById(R.id.forecast_list_item_tv_temperature);
         }
     }
 

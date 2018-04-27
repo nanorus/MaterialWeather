@@ -7,7 +7,7 @@ import com.example.nanorus.materialweather.model.data.ResourceManager;
 import com.example.nanorus.materialweather.model.data.Utils;
 import com.example.nanorus.materialweather.model.data.api.services.IpLocationService;
 import com.example.nanorus.materialweather.model.data.api.services.SearchPossibleCitiesService;
-import com.example.nanorus.materialweather.entity.data.search_possible_cities.Prediction;
+import com.example.nanorus.materialweather.entity.weather.data.search_possible_cities.Prediction;
 import com.example.nanorus.materialweather.presentation.ui.Toaster;
 import com.example.nanorus.materialweather.presentation.ui.adapters.auto_complete_text_view.presenter.base.BaseAutoCompleteTextViewAdapterPresenter;
 

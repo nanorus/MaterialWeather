@@ -3,28 +3,27 @@ package com.example.nanorus.materialweather.model.data.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
-import com.example.nanorus.materialweather.model.data.mapper.DataMapper;
-import com.example.nanorus.materialweather.entity.domain.weather.FullDayWeatherPojo;
-import com.example.nanorus.materialweather.entity.domain.weather.ShortDayWeatherPojo;
-import com.example.nanorus.materialweather.entity.domain.weather.ThreeHoursWeatherPojo;
-import com.example.nanorus.materialweather.entity.data.five_days.FiveDaysListPojo;
-import com.example.nanorus.materialweather.entity.data.five_days.FiveDaysRequestPojo;
+import com.example.nanorus.materialweather.entity.weather.repository.DayForecast;
+import com.example.nanorus.materialweather.entity.weather.repository.HourForecast;
+import com.example.nanorus.materialweather.entity.weather.repository.WeekForecast;
+import com.example.nanorus.materialweather.model.data.DateUtils;
+import com.example.nanorus.materialweather.model.data.TempUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import rx.Emitter;
-import rx.Observable;
+import rx.Single;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 @Singleton
 public class DatabaseManager {
 
+    private final String TAG = this.getClass().getName();
     private DatabaseHelper mDatabaseHelper;
     private DatabaseContract mDatabaseContract;
     private Subscription mDaysWeatherSubscription;
@@ -35,25 +34,18 @@ public class DatabaseManager {
         mDatabaseContract = databaseContract;
     }
 
-    public Observable<FullDayWeatherPojo> getSingleDayWeather(int id) {
-        // cursor, query
-        return null;
-    }
-
-    public Observable<ShortDayWeatherPojo> getDaysWeather() {
-        return Observable.create(
-                subscriber -> {
+    public Single<WeekForecast> getWeekForecast() {
+        Log.d(TAG, "getWeekForecast()");
+        return Single.create(
+                singleSubscriber -> {
                     SQLiteDatabase db = mDatabaseHelper.getReadableDB();
 
                     Cursor cursorAllData = db.rawQuery("SELECT * FROM " + mDatabaseContract.TABLE_NAME_WEATHER, null);
-
-                    System.out.println("databaseManager: READ FROM DB");
-                    // list of hours weather from db
-                    ArrayList<ThreeHoursWeatherPojo> threeHoursWeatherPojos = new ArrayList<>();
+                    ArrayList<HourForecast> hourForecasts = new ArrayList<>();
                     if (cursorAllData.moveToFirst()) {
                         do {
-                            threeHoursWeatherPojos.add(new ThreeHoursWeatherPojo(
-                                    DataMapper.kelvinToCelsius(cursorAllData.getDouble(
+                            hourForecasts.add(new HourForecast(
+                                    TempUtils.kelvinToCelsius(cursorAllData.getDouble(
                                             cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_TEMPERATURE)
                                     )),
                                     cursorAllData.getString(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_DESCRIPTION)),
@@ -62,45 +54,34 @@ public class DatabaseManager {
                                     cursorAllData.getInt(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_CLOUDINESS)),
                                     cursorAllData.getDouble(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_WIND_SPEED)),
                                     cursorAllData.getInt(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_WIND_DIRECTION)),
-                                    DataMapper.stringToDate(cursorAllData.getString(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_DATE)))
+                                    DateUtils.dtTxtToDate(cursorAllData.getString(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_DATE))),
+                                    cursorAllData.getString(cursorAllData.getColumnIndex(mDatabaseContract.COLUMN_NAME_WEATHER_ICON))
                             ));
                         } while (cursorAllData.moveToNext());
                     }
                     cursorAllData.close();
                     mDatabaseHelper.closeDB();
-                    // mapping list of hours weather to days weather observable
-                    Observable<ShortDayWeatherPojo> daysWeatherObservable =
-                            DataMapper.threeHoursWeatherPojoToShortDayWeatherPojoObservable(threeHoursWeatherPojos);
-                    mDaysWeatherSubscription = daysWeatherObservable
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    subscriber::onNext,
-                                    subscriber::onError,
-                                    subscriber::onCompleted
-                            );
 
-                },
-                Emitter.BackpressureMode.BUFFER
-        );
+                    singleSubscriber.onSuccess(new WeekForecast(DayForecast.fromHourForecasts(hourForecasts)));
+                });
     }
 
-    public void putFullWeatherData(FiveDaysRequestPojo data) {
-        System.out.println("databaseManager: WRITE TO DB");
+    public void putWeekForecast(WeekForecast data) {
+        Log.d(TAG, "putWeekForecast()");
         SQLiteDatabase db = mDatabaseHelper.getWritableDB();
-        FiveDaysListPojo list;
+        List<HourForecast> hourForecasts = data.getHourForecasts();
         ContentValues cv = new ContentValues();
         db.delete(mDatabaseContract.TABLE_NAME_WEATHER, null, null);
-        for (int i = 0; i < data.getList().size(); i++) {
-            list = data.getList().get(i);
-            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_DATE, list.getDtTxt());
-            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_TEMPERATURE, list.getMain().getTemp());
-            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_DESCRIPTION, list.getWeather().get(0).getDescription());
-            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_CLOUDINESS, list.getClouds().getAll());
-            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_PRESSURE, list.getMain().getPressure());
-            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_HUMIDITY, list.getMain().getHumidity());
-            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_WIND_SPEED, list.getWind().getSpeed());
-            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_WIND_DIRECTION, list.getWind().getDeg());
+        for (HourForecast hourForecast : hourForecasts) {
+            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_DATE, DateUtils.dateToDtTxt(hourForecast.getDate()));
+            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_TEMPERATURE, hourForecast.getTemp());
+            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_DESCRIPTION, hourForecast.getDescription());
+            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_CLOUDINESS, hourForecast.getCloudiness());
+            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_PRESSURE, hourForecast.getPressure());
+            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_HUMIDITY, hourForecast.getHumidity());
+            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_WIND_SPEED, hourForecast.getWindSpeed());
+            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_WIND_DIRECTION, hourForecast.getWindDirection());
+            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_ICON, hourForecast.getIcon());
 
             db.insert(mDatabaseContract.TABLE_NAME_WEATHER, null, cv);
             cv.clear();

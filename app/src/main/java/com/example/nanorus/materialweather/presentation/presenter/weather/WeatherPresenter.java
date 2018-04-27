@@ -2,55 +2,35 @@ package com.example.nanorus.materialweather.presentation.presenter.weather;
 
 import android.util.Log;
 
-import com.example.nanorus.materialweather.model.data.AppPreferencesManager;
+import com.example.nanorus.materialweather.entity.weather.repository.WeatherForecast;
 import com.example.nanorus.materialweather.model.data.ResourceManager;
-import com.example.nanorus.materialweather.model.data.Utils;
-import com.example.nanorus.materialweather.entity.domain.weather.CurrentDayWeatherPojo;
-import com.example.nanorus.materialweather.entity.domain.weather.ShortDayWeatherPojo;
-import com.example.nanorus.materialweather.entity.data.five_days.FiveDaysRequestPojo;
-import com.example.nanorus.materialweather.model.data.weather.WeatherRepository;
+import com.example.nanorus.materialweather.model.domain.weather.WeatherInteractor;
 import com.example.nanorus.materialweather.navigation.Router;
 import com.example.nanorus.materialweather.presentation.ui.Toaster;
 import com.example.nanorus.materialweather.presentation.view.weather.IWeatherActivity;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Single;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class WeatherPresenter implements IWeatherPresenter {
     private final String TAG = this.getClass().getSimpleName();
 
     private IWeatherActivity mView;
-    private WeatherRepository mDataManager;
-    private AppPreferencesManager mAppPreferencesManager;
-    private ResourceManager mResourceManager;
     private Router mRouter;
 
-    private List<ShortDayWeatherPojo> mWeekWeatherList;
-
-    private Single<FiveDaysRequestPojo> mOnlineWeekWeatherSingle;
-    private Observable<ShortDayWeatherPojo> mOfflineWeekWeatherObservable;
-    private Single<CurrentDayWeatherPojo> mOnlineNowWeatherSingle;
-    private Single<CurrentDayWeatherPojo> mOfflineNowWeatherSingle;
-
-    private Subscription mOnlineWeekWeatherSubscription;
-    private Subscription mOfflineWeekWeatherSubscription;
-    private Subscription mOnlineNowWeatherSubscription;
-    private Subscription mOfflineNowWeatherSubscription;
+    private WeatherForecast mWeatherForecast;
+    private Observable<WeatherForecast> mWeatherForecastObservable;
+    private Single<WeatherForecast> mWeatherForecastSingle;
+    private WeatherInteractor mInteractor;
+    private ResourceManager mResourceManager;
 
     @Inject
-    public WeatherPresenter(WeatherRepository dataManager, AppPreferencesManager appPreferencesManager, Router router, ResourceManager resourceManager) {
-        mDataManager = dataManager;
-        mAppPreferencesManager = appPreferencesManager;
+    public WeatherPresenter(Router router, WeatherInteractor interactor, ResourceManager resourceManager) {
         mRouter = router;
+        mInteractor = interactor;
         mResourceManager = resourceManager;
     }
 
@@ -61,134 +41,25 @@ public class WeatherPresenter implements IWeatherPresenter {
 
     @Override
     public void startWork() {
-        updateDataOnline();
-    }
+        mView.initForecastList();
+        mWeatherForecastObservable = mInteractor.getWeatherForecastUpdates().observeOn(AndroidSchedulers.mainThread());
+        mWeatherForecastSingle = mInteractor.getRefreshedWeatherForecast().observeOn(AndroidSchedulers.mainThread());
 
-    @Override
-    public void updateDataOnline() {
-        Log.d(TAG, "updateDataOnline()");
-        mView.showRefresh(true);
-        mOnlineWeekWeatherSingle = mDataManager.getFiveDaysWeatherOnline(getPlaceFromPref());
-        mOnlineNowWeatherSingle = mDataManager.getNowWeatherOnline(getPlaceFromPref());
+        mWeatherForecastObservable.subscribe(
+                weatherForecast -> {
+                    Log.d(TAG, "weatherForecastObservable.onNext");
+                    mView.updateWeatherForecast(weatherForecast);
+                },
+                throwable -> {
+                    Log.e(TAG, throwable.toString());
+                    Toaster.shortToast(throwable.getMessage());
+                }, () -> Log.d(TAG, "weatherForecastObservable.onCompleted"));
 
-        if (mOnlineWeekWeatherSubscription != null && !mOnlineWeekWeatherSubscription.isUnsubscribed())
-            mOnlineWeekWeatherSubscription.unsubscribe();
-        if (mOnlineNowWeatherSubscription != null && !mOnlineNowWeatherSubscription.isUnsubscribed())
-            mOnlineNowWeatherSubscription.unsubscribe();
-
-
-        mOnlineNowWeatherSubscription = mOnlineNowWeatherSingle
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(nowWeatherPojo -> {
-                            mAppPreferencesManager.setNowWeatherData(nowWeatherPojo);
-                            if (mOnlineWeekWeatherSubscription.isUnsubscribed()) {
-                                updateDataOffline();
-                                mView.showRefresh(false);
-                            }
-                        },
-                        throwable -> {
-                            if (Utils.check404Error(throwable)) {
-                                Toaster.shortToast(mResourceManager.apiPlaceNotFound());
-                            }
-                        });
-        mOnlineWeekWeatherSubscription = mOnlineWeekWeatherSingle
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        fiveDaysRequestPojo -> {
-                            Log.d(TAG, "saving weather started");
-                            mDataManager.saveFullWeatherData(fiveDaysRequestPojo);
-                            Log.d(TAG, "saving weather completed");
-                            if (mOnlineNowWeatherSubscription.isUnsubscribed()) {
-                                mAppPreferencesManager.setLastWeatherUpdateTime(new Date());
-                                updateDataOffline();
-                                mView.showRefresh(false);
-                            }
-                        },
-                        (throwable -> {
-                            if (Utils.check404Error(throwable)) {
-                                Toaster.shortToast(mResourceManager.apiPlaceNotFound());
-                            } else if (Utils.checkNetWorkError(throwable)) {
-                                Toaster.shortToast(mResourceManager.networkError());
-                            }
-                        })
-                );
-    }
-
-    @Override
-    public void updateDataOffline() {
-        Log.d(TAG, "updateDataOffline()");
-        if (mWeekWeatherList != null)
-            mWeekWeatherList.clear();
-        else
-            mWeekWeatherList = new ArrayList<>();
-        mView.createWeatherList(mWeekWeatherList);
-        mView.setAdapter();
-
-        mOfflineWeekWeatherObservable = mDataManager.getDaysWeatherOffline();
-        mOfflineNowWeatherSingle = mDataManager.loadNowWeatherData();
-
-        if (mOfflineWeekWeatherSubscription != null && !mOfflineWeekWeatherSubscription.isUnsubscribed())
-            mOfflineWeekWeatherSubscription.unsubscribe();
-        if (mOfflineNowWeatherSubscription != null && !mOfflineNowWeatherSubscription.isUnsubscribed())
-            mOfflineNowWeatherSubscription.unsubscribe();
-
-        mView.setLastWeatherUpdateTime(mAppPreferencesManager.getLastWeatherUpdateTime());
-
-        mOfflineNowWeatherSubscription = mOfflineNowWeatherSingle
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        nowWeatherPojo -> {
-                            Log.d(TAG, "load now offline: place: " + nowWeatherPojo.getPlace());
-                            mView.setNowSky(nowWeatherPojo.getDescription());
-                            mView.setNowTemperature(String.valueOf(nowWeatherPojo.getTemp()));
-                            mView.setWebPlace(nowWeatherPojo.getPlace());
-                            setWeatherIcon(nowWeatherPojo.getIcon());
-                        }, Throwable::printStackTrace);
-
-        mOfflineWeekWeatherSubscription = mOfflineWeekWeatherObservable
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        shortDayWeatherPojo -> {
-                            Log.d(TAG, "update list: " + mWeekWeatherList.size());
-                            mWeekWeatherList.add(shortDayWeatherPojo);
-                            mView.updateAdapter();
-                        }, Throwable::printStackTrace,
-                        () -> {
-                            Log.d(TAG, "list size: " + mWeekWeatherList.size());
-                            if (mWeekWeatherList.size() < 4)
-                                updateDataOnline();
-                        });
-    }
-
-    private void setWeatherIcon(String icon) {
-        mView.setWeatherIcon(mResourceManager.getWeatherIcon(icon));
-    }
-
-    private String getPlaceFromPref() {
-        return mAppPreferencesManager.getPlace();
     }
 
     @Override
     public void releasePresenter() {
-        if (mOnlineWeekWeatherSubscription != null && !mOnlineWeekWeatherSubscription.isUnsubscribed())
-            mOnlineWeekWeatherSubscription.unsubscribe();
-        if (mOnlineNowWeatherSubscription != null && !mOnlineNowWeatherSubscription.isUnsubscribed())
-            mOnlineNowWeatherSubscription.unsubscribe();
-        if (mOfflineWeekWeatherSubscription != null && !mOfflineWeekWeatherSubscription.isUnsubscribed())
-            mOfflineWeekWeatherSubscription.unsubscribe();
-        if (mOfflineNowWeatherSubscription != null && !mOfflineNowWeatherSubscription.isUnsubscribed())
-            mOfflineNowWeatherSubscription.unsubscribe();
-
-
         mView = null;
-        mOnlineWeekWeatherSingle = null;
-        mOnlineNowWeatherSingle = null;
-        mOfflineWeekWeatherObservable = null;
-        mOfflineNowWeatherSingle = null;
     }
 
     @Override
@@ -199,13 +70,25 @@ public class WeatherPresenter implements IWeatherPresenter {
 
     @Override
     public void onResumeView(String showingCity) {
-        String savedCity = mAppPreferencesManager.getPlace();
+/*        String savedCity = mAppPreferencesManager.getPlace();
         if (!savedCity.equals(showingCity))
-            updateDataOnline();
+            updateDataOnline();*/
     }
 
     @Override
     public void onRefresh() {
-        updateDataOnline();
+        mView.showRefresh(true);
+        mWeatherForecastSingle.subscribe(
+                weatherForecast -> {
+                    Log.d(TAG, "weatherForecastSingle.onSuccess");
+                    mView.updateWeatherForecast(weatherForecast);
+                    mView.setIcon(mResourceManager.getWeatherIcon(weatherForecast.getCurrentWeather().getIcon()));
+                    mView.showRefresh(false);
+                },
+                throwable -> {
+                    Log.e(TAG, throwable.toString());
+                    Toaster.shortToast(throwable.getMessage());
+                    mView.showRefresh(false);
+                });
     }
 }

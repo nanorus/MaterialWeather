@@ -3,8 +3,7 @@ package com.example.nanorus.materialweather.model.data;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.example.nanorus.materialweather.entity.domain.weather.CurrentDayWeatherPojo;
-import com.example.nanorus.materialweather.model.data.mapper.DataMapper;
+import com.example.nanorus.materialweather.entity.weather.repository.CurrentWeather;
 
 import java.util.Date;
 
@@ -34,44 +33,45 @@ public class AppPreferencesManager {
         return getPreferences().getString("place", "Moscow");
     }
 
-    public void setNowWeatherData(CurrentDayWeatherPojo currentDayWeatherPojo) {
-        Log.d(TAG, "setNowWeatherData() place: " + currentDayWeatherPojo.getPlace());
+    public void setNowWeatherData(CurrentWeather currentWeather) {
+        Log.d(TAG, "setNowWeatherData() place: " + currentWeather.getPlace());
         SharedPreferences.Editor editor = getPreferences().edit();
-        editor.putString("now_place", currentDayWeatherPojo.getPlace());
-        editor.putInt("now_temperature", currentDayWeatherPojo.getTemp());
-        editor.putString("now_description", currentDayWeatherPojo.getDescription());
-        editor.putInt("now_pressure", currentDayWeatherPojo.getPressure());
-        editor.putInt("now_humidity", currentDayWeatherPojo.getHumidity());
-        editor.putInt("now_cloudiness", currentDayWeatherPojo.getCloudiness());
-        editor.putFloat("now_wind_speed", (float) currentDayWeatherPojo.getWindSpeed());
-        editor.putInt("now_wind_direction", currentDayWeatherPojo.getWindDirection());
-        editor.putString("now_icon", currentDayWeatherPojo.getIcon());
+        editor.putString("now_place", currentWeather.getPlace());
+        editor.putInt("now_temperature", currentWeather.getTemp());
+        editor.putString("now_description", currentWeather.getDescription());
+        editor.putInt("now_pressure", currentWeather.getPressure());
+        editor.putInt("now_humidity", currentWeather.getHumidity());
+        editor.putInt("now_cloudiness", currentWeather.getCloudiness());
+        editor.putFloat("now_wind_speed", (float) currentWeather.getWindSpeed());
+        editor.putInt("now_wind_direction", currentWeather.getWindDirection());
+        editor.putString("now_icon", currentWeather.getIcon());
         editor.apply();
     }
 
-    public Single<CurrentDayWeatherPojo> getNowWeatherData() {
+    public Single<CurrentWeather> getNowWeatherData() {
         Log.d(TAG, "getNowWeatherData() place: " + mPreferences.getString("now_place", null));
-        return Single.create(singleSubscriber -> singleSubscriber.onSuccess(new CurrentDayWeatherPojo(
-                getPreferences().getInt("now_temperature", 0),
-                getPreferences().getString("now_description", "null"),
-                getPreferences().getInt("now_pressure", 0),
-                getPreferences().getInt("now_humidity", 0),
-                getPreferences().getInt("now_cloudiness", 0),
-                getPreferences().getFloat("now_wind_speed", 0),
-                getPreferences().getInt("now_wind_direction", 0),
-                getPreferences().getString("now_place", null),
-                getPreferences().getString("now_icon", "01d")
+        return Single.create(singleSubscriber -> singleSubscriber.onSuccess(
+                new CurrentWeather(
+                        getPreferences().getInt("now_temperature", 0),
+                        getPreferences().getString("now_description", "null"),
+                        getPreferences().getInt("now_pressure", 0),
+                        getPreferences().getInt("now_humidity", 0),
+                        getPreferences().getInt("now_cloudiness", 0),
+                        getPreferences().getFloat("now_wind_speed", 0),
+                        getPreferences().getInt("now_wind_direction", 0),
+                        getPreferences().getString("now_place", null),
+                        getPreferences().getString("now_icon", "01d")
         )));
     }
 
     public void setLastWeatherUpdateTime(Date date) {
         SharedPreferences.Editor editor = getPreferences().edit();
-        editor.putString("last_weather_update_time", DataMapper.dateToString(date));
+        editor.putString("last_weather_update_time", DateUtils.dateToDtTxt(date));
         editor.apply();
     }
 
-    public String getLastWeatherUpdateTime() {
-        return getPreferences().getString("last_weather_update_time", "");
+    public Date getLastWeatherUpdateTime() {
+        return DateUtils.dtTxtToDate(getPreferences().getString("last_weather_update_time", ""));
     }
 
     public SharedPreferences getPreferences() {

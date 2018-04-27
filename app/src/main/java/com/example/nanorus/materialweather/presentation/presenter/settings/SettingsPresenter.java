@@ -3,15 +3,16 @@ package com.example.nanorus.materialweather.presentation.presenter.settings;
 import android.util.Log;
 
 import com.example.nanorus.materialweather.app.App;
+import com.example.nanorus.materialweather.entity.weather.repository.CurrentWeather;
 import com.example.nanorus.materialweather.model.data.AppPreferencesManager;
 import com.example.nanorus.materialweather.model.data.ResourceManager;
 import com.example.nanorus.materialweather.model.data.Utils;
 import com.example.nanorus.materialweather.model.data.api.services.SearchPossibleCitiesService;
-import com.example.nanorus.materialweather.entity.domain.weather.CurrentDayWeatherPojo;
-import com.example.nanorus.materialweather.model.data.weather.WeatherRepository;
+import com.example.nanorus.materialweather.model.domain.settings.SettingsInteractor;
+import com.example.nanorus.materialweather.model.repository.weather.WeatherRepository;
 import com.example.nanorus.materialweather.navigation.Router;
-import com.example.nanorus.materialweather.presentation.view.settings.ISettingsActivity;
 import com.example.nanorus.materialweather.presentation.ui.Toaster;
+import com.example.nanorus.materialweather.presentation.view.settings.ISettingsActivity;
 
 import javax.inject.Inject;
 
@@ -31,6 +32,8 @@ public class SettingsPresenter implements ISettingsPresenter {
     Router mRouter;
     @Inject
     WeatherRepository mWeatherRepository;
+    @Inject
+    SettingsInteractor interactor;
 
     private StringBuilder mEnteredCity;
     private StringBuilder mPreviousEnteredCity;
@@ -65,7 +68,38 @@ public class SettingsPresenter implements ISettingsPresenter {
 
     @Override
     public void onCitiesAutoCompleteItemClicked(String selectedCity) {
+
+        Single<Boolean> checkSity = interactor.checkCity(selectedCity);
+        checkSity.observeOn(AndroidSchedulers.mainThread());
+        checkSity.subscribe(new SingleSubscriber<Boolean>() {
+            @Override
+            public void onSuccess(Boolean aBoolean) {
+                if (aBoolean){
+                    Log.d(TAG, "check city Success");
+                    mView.setCity(selectedCity);
+                    mView.setEnteredCitySuccess(true);
+                } else {
+                    Log.d(TAG, "check city no success");
+
+                }
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                Log.d(TAG, error.toString());
+                Toaster.shortToast(error.getMessage());
+                if (Utils.check404Error(error)) {
+                    Toaster.shortToast(mResourceManager.cityNotFound());
+                    mView.setEnteredCity(mPreviousEnteredCity.toString());
+                    mView.playEnteredTextFailAnimation();
+                    mView.setEnteredCitySuccess(false);
+                } else if (Utils.checkNetWorkError(error)) {
+                    Toaster.shortToast(mResourceManager.networkError());
+                }
+            }
+        });
         setCity(selectedCity);
+
     }
 
     @Override
@@ -81,14 +115,15 @@ public class SettingsPresenter implements ISettingsPresenter {
         mRouter.backPress(mView.getView());
     }
 
+
     private void setCity(String city) {
-        Single<CurrentDayWeatherPojo> nowWeatherOnline = mWeatherRepository.getNowWeatherOnline(city);
+        Single<CurrentWeather> nowWeatherOnline = mWeatherRepository.getRefreshedWeather(city);
         nowWeatherOnline.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleSubscriber<CurrentDayWeatherPojo>() {
+                .subscribe(new SingleSubscriber<CurrentWeather>() {
                     @Override
-                    public void onSuccess(CurrentDayWeatherPojo currentDayWeatherPojo) {
+                    public void onSuccess(CurrentWeather currentWeather) {
                         Log.d(TAG, "setCity(). get current weather onSuccess");
-                        mView.setCity(currentDayWeatherPojo.getPlace());
+                        mView.setCity(currentWeather.getPlace());
                         mView.setEnteredCitySuccess(true);
                     }
 

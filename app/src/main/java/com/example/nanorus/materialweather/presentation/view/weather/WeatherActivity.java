@@ -21,11 +21,12 @@ import android.widget.TextView;
 
 import com.example.nanorus.materialweather.R;
 import com.example.nanorus.materialweather.app.App;
-import com.example.nanorus.materialweather.entity.domain.weather.ShortDayWeatherPojo;
-import com.example.nanorus.materialweather.presentation.ui.adapters.ForecastRecyclerViewAdapter;
+import com.example.nanorus.materialweather.entity.weather.repository.CurrentWeather;
+import com.example.nanorus.materialweather.entity.weather.repository.WeatherForecast;
+import com.example.nanorus.materialweather.model.data.DateUtils;
+import com.example.nanorus.materialweather.model.data.ResourceManager;
 import com.example.nanorus.materialweather.presentation.presenter.weather.IWeatherPresenter;
-
-import java.util.List;
+import com.example.nanorus.materialweather.presentation.ui.adapters.ForecastRecyclerViewAdapter;
 
 import javax.inject.Inject;
 
@@ -37,6 +38,8 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
     @Inject
     IWeatherPresenter mPresenter;
+    @Inject
+    ResourceManager mResourceManager;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -62,7 +65,6 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
     private ForecastRecyclerViewAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
-    private List<ShortDayWeatherPojo> mWeatherDaysList;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +78,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         mPresenter.bindView(getView());
         mPresenter.startWork();
         mSwipeRefresh.setOnRefreshListener(() -> mPresenter.onRefresh());
-        mSwipeRefresh.setColorSchemeResources(R.color.swipe_refresh_color_1, R.color.swipe_refresh_color_2,R.color.swipe_refresh_color_3);
+        mSwipeRefresh.setColorSchemeResources(R.color.swipe_refresh_color_1, R.color.swipe_refresh_color_2, R.color.swipe_refresh_color_3);
     }
 
     @Override
@@ -93,41 +95,28 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         super.onDestroy();
     }
 
-    @Override
-    public void createWeatherList(List<ShortDayWeatherPojo> weatherDaysList) {
-        mWeatherDaysList = weatherDaysList;
-    }
-
 
     @Override
-    public void setAdapter() {
-        mAdapter = new ForecastRecyclerViewAdapter(mWeatherDaysList);
-        mWeatherRecyclerView.setAdapter(mAdapter);
+    public void initForecastList() {
         if (mLayoutManager == null) {
             mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
             mWeatherRecyclerView.setLayoutManager(mLayoutManager);
         }
+        mAdapter = new ForecastRecyclerViewAdapter();
+        mWeatherRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
-    public void setNowTemperature(String temperature) {
-        mTemperatureTextView.setText(temperature);
-    }
-
-    @Override
-    public void setNowSky(String sky) {
-        mSkyTextView.setText(sky);
-    }
-
-    @Override
-    public void updateAdapter() {
-        if (mAdapter != null)
+    public void updateWeatherForecast(WeatherForecast weatherForecast) {
+        if (mAdapter != null) {
+            mAdapter.updateData(weatherForecast.getWeekForecast().getDayForecastList());
             mAdapter.notifyDataSetChanged();
-    }
+        }
 
-    @Override
-    public void setWebPlace(String place) {
-        mPlaceTextView.setText(place);
+        CurrentWeather currentWeather = weatherForecast.getCurrentWeather();
+        mTemperatureTextView.setText(String.valueOf(currentWeather.getTemp()));
+        mSkyTextView.setText(currentWeather.getDescription());
+        mLastWeatherUpdateTextView.setText(DateUtils.dateToString(weatherForecast.getLastUpdate()));
     }
 
     @Override
@@ -147,6 +136,11 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         else
             getSupportActionBar().setTitle(R.string.weather);
         mSwipeRefresh.setRefreshing(show);
+    }
+
+    @Override
+    public void setIcon(Bitmap icon) {
+        setWeatherIcon(icon);
     }
 
     @Override
@@ -171,11 +165,6 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     public void closeDrawer() {
         if (mDrawerLayout != null)
             mDrawerLayout.closeDrawer(Gravity.LEFT);
-    }
-
-    @Override
-    public void setLastWeatherUpdateTime(String time) {
-        mLastWeatherUpdateTextView.setText(time);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.example.nanorus.materialweather.model.data.api.services;
 
-import com.example.nanorus.materialweather.entity.data.search_possible_cities.PredictionList;
+import com.example.nanorus.materialweather.entity.weather.data.search_possible_cities.PredictionList;
 
 import retrofit2.http.GET;
 import retrofit2.http.Query;

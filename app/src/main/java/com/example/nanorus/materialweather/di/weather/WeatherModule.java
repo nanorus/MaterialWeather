@@ -1,5 +1,6 @@
 package com.example.nanorus.materialweather.di.weather;
 
+import com.example.nanorus.materialweather.model.data.AppPreferencesManager;
 import com.example.nanorus.materialweather.model.data.ResourceManager;
 import com.example.nanorus.materialweather.model.domain.weather.WeatherInteractor;
 import com.example.nanorus.materialweather.navigation.Router;
@@ -13,8 +14,8 @@ import dagger.Provides;
 public class WeatherModule {
 
     @Provides
-    IWeatherPresenter bindWeatherActivityPresenter(Router router, WeatherInteractor interactor, ResourceManager resourceManager) {
-        return new WeatherPresenter(router, interactor, resourceManager);
+    IWeatherPresenter bindWeatherActivityPresenter(Router router, WeatherInteractor interactor, ResourceManager resourceManager, AppPreferencesManager appPreferencesManager) {
+        return new WeatherPresenter(router, interactor, resourceManager, appPreferencesManager);
     }
 
 }

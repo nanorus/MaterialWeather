@@ -9,7 +9,9 @@ public interface ISettingsActivity {
 
     void setEnteredCity(String enteringCity);
 
-    void setEnteredCitySuccess(boolean success);
+    void showEnteredCitySuccessNotice(boolean success);
 
-    void playEnteredTextFailAnimation();
+    void hideEnteredCitySuccessHotice();
+
+    void showSaveButton(boolean show);
 }

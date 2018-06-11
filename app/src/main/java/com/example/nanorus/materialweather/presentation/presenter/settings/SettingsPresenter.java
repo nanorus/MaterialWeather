@@ -40,7 +40,7 @@ public class SettingsPresenter implements ISettingsPresenter {
 
     private ISettingsActivity mView;
 
-    public SettingsPresenter(SearchPossibleCitiesService searchPossibleCitiesService) {
+    public SettingsPresenter() {
         App.getApp().getAppComponent().inject(this);
         mEnteredCity = new StringBuilder();
         mPreviousEnteredCity = new StringBuilder();
@@ -53,13 +53,13 @@ public class SettingsPresenter implements ISettingsPresenter {
 
     @Override
     public void startWork() {
-        mView.setCity(mPreferencesManager.getPlace());
+        mView.setCity(interactor.getCity());
     }
 
     @Override
     public void onSaveClicked(String locality) {
         if (!locality.isEmpty()) {
-            mPreferencesManager.setPlace(locality);
+            interactor.setCity(locality);
             mRouter.finishActivity(mView.getView());
         } else {
             Toaster.shortToast(mResourceManager.enterLocalityText());
@@ -68,19 +68,18 @@ public class SettingsPresenter implements ISettingsPresenter {
 
     @Override
     public void onCitiesAutoCompleteItemClicked(String selectedCity) {
-
         Single<Boolean> checkSity = interactor.checkCity(selectedCity);
         checkSity.observeOn(AndroidSchedulers.mainThread());
         checkSity.subscribe(new SingleSubscriber<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
-                if (aBoolean){
+                if (aBoolean) {
                     Log.d(TAG, "check city Success");
-                    mView.setCity(selectedCity);
-                    mView.setEnteredCitySuccess(true);
+                    setCity(selectedCity);
+                    mView.showEnteredCitySuccessNotice(true);
                 } else {
                     Log.d(TAG, "check city no success");
-
+                    failEnterCity();
                 }
             }
 
@@ -89,25 +88,29 @@ public class SettingsPresenter implements ISettingsPresenter {
                 Log.d(TAG, error.toString());
                 Toaster.shortToast(error.getMessage());
                 if (Utils.check404Error(error)) {
-                    Toaster.shortToast(mResourceManager.cityNotFound());
-                    mView.setEnteredCity(mPreviousEnteredCity.toString());
-                    mView.playEnteredTextFailAnimation();
-                    mView.setEnteredCitySuccess(false);
+                    failEnterCity();
                 } else if (Utils.checkNetWorkError(error)) {
                     Toaster.shortToast(mResourceManager.networkError());
                 }
             }
         });
-        setCity(selectedCity);
 
+    }
+
+    private void failEnterCity() {
+        Toaster.shortToast(mResourceManager.cityNotFound());
+        mView.setEnteredCity(mPreviousEnteredCity.toString());
+        mView.showEnteredCitySuccessNotice(false);
     }
 
     @Override
     public void onCitiesAutoCompleteTextChanged(String text) {
+        mView.showSaveButton(false);
         mPreviousEnteredCity.setLength(0);
         mPreviousEnteredCity.append(mEnteredCity);
         mEnteredCity.setLength(0);
         mEnteredCity.append(text);
+        mView.hideEnteredCitySuccessHotice();
     }
 
     @Override
@@ -123,18 +126,19 @@ public class SettingsPresenter implements ISettingsPresenter {
                     @Override
                     public void onSuccess(CurrentWeather currentWeather) {
                         Log.d(TAG, "setCity(). get current weather onSuccess");
-                        mView.setCity(currentWeather.getPlace());
-                        mView.setEnteredCitySuccess(true);
+                        mView.setCity(currentWeather.getCity());
+                        mView.showEnteredCitySuccessNotice(true);
+                        mView.showSaveButton(true);
                     }
 
                     @Override
                     public void onError(Throwable error) {
                         Log.d(TAG, "setCity(). get current city Error: " + error.getMessage());
+                        mView.showSaveButton(false);
                         if (Utils.check404Error(error)) {
                             Toaster.shortToast(mResourceManager.cityNotFound());
                             mView.setEnteredCity(mPreviousEnteredCity.toString());
-                            mView.playEnteredTextFailAnimation();
-                            mView.setEnteredCitySuccess(false);
+                            mView.showEnteredCitySuccessNotice(false);
                         } else if (Utils.checkNetWorkError(error)) {
                             Toaster.shortToast(mResourceManager.networkError());
                         }

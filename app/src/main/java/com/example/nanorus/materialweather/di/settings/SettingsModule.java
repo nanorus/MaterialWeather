@@ -11,8 +11,8 @@ import dagger.Provides;
 public class SettingsModule {
 
     @Provides
-    ISettingsPresenter bindSettingsPresenter(SearchPossibleCitiesService searchPossibleCitiesService){
-        return new SettingsPresenter(searchPossibleCitiesService);
+    ISettingsPresenter bindSettingsPresenter(){
+        return new SettingsPresenter();
     }
 
 }

@@ -28,14 +28,24 @@ public class AppPreferencesManager {
         editor.putString("place", place);
         editor.apply();
     }
+    public void setCity(String city) {
+        SharedPreferences.Editor editor = getPreferences().edit();
+        editor.putString("city", city);
+        editor.apply();
+    }
 
     public String getPlace() {
         return getPreferences().getString("place", "Moscow");
+    }
+    public String getCity() {
+        String city = getPreferences().getString("city", "Moscow");
+        return getPreferences().getString("city", "Moscow");
     }
 
     public void setNowWeatherData(CurrentWeather currentWeather) {
         Log.d(TAG, "setNowWeatherData() place: " + currentWeather.getPlace());
         SharedPreferences.Editor editor = getPreferences().edit();
+        editor.putString("now_city", currentWeather.getCity());
         editor.putString("now_place", currentWeather.getPlace());
         editor.putInt("now_temperature", currentWeather.getTemp());
         editor.putString("now_description", currentWeather.getDescription());
@@ -59,6 +69,7 @@ public class AppPreferencesManager {
                         getPreferences().getInt("now_cloudiness", 0),
                         getPreferences().getFloat("now_wind_speed", 0),
                         getPreferences().getInt("now_wind_direction", 0),
+                        getPreferences().getString("now_city", null),
                         getPreferences().getString("now_place", null),
                         getPreferences().getString("now_icon", "01d")
         )));

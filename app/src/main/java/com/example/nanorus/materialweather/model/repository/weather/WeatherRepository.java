@@ -34,7 +34,7 @@ public class WeatherRepository {
     }
 
     public Single<WeekForecast> getRefreshedForecast() {
-        return mFiveDaysForecastService.getRequest(mAppPreferencesManager.getPlace())
+        return mFiveDaysForecastService.getRequest(mAppPreferencesManager.getCity())
                 .map(fiveDaysRequest -> HourForecast.map(fiveDaysRequest.getList()))
                 .map(DayForecast::fromHourForecasts)
                 .map(WeekForecast::new);
@@ -42,7 +42,7 @@ public class WeatherRepository {
     }
 
     public Single<CurrentWeather> getRefreshedWeather() {
-        return mCurrentTimeForecastService.getRequest(mAppPreferencesManager.getPlace())
+        return mCurrentTimeForecastService.getRequest(mAppPreferencesManager.getCity())
                 .map(CurrentWeather::map);
     }
 

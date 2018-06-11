@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -27,7 +26,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/textView_city"
@@ -37,7 +36,7 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/textView_locality_label"
                 app:layout_constraintTop_toBottomOf="@+id/textView_locality_label"
-                tools:text="city"/>
+                tools:text="city" />
 
             <TextView
                 android:id="@+id/textView_locality_label"
@@ -50,22 +49,22 @@
                 android:text="@string/locality"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
 
             <com.example.nanorus.materialweather.presentation.ui.custom.DelayAutoCompleteTextView
                 android:id="@+id/autoCompleteTextView_city"
                 style="@style/PrimaryEditText"
-                android:layout_width="276dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:completionThreshold="1"
                 android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 "
                 android:hint="@string/example_london_uk"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textView_city"/>
+                app:layout_constraintEnd_toStartOf="@+id/imageView_city_entered_success_icon"
+                app:layout_constraintStart_toStartOf="@+id/textView_city"
+                app:layout_constraintTop_toBottomOf="@id/textView_city" />
 
             <ImageView
 
@@ -73,11 +72,12 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginBottom="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_marginTop="8dp"
                 app:layout_constraintBottom_toBottomOf="@+id/autoCompleteTextView_city"
-                app:layout_constraintStart_toEndOf="@+id/progress_bar"
-                app:layout_constraintTop_toTopOf="@+id/autoCompleteTextView_city"/>
+                app:layout_constraintEnd_toStartOf="@+id/successTextView"
+                app:layout_constraintTop_toTopOf="@+id/autoCompleteTextView_city" />
 
             <ProgressBar
                 android:id="@+id/progress_bar"
@@ -89,7 +89,19 @@
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="@id/autoCompleteTextView_city"
                 app:layout_constraintRight_toRightOf="@id/autoCompleteTextView_city"
-                app:layout_constraintTop_toTopOf="@id/autoCompleteTextView_city"/>
+                app:layout_constraintTop_toTopOf="@id/autoCompleteTextView_city" />
+
+            <TextView
+                android:id="@+id/successTextView"
+                style="@style/PrimaryTextView"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView_city_entered_success_icon"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/imageView_city_entered_success_icon"
+                tools:text="success" />
 
 
         </android.support.constraint.ConstraintLayout>

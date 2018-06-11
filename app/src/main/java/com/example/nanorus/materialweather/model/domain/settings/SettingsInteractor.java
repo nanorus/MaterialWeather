@@ -16,7 +16,6 @@ public class SettingsInteractor {
 
     private SettingsRepository mSettingsRepository;
     private WeatherRepository mWeatherRepository;
-    private CurrentTimeForecastService mCurrentTimeForecastService;
 
     @Inject
     public SettingsInteractor(SettingsRepository settingsRepository, WeatherRepository weatherRepository) {
@@ -25,14 +24,17 @@ public class SettingsInteractor {
     }
 
     public Single<Boolean> checkCity(String city) {
-        return mCurrentTimeForecastService.getRequest(city)
-                .map(CurrentWeather::map)
+        return mWeatherRepository.getRefreshedWeather(city)
                 .map(currentWeather -> currentWeather != null)
                 .subscribeOn(Schedulers.io());
     }
 
-    public void saveCity() {
+    public void setCity(String city) {
+        mSettingsRepository.setCity(city);
+    }
 
+    public String getCity() {
+        return mSettingsRepository.getCity();
     }
 
 }

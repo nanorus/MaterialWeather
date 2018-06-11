@@ -15,9 +15,10 @@ public class CurrentWeather {
     private double mWindSpeed;
     private int mWindDirection;
     private String mPlace;
+    private String mCity;
     private String mIcon;
 
-    public CurrentWeather(int temp, String description, int pressure, int humidity, int cloudiness, double windSpeed, int windDirection, String place, String icon) {
+    public CurrentWeather(int temp, String description, int pressure, int humidity, int cloudiness, double windSpeed, int windDirection,String city, String place,  String icon) {
         mTemp = temp;
         mDescription = description;
         mPressure = pressure;
@@ -26,7 +27,16 @@ public class CurrentWeather {
         mWindSpeed = windSpeed;
         mWindDirection = windDirection;
         mPlace = place;
+        mCity = city;
         mIcon = icon;
+    }
+
+    public String getCity() {
+        return mCity;
+    }
+
+    public void setmCity(String mCity) {
+        this.mCity = mCity;
     }
 
     public String getPlace() {
@@ -110,8 +120,9 @@ public class CurrentWeather {
                 currentRequest.getClouds().getAll(),
                 currentRequest.getWind().getSpeed(),
                 currentRequest.getCod(),
+                currentRequest.getName(),
                 currentRequest.getName() + ", " +
-                        (new Locale("en", currentRequest.getSys().getCountry())).getDisplayCountry(),
+                        (new Locale("en-US", currentRequest.getSys().getCountry())).getDisplayCountry(),
                 currentRequest.getWeather().get(0).getIcon()
         );
     }

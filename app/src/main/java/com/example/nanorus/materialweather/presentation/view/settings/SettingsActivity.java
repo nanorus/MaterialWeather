@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -40,6 +41,9 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
     TextView mCityTextView;
     @BindView(R.id.imageView_city_entered_success_icon)
     ImageView cityEnteredSuccessIconImageView;
+    @BindView(R.id.successTextView)
+    TextView successTextView;
+    MenuItem saveMenuItem;
 
     CitiesAutoCompleteTextViewAdapter mCityAutoCompleteAdapter;
 
@@ -62,9 +66,11 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(Menu.NONE, MENU_ITEM_SAVE, Menu.NONE, "save");
-        menu.findItem(MENU_ITEM_SAVE)
+        saveMenuItem = menu.findItem(MENU_ITEM_SAVE);
+        saveMenuItem
                 .setIcon(R.drawable.ic_check_white_24dp)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        saveMenuItem.setVisible(false);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -99,11 +105,45 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
     }
 
     @Override
-    public void setEnteredCitySuccess(boolean success) {
-        int iconResId = R.drawable.ic_close_red_24dp;
-        if (success)
-            iconResId = R.drawable.ic_check_white_24dp;
+    public void showEnteredCitySuccessNotice(boolean success) {
+        cityEnteredSuccessIconImageView.setVisibility(View.VISIBLE);
+        if (successTextView.getVisibility() == View.INVISIBLE) {
+            successTextView.setVisibility(View.VISIBLE);
+        }
+        int iconResId = R.drawable.ic_check_white_24dp;
+        if (!success) {
+            iconResId = R.drawable.ic_close_red_24dp;
+            playEnteredTextFailAnimation();
+        }
         cityEnteredSuccessIconImageView.setImageResource(iconResId);
+        showSuccessNoticeLabel(success);
+    }
+
+    @Override
+    public void showSaveButton(boolean show) {
+        if (show) {
+            saveMenuItem.setVisible(true);
+        } else {
+            saveMenuItem.setVisible(false);
+        }
+    }
+
+    @Override
+    public void hideEnteredCitySuccessHotice() {
+        if (successTextView.getVisibility() == View.VISIBLE) {
+            successTextView.setVisibility(View.INVISIBLE);
+        }
+        cityEnteredSuccessIconImageView.setVisibility(View.INVISIBLE);
+    }
+
+    private void showSuccessNoticeLabel(boolean success) {
+        if (success) {
+            successTextView.setText(R.string.city_found);
+            successTextView.setTextColor(getResources().getColor(R.color.white));
+        } else {
+            successTextView.setText(R.string.city_no_found);
+            successTextView.setTextColor(getResources().getColor(R.color.red));
+        }
     }
 
     private void init() {
@@ -129,14 +169,12 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
                 mPresenter.onCitiesAutoCompleteItemClicked((String) adapterView.getItemAtPosition(i)));
     }
 
-    @Override
     public void playEnteredTextFailAnimation() {
         YoYo.with(Techniques.Shake)
                 .duration(900)
                 .delay(100)
                 .playOn(mCityEditText);
     }
-
 
 
     @Override

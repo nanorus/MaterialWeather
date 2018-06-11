@@ -3,6 +3,7 @@ package com.example.nanorus.materialweather.presentation.presenter.weather;
 import android.util.Log;
 
 import com.example.nanorus.materialweather.entity.weather.repository.WeatherForecast;
+import com.example.nanorus.materialweather.model.data.AppPreferencesManager;
 import com.example.nanorus.materialweather.model.data.ResourceManager;
 import com.example.nanorus.materialweather.model.domain.weather.WeatherInteractor;
 import com.example.nanorus.materialweather.navigation.Router;
@@ -26,12 +27,14 @@ public class WeatherPresenter implements IWeatherPresenter {
     private Single<WeatherForecast> mWeatherForecastSingle;
     private WeatherInteractor mInteractor;
     private ResourceManager mResourceManager;
+    private AppPreferencesManager mAppPreferencesManager;
 
     @Inject
-    public WeatherPresenter(Router router, WeatherInteractor interactor, ResourceManager resourceManager) {
+    public WeatherPresenter(Router router, WeatherInteractor interactor, ResourceManager resourceManager, AppPreferencesManager appPreferencesManager) {
         mRouter = router;
         mInteractor = interactor;
         mResourceManager = resourceManager;
+        mAppPreferencesManager = appPreferencesManager;
     }
 
     @Override
@@ -70,14 +73,16 @@ public class WeatherPresenter implements IWeatherPresenter {
 
     @Override
     public void onResumeView(String showingCity) {
-/*        String savedCity = mAppPreferencesManager.getPlace();
-        if (!savedCity.equals(showingCity))
-            updateDataOnline();*/
+        String savedCity = mAppPreferencesManager.getPlace();
+        if (!savedCity.equals(showingCity)) {
+            onRefresh();
+        }
     }
 
     @Override
     public void onRefresh() {
         mView.showRefresh(true);
+        mWeatherForecastSingle = mInteractor.getRefreshedWeatherForecast().observeOn(AndroidSchedulers.mainThread());
         mWeatherForecastSingle.subscribe(
                 weatherForecast -> {
                     Log.d(TAG, "weatherForecastSingle.onSuccess");

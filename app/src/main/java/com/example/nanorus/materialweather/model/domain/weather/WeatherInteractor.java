@@ -15,6 +15,8 @@ import rx.schedulers.Schedulers;
 
 public class WeatherInteractor {
 
+    boolean testMode = false;
+
     private WeatherRepository mRepository;
 
     @Inject
@@ -33,13 +35,23 @@ public class WeatherInteractor {
     }
 
     public Observable<WeatherForecast> getWeatherForecastUpdates() {
-        return Observable.interval(1000, TimeUnit.SECONDS).flatMap(aLong -> {
-            if (DateUtils.hoursPassed(mRepository.getLastUpdateTime()) >= 3) {
-                return getRefreshedWeatherForecast().toObservable();
-            } else {
-                return loadWeatherForecast().toObservable();
-            }
-        }).subscribeOn(Schedulers.io());
+        if (!testMode)
+            return Observable.interval(1000, TimeUnit.SECONDS).flatMap(aLong -> {
+                if (DateUtils.hoursPassed(mRepository.getLastUpdateTime()) >= 3) {
+                    return getRefreshedWeatherForecast().toObservable();
+                } else {
+                    return loadWeatherForecast().toObservable();
+                }
+            }).subscribeOn(Schedulers.io());
+        else
+            return Observable.interval(10, TimeUnit.SECONDS).flatMap(aLong -> {
+                if (DateUtils.secondsPassed(mRepository.getLastUpdateTime()) >= 9) {
+                    return getRefreshedWeatherForecast().toObservable();
+                } else {
+                    return loadWeatherForecast().toObservable();
+                }
+            }).subscribeOn(Schedulers.io());
+
 
     }
 

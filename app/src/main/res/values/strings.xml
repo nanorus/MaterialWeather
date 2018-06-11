@@ -16,10 +16,12 @@
     <string name="locality">Locality</string>
     <string name="example_london_uk">London, UK</string>
     <string name="enter_locality">Enter and select the valid locality</string>
-    <string name="city_not_found">No weather found for this city</string>
+    <string name="city_not_found">No weather found for this city. Try to enter the city correctly</string>
     <string name="api_place_not_found">Sorry, weather API doesn\'t find this place</string>
     <string name="network_error">No internet connection</string>
     <string name="refreshing">Loading forecast..</string>
     <string name="last_weather_update">Last update:</string>
+    <string name="city_found">city found</string>
+    <string name="city_no_found">city not found</string>
 
 </resources>

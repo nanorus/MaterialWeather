@@ -117,6 +117,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         mTemperatureTextView.setText(String.valueOf(currentWeather.getTemp()));
         mSkyTextView.setText(currentWeather.getDescription());
         mLastWeatherUpdateTextView.setText(DateUtils.dateToString(weatherForecast.getLastUpdate()));
+        mPlaceTextView.setText(currentWeather.getPlace());
     }
 
     @Override

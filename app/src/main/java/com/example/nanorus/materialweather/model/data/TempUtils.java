@@ -14,4 +14,8 @@ public class TempUtils {
     public static int kelvinToCelsius(double kelvin) {
         return (int) Math.round(kelvin) - 273;
     }
+
+    public static double celsiusToKelvin(int celsius) {
+        return (float) celsius + 273.15F;
+    }
 }

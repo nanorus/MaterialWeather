@@ -16,4 +16,5 @@ public interface ISettingsPresenter {
     void onCitiesAutoCompleteTextChanged(String text);
 
     void onHomeClicked();
+
 }

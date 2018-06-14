@@ -19,81 +19,101 @@ import rx.android.schedulers.AndroidSchedulers;
 public class WeatherPresenter implements IWeatherPresenter {
     private final String TAG = this.getClass().getSimpleName();
 
-    private IWeatherActivity mView;
-    private Router mRouter;
+    private IWeatherActivity view;
+    private Router router;
 
-    private WeatherForecast mWeatherForecast;
-    private Observable<WeatherForecast> mWeatherForecastObservable;
-    private Single<WeatherForecast> mWeatherForecastSingle;
-    private WeatherInteractor mInteractor;
-    private ResourceManager mResourceManager;
-    private AppPreferencesManager mAppPreferencesManager;
+    private Observable<WeatherForecast> weatherForecastObservable;
+    private Single<WeatherForecast> refreshedWeatherForecastSingle;
+    private Single<WeatherForecast> cachedWeatherForecastSingle;
+    private WeatherInteractor interactor;
+    private ResourceManager resourceManager;
+    private AppPreferencesManager appPreferencesManager;
 
     @Inject
     public WeatherPresenter(Router router, WeatherInteractor interactor, ResourceManager resourceManager, AppPreferencesManager appPreferencesManager) {
-        mRouter = router;
-        mInteractor = interactor;
-        mResourceManager = resourceManager;
-        mAppPreferencesManager = appPreferencesManager;
+        this.router = router;
+        this.interactor = interactor;
+        this.resourceManager = resourceManager;
+        this.appPreferencesManager = appPreferencesManager;
     }
 
     @Override
     public void bindView(IWeatherActivity activity) {
-        mView = activity;
+        view = activity;
     }
 
     @Override
     public void startWork() {
-        mView.initForecastList();
-        mWeatherForecastObservable = mInteractor.getWeatherForecastUpdates().observeOn(AndroidSchedulers.mainThread());
-        mWeatherForecastSingle = mInteractor.getRefreshedWeatherForecast().observeOn(AndroidSchedulers.mainThread());
+        view.initForecastList();
+        weatherForecastObservable = interactor.getWeatherForecastUpdates().observeOn(AndroidSchedulers.mainThread());
+        refreshedWeatherForecastSingle = interactor.getRefreshedWeatherForecast().observeOn(AndroidSchedulers.mainThread());
+        cachedWeatherForecastSingle = interactor.loadWeatherForecast().observeOn(AndroidSchedulers.mainThread());
 
-        mWeatherForecastObservable.subscribe(
+        cachedWeatherForecastSingle.subscribe(
+                weatherForecast -> {
+                    Log.d(TAG, "cachedWeatherForecastSingle.onSuccess");
+                    view.updateWeatherForecast(weatherForecast);
+                    view.setIcon(resourceManager.getWeatherIcon(weatherForecast.getCurrentWeather().getIcon()));
+                    view.showRefresh(false);
+                    view.scrollToTop();
+                },
+                throwable -> {
+                    Log.e(TAG, throwable.toString());
+                    Toaster.shortToast(throwable.getMessage());
+                    view.showRefresh(false);
+                    view.scrollToTop();
+                }
+        );
+
+        weatherForecastObservable.subscribe(
                 weatherForecast -> {
                     Log.d(TAG, "weatherForecastObservable.onNext");
-                    mView.updateWeatherForecast(weatherForecast);
+                    view.updateWeatherForecast(weatherForecast);
                 },
                 throwable -> {
                     Log.e(TAG, throwable.toString());
                     Toaster.shortToast(throwable.getMessage());
                 }, () -> Log.d(TAG, "weatherForecastObservable.onCompleted"));
-
     }
 
     @Override
     public void releasePresenter() {
-        mView = null;
+        view = null;
     }
 
     @Override
     public void onSettingsClick() {
-        mView.closeDrawer();
-        mRouter.startSettingsActivity(mView.getActivity());
-    }
-
-    @Override
-    public void onResumeView(String showingCity) {
-        String savedCity = mAppPreferencesManager.getPlace();
-        if (!savedCity.equals(showingCity)) {
-            onRefresh();
-        }
+        view.closeDrawer();
+        router.startSettingsActivity(view.getActivity());
     }
 
     @Override
     public void onRefresh() {
-        mView.showRefresh(true);
-        mWeatherForecastSingle = mInteractor.getRefreshedWeatherForecast().observeOn(AndroidSchedulers.mainThread());
-        mWeatherForecastSingle.subscribe(
+        view.showRefresh(true);
+        refreshedWeatherForecastSingle = interactor.getRefreshedWeatherForecast().observeOn(AndroidSchedulers.mainThread());
+        refreshedWeatherForecastSingle.subscribe(
                 weatherForecast -> {
-                    Log.d(TAG, "weatherForecastSingle.onSuccess");
-                    mView.updateWeatherForecast(weatherForecast);
-                    mView.setIcon(mResourceManager.getWeatherIcon(weatherForecast.getCurrentWeather().getIcon()));
-                    mView.showRefresh(false);
+                    Log.d(TAG, "refreshedWeatherForecastSingle.onSuccess");
+                    view.updateWeatherForecast(weatherForecast);
+                    view.setIcon(resourceManager.getWeatherIcon(weatherForecast.getCurrentWeather().getIcon()));
+                    view.showRefresh(false);
+                    view.scrollToTop();
                 },
                 throwable -> {
                     Log.e(TAG, throwable.toString());
                     Toaster.shortToast(throwable.getMessage());
-                    mView.showRefresh(false);
+                    view.showRefresh(false);
+                    view.scrollToTop();
                 });
+    }
+
+    @Override
+    public void onActivityResult(boolean isResultOk, String showingCity) {
+        if (isResultOk){
+            String savedCity = appPreferencesManager.getPlace();
+            if (!savedCity.equals(showingCity)) {
+                onRefresh();
+            }
+        }
     }
 }

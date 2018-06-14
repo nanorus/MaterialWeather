@@ -12,7 +12,7 @@ public interface IWeatherPresenter {
 
     void onSettingsClick();
 
-    void onResumeView(String showingCity);
-
     void onRefresh();
+
+    void onActivityResult(boolean isResultOk, String showingCity);
 }

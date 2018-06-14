@@ -1,6 +1,7 @@
 package com.example.nanorus.materialweather.presentation.view.weather;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +30,8 @@ import com.example.nanorus.materialweather.model.data.ResourceManager;
 import com.example.nanorus.materialweather.presentation.presenter.weather.IWeatherPresenter;
 import com.example.nanorus.materialweather.presentation.ui.adapters.ForecastRecyclerViewAdapter;
 
+import java.util.Objects;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -37,34 +41,36 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     private final String TAG = this.getClass().getSimpleName();
 
     @Inject
-    IWeatherPresenter mPresenter;
+    IWeatherPresenter presenter;
     @Inject
-    ResourceManager mResourceManager;
+    ResourceManager resourceManager;
 
     @BindView(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
+    DrawerLayout drawerLayout;
     @BindView(R.id.navigation_view)
-    NavigationView mNavigationView;
-    ConstraintLayout mNavigationHeader;
-    ActionBarDrawerToggle mDrawerToggle;
+    NavigationView navigationView;
+    ConstraintLayout navigationHeader;
+    ActionBarDrawerToggle drawerToggle;
 
     @BindView(R.id.weather_tv_place)
-    TextView mPlaceTextView;
+    TextView placeTextView;
     @BindView(R.id.weather_rv_weatherList)
-    RecyclerView mWeatherRecyclerView;
+    RecyclerView weatherRecyclerView;
     @BindView(R.id.weather_now_tv_sky)
-    TextView mSkyTextView;
+    TextView skyTextView;
     @BindView(R.id.weather_now_tv_temperature)
-    TextView mTemperatureTextView;
+    TextView temperatureTextView;
     @BindView(R.id.swipe_refresh)
-    SwipeRefreshLayout mSwipeRefresh;
+    SwipeRefreshLayout swipeRefresh;
     @BindView(R.id.textView_last_update_value)
-    TextView mLastWeatherUpdateTextView;
+    TextView lastWeatherUpdateTextView;
     @BindView(R.id.imageView_weather_icon)
-    ImageView mWeatherIcon;
+    ImageView weatherIcon;
+    @BindView(R.id.nested)
+    NestedScrollView nestedScrollView;
 
-    private ForecastRecyclerViewAdapter mAdapter;
-    private LinearLayoutManager mLayoutManager;
+    private ForecastRecyclerViewAdapter adapter;
+    private LinearLayoutManager layoutManager;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,22 +81,16 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         setupNavigationDrawer();
 
         App.getApp().getWeatherComponent().inject(this);
-        mPresenter.bindView(getView());
-        mPresenter.startWork();
-        mSwipeRefresh.setOnRefreshListener(() -> mPresenter.onRefresh());
-        mSwipeRefresh.setColorSchemeResources(R.color.swipe_refresh_color_1, R.color.swipe_refresh_color_2, R.color.swipe_refresh_color_3);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mPresenter.onResumeView(mPlaceTextView.getText().toString());
+        presenter.bindView(getView());
+        presenter.startWork();
+        swipeRefresh.setOnRefreshListener(() -> presenter.onRefresh());
+        swipeRefresh.setColorSchemeResources(R.color.swipe_refresh_color_1, R.color.swipe_refresh_color_2, R.color.swipe_refresh_color_3);
     }
 
     @Override
     protected void onDestroy() {
-        mPresenter.releasePresenter();
-        mPresenter = null;
+        presenter.releasePresenter();
+        presenter = null;
         App.getApp().releaseWeatherComponent();
         super.onDestroy();
     }
@@ -98,26 +98,26 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
     @Override
     public void initForecastList() {
-        if (mLayoutManager == null) {
-            mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-            mWeatherRecyclerView.setLayoutManager(mLayoutManager);
+        if (layoutManager == null) {
+            layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+            weatherRecyclerView.setLayoutManager(layoutManager);
         }
-        mAdapter = new ForecastRecyclerViewAdapter();
-        mWeatherRecyclerView.setAdapter(mAdapter);
+        adapter = new ForecastRecyclerViewAdapter();
+        weatherRecyclerView.setAdapter(adapter);
     }
 
     @Override
     public void updateWeatherForecast(WeatherForecast weatherForecast) {
-        if (mAdapter != null) {
-            mAdapter.updateData(weatherForecast.getWeekForecast().getDayForecastList());
-            mAdapter.notifyDataSetChanged();
+        if (adapter != null) {
+            adapter.updateData(weatherForecast.getWeekForecast().getDayForecastList());
+            adapter.notifyDataSetChanged();
         }
 
         CurrentWeather currentWeather = weatherForecast.getCurrentWeather();
-        mTemperatureTextView.setText(String.valueOf(currentWeather.getTemp()));
-        mSkyTextView.setText(currentWeather.getDescription());
-        mLastWeatherUpdateTextView.setText(DateUtils.dateToString(weatherForecast.getLastUpdate()));
-        mPlaceTextView.setText(currentWeather.getPlace());
+        temperatureTextView.setText(String.valueOf(currentWeather.getTemp()));
+        skyTextView.setText(currentWeather.getDescription());
+        lastWeatherUpdateTextView.setText(DateUtils.dateToString(weatherForecast.getLastUpdate()));
+        placeTextView.setText(currentWeather.getPlace());
     }
 
     @Override
@@ -136,7 +136,7 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
             getSupportActionBar().setTitle(R.string.refreshing);
         else
             getSupportActionBar().setTitle(R.string.weather);
-        mSwipeRefresh.setRefreshing(show);
+        swipeRefresh.setRefreshing(show);
     }
 
     @Override
@@ -146,38 +146,43 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mDrawerToggle.onOptionsItemSelected(item);
+        drawerToggle.onOptionsItemSelected(item);
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
+        drawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
     public void closeDrawer() {
-        if (mDrawerLayout != null)
-            mDrawerLayout.closeDrawer(Gravity.LEFT);
+        if (drawerLayout != null)
+            drawerLayout.closeDrawer(Gravity.LEFT);
     }
 
     @Override
     public void setWeatherIcon(Bitmap icon) {
-        mWeatherIcon.setImageBitmap(icon);
+        weatherIcon.setImageBitmap(icon);
+    }
+
+    @Override
+    public void scrollToTop() {
+        nestedScrollView.scrollTo(0, 0);
     }
 
     private void setupNavigationDrawer() {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mNavigationHeader = (ConstraintLayout) mNavigationView.getHeaderView(0);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+        navigationHeader = (ConstraintLayout) navigationView.getHeaderView(0);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.drawer_open, R.string.drawer_close) {
 
             public void onDrawerClosed(View view) {
@@ -192,18 +197,31 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
                 invalidateOptionsMenu();
             }
         };
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerLayout.addDrawerListener(drawerToggle);
 
-        mNavigationView.setNavigationItemSelectedListener(item -> {
+        navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.menu_item_settings:
-                    mPresenter.onSettingsClick();
+                    presenter.onSettingsClick();
                     break;
             }
             return false;
         });
-        mNavigationHeader.findViewById(R.id.button_menu_changeCity).setOnClickListener(view -> mPresenter.onSettingsClick());
+        navigationHeader.findViewById(R.id.button_menu_changeCity).setOnClickListener(view -> presenter.onSettingsClick());
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        boolean result = true;
+        if (resultCode == RESULT_OK)
+            result = true;
+        else if (resultCode == RESULT_CANCELED)
+            result = false;
+
+        presenter.onActivityResult(result, placeTextView.getText().toString());
     }
 
 

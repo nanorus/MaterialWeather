@@ -73,20 +73,25 @@ public class DayForecast {
                 dayHourForecastList.add(hourForecast);
             } else {
                 // fill in the same day and create new day
-                dayForecast.setTemperaturesAmplitude(getTemperaturesAmplitude(dayHourForecastList));
-                dayForecast.setHourForecastList(dayHourForecastList);
-                dayForecast.setIcon(dayHourForecastList.get((dayHourForecastList.size())/2).getIcon());;
-                dayForecast.setDate(oneDayEarlier(cal));
-                dayForecasts.add(dayForecast);
-                dayHourForecastList.clear();
+                fillDay(dayForecast, dayHourForecastList, oneDayEarlier(cal), dayForecasts);
+                dayHourForecastList = new ArrayList<>();
                 day = cal.get(Calendar.DAY_OF_MONTH);
                 dayForecast = new DayForecast();
             }
         }
+        fillDay(dayForecast, dayHourForecastList, cal.getTime(), dayForecasts);
         return dayForecasts;
     }
 
-    public static Date oneDayEarlier(Calendar calendar){
+    private static void fillDay(DayForecast dayForecast, List<HourForecast> dayHourForecastList, Date date, List<DayForecast> dayForecasts){
+        dayForecast.setTemperaturesAmplitude(getTemperaturesAmplitude(dayHourForecastList));
+        dayForecast.setHourForecastList(dayHourForecastList);
+        dayForecast.setIcon(dayHourForecastList.get((dayHourForecastList.size()) / 2).getIcon());
+        dayForecast.setDate(date);
+        dayForecasts.add(dayForecast);
+    }
+
+    public static Date oneDayEarlier(Calendar calendar) {
         calendar.add(Calendar.DATE, -1);
         Date date = calendar.getTime();
         calendar.add(Calendar.DATE, 1);

@@ -20,6 +20,7 @@
             android:id="@+id/relativeLayout">
 
             <android.support.v4.widget.NestedScrollView
+                android:id="@+id/nested"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_constraintTop_toTopOf="parent"

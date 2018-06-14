@@ -74,7 +74,7 @@ public class DatabaseManager {
         db.delete(mDatabaseContract.TABLE_NAME_WEATHER, null, null);
         for (HourForecast hourForecast : hourForecasts) {
             cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_DATE, DateUtils.dateToDtTxt(hourForecast.getDate()));
-            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_TEMPERATURE, hourForecast.getTemp());
+            cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_TEMPERATURE, TempUtils.celsiusToKelvin(hourForecast.getTemp()));
             cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_DESCRIPTION, hourForecast.getDescription());
             cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_CLOUDINESS, hourForecast.getCloudiness());
             cv.put(mDatabaseContract.COLUMN_NAME_WEATHER_PRESSURE, hourForecast.getPressure());

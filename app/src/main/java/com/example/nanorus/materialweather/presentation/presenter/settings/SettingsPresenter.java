@@ -7,7 +7,6 @@ import com.example.nanorus.materialweather.entity.weather.repository.CurrentWeat
 import com.example.nanorus.materialweather.model.data.AppPreferencesManager;
 import com.example.nanorus.materialweather.model.data.ResourceManager;
 import com.example.nanorus.materialweather.model.data.Utils;
-import com.example.nanorus.materialweather.model.data.api.services.SearchPossibleCitiesService;
 import com.example.nanorus.materialweather.model.domain.settings.SettingsInteractor;
 import com.example.nanorus.materialweather.model.repository.weather.WeatherRepository;
 import com.example.nanorus.materialweather.navigation.Router;
@@ -25,25 +24,25 @@ public class SettingsPresenter implements ISettingsPresenter {
     private final String TAG = this.getClass().getSimpleName();
 
     @Inject
-    ResourceManager mResourceManager;
+    ResourceManager resourceManager;
     @Inject
-    AppPreferencesManager mPreferencesManager;
+    AppPreferencesManager preferencesManager;
     @Inject
-    Router mRouter;
+    Router router;
     @Inject
-    WeatherRepository mWeatherRepository;
+    WeatherRepository weatherRepository;
     @Inject
     SettingsInteractor interactor;
 
-    private StringBuilder mEnteredCity;
-    private StringBuilder mPreviousEnteredCity;
+    private StringBuilder enteredCity;
+    private StringBuilder previousEnteredCity;
 
     private ISettingsActivity mView;
 
     public SettingsPresenter() {
         App.getApp().getAppComponent().inject(this);
-        mEnteredCity = new StringBuilder();
-        mPreviousEnteredCity = new StringBuilder();
+        enteredCity = new StringBuilder();
+        previousEnteredCity = new StringBuilder();
     }
 
     @Override
@@ -60,14 +59,15 @@ public class SettingsPresenter implements ISettingsPresenter {
     public void onSaveClicked(String locality) {
         if (!locality.isEmpty()) {
             interactor.setCity(locality);
-            mRouter.finishActivity(mView.getView());
+            router.finishActivityWithResult(mView.getView(), Router.RESULT_CODE_OK);
         } else {
-            Toaster.shortToast(mResourceManager.enterLocalityText());
+            Toaster.shortToast(resourceManager.enterLocalityText());
         }
     }
 
     @Override
     public void onCitiesAutoCompleteItemClicked(String selectedCity) {
+        mView.showCheckCityProgress(true);
         Single<Boolean> checkSity = interactor.checkCity(selectedCity);
         checkSity.observeOn(AndroidSchedulers.mainThread());
         checkSity.subscribe(new SingleSubscriber<Boolean>() {
@@ -76,10 +76,12 @@ public class SettingsPresenter implements ISettingsPresenter {
                 if (aBoolean) {
                     Log.d(TAG, "check city Success");
                     setCity(selectedCity);
+                    mView.showCheckCityProgress(false);
                     mView.showEnteredCitySuccessNotice(true);
                 } else {
                     Log.d(TAG, "check city no success");
                     failEnterCity();
+                    mView.showCheckCityProgress(false);
                 }
             }
 
@@ -90,37 +92,38 @@ public class SettingsPresenter implements ISettingsPresenter {
                 if (Utils.check404Error(error)) {
                     failEnterCity();
                 } else if (Utils.checkNetWorkError(error)) {
-                    Toaster.shortToast(mResourceManager.networkError());
+                    Toaster.shortToast(resourceManager.networkError());
                 }
+                mView.showCheckCityProgress(false);
             }
         });
 
     }
 
     private void failEnterCity() {
-        Toaster.shortToast(mResourceManager.cityNotFound());
-        mView.setEnteredCity(mPreviousEnteredCity.toString());
+        Toaster.shortToast(resourceManager.cityNotFound());
+        mView.setEnteredCity(previousEnteredCity.toString());
         mView.showEnteredCitySuccessNotice(false);
     }
 
     @Override
     public void onCitiesAutoCompleteTextChanged(String text) {
         mView.showSaveButton(false);
-        mPreviousEnteredCity.setLength(0);
-        mPreviousEnteredCity.append(mEnteredCity);
-        mEnteredCity.setLength(0);
-        mEnteredCity.append(text);
+        previousEnteredCity.setLength(0);
+        previousEnteredCity.append(enteredCity);
+        enteredCity.setLength(0);
+        enteredCity.append(text);
         mView.hideEnteredCitySuccessHotice();
     }
 
     @Override
     public void onHomeClicked() {
-        mRouter.backPress(mView.getView());
+        router.backPress(mView.getView());
     }
 
 
     private void setCity(String city) {
-        Single<CurrentWeather> nowWeatherOnline = mWeatherRepository.getRefreshedWeather(city);
+        Single<CurrentWeather> nowWeatherOnline = weatherRepository.getRefreshedWeather(city);
         nowWeatherOnline.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleSubscriber<CurrentWeather>() {
                     @Override
@@ -136,11 +139,11 @@ public class SettingsPresenter implements ISettingsPresenter {
                         Log.d(TAG, "setCity(). get current city Error: " + error.getMessage());
                         mView.showSaveButton(false);
                         if (Utils.check404Error(error)) {
-                            Toaster.shortToast(mResourceManager.cityNotFound());
-                            mView.setEnteredCity(mPreviousEnteredCity.toString());
+                            Toaster.shortToast(resourceManager.cityNotFound());
+                            mView.setEnteredCity(previousEnteredCity.toString());
                             mView.showEnteredCitySuccessNotice(false);
                         } else if (Utils.checkNetWorkError(error)) {
-                            Toaster.shortToast(mResourceManager.networkError());
+                            Toaster.shortToast(resourceManager.networkError());
                         }
                     }
                 });

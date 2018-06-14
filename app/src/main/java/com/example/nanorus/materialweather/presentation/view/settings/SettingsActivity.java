@@ -31,21 +31,23 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
     private final int MENU_ITEM_SAVE = 1;
 
     @Inject
-    ISettingsPresenter mPresenter;
+    ISettingsPresenter presenter;
 
     @BindView(R.id.autoCompleteTextView_city)
-    DelayAutoCompleteTextView mCityEditText;
+    DelayAutoCompleteTextView cityEditText;
     @BindView(R.id.progress_bar)
-    ProgressBar mProgressBar;
+    ProgressBar progressBar;
     @BindView(R.id.textView_city)
-    TextView mCityTextView;
+    TextView cityTextView;
     @BindView(R.id.imageView_city_entered_success_icon)
     ImageView cityEnteredSuccessIconImageView;
     @BindView(R.id.successTextView)
     TextView successTextView;
     MenuItem saveMenuItem;
+    @BindView(R.id.progress_bar_check_entered_city)
+    ProgressBar checkCityProgressBar;
 
-    CitiesAutoCompleteTextViewAdapter mCityAutoCompleteAdapter;
+    CitiesAutoCompleteTextViewAdapter cityAutoCompleteAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +60,8 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
 
         App.getApp().getSettingsComponent().inject(this);
 
-        mPresenter.bindView(this);
-        mPresenter.startWork();
+        presenter.bindView(this);
+        presenter.startWork();
         init();
     }
 
@@ -78,10 +80,10 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case MENU_ITEM_SAVE:
-                mPresenter.onSaveClicked(mCityTextView.getText().toString());
+                presenter.onSaveClicked(cityTextView.getText().toString());
                 break;
             case android.R.id.home:
-                mPresenter.onHomeClicked();
+                presenter.onHomeClicked();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -96,12 +98,12 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
 
     @Override
     public void setCity(String city) {
-        mCityTextView.setText(city);
+        cityTextView.setText(city);
     }
 
     @Override
     public void setEnteredCity(String enteringCity) {
-        mCityEditText.setText(enteringCity);
+        cityEditText.setText(enteringCity);
     }
 
     @Override
@@ -129,6 +131,15 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
     }
 
     @Override
+    public void showCheckCityProgress(boolean show) {
+        if (show) {
+            checkCityProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            checkCityProgressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
     public void hideEnteredCitySuccessHotice() {
         if (successTextView.getVisibility() == View.VISIBLE) {
             successTextView.setVisibility(View.INVISIBLE);
@@ -147,9 +158,9 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
     }
 
     private void init() {
-        mCityAutoCompleteAdapter = new CitiesAutoCompleteTextViewAdapter(getView(), mProgressBar);
-        mCityEditText.setAdapter(mCityAutoCompleteAdapter);
-        mCityEditText.addTextChangedListener(new TextWatcher() {
+        cityAutoCompleteAdapter = new CitiesAutoCompleteTextViewAdapter(getView(), progressBar);
+        cityEditText.setAdapter(cityAutoCompleteAdapter);
+        cityEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -157,7 +168,7 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                mPresenter.onCitiesAutoCompleteTextChanged(charSequence.toString());
+                presenter.onCitiesAutoCompleteTextChanged(charSequence.toString());
             }
 
             @Override
@@ -165,22 +176,24 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
 
             }
         });
-        mCityEditText.setOnItemClickListener((adapterView, view, i, l) ->
-                mPresenter.onCitiesAutoCompleteItemClicked((String) adapterView.getItemAtPosition(i)));
+        cityEditText.setOnItemClickListener((adapterView, view, i, l) ->
+                presenter.onCitiesAutoCompleteItemClicked((String) adapterView.getItemAtPosition(i)));
     }
 
     public void playEnteredTextFailAnimation() {
         YoYo.with(Techniques.Shake)
                 .duration(900)
                 .delay(100)
-                .playOn(mCityEditText);
+                .playOn(cityEditText);
     }
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPresenter.releasePresenter();
-        mPresenter = null;
+        presenter.releasePresenter();
+        presenter = null;
     }
+
+
 }

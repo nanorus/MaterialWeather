@@ -14,4 +14,6 @@ public interface ISettingsActivity {
     void hideEnteredCitySuccessHotice();
 
     void showSaveButton(boolean show);
+
+    void showCheckCityProgress(boolean show);
 }

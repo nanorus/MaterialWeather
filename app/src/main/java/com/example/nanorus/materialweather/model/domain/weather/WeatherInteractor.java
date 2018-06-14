@@ -56,7 +56,7 @@ public class WeatherInteractor {
     }
 
 
-    private Single<WeatherForecast> loadWeatherForecast() {
+    public Single<WeatherForecast> loadWeatherForecast() {
         return Single.zip(mRepository.loadCurrentWeather(), mRepository.loadForecast(),
                 (currentWeather, weekForecast) -> new WeatherForecast(currentWeather, weekForecast, mRepository.getLastUpdateTime()));
     }

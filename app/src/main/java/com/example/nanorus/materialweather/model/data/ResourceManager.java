@@ -2,39 +2,112 @@ package com.example.nanorus.materialweather.model.data;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 import com.example.nanorus.materialweather.R;
 
 public class ResourceManager {
 
-    Context mContext;
+    private Context context;
 
     public ResourceManager(Context context) {
-        mContext = context;
+        this.context = context;
     }
 
     public String enterLocalityText() {
-        return mContext.getString(R.string.enter_locality);
+        return context.getString(R.string.enter_locality);
     }
 
     public String cityNotFound() {
-        return mContext.getString(R.string.city_not_found);
+        return context.getString(R.string.city_not_found);
     }
 
-    public String apiPlaceNotFound(){
-        return mContext.getString(R.string.api_place_not_found);
+    public String apiPlaceNotFound() {
+        return context.getString(R.string.api_place_not_found);
     }
 
     public String networkError() {
-        return mContext.getString(R.string.network_error);
+        return context.getString(R.string.network_error);
     }
 
-    public Bitmap getWeatherIcon(String iconName){
+    public Bitmap getWeatherIconBitmap(String iconName) {
+        return ((BitmapDrawable) getWeatherIconDrawable(iconName)).getBitmap();
+    }
+
+    public Bitmap getForecastIconBitmap(String iconName) {
+        return ((BitmapDrawable) getForecastIconDrawable(iconName)).getBitmap();
+    }
+
+
+    public Drawable getForecastIconDrawable(String iconName) {
         int resource = R.drawable.ic_w_01d;
-        switch (iconName){
+        switch (iconName) {
             case "01d":
-                resource = R.drawable.ic_w_01n;
+                resource = R.drawable.ic_w_01d_forecast;
+                break;
+            case "01n":
+                resource = R.drawable.ic_w_01n_forecast;
+                break;
+            case "02d":
+                resource = R.drawable.ic_w_02d_forecast;
+                break;
+            case "02n":
+                resource = R.drawable.ic_w_02n_forecast;
+                break;
+            case "03d":
+                resource = R.drawable.ic_w_03d_forecast;
+                break;
+            case "03n":
+                resource = R.drawable.ic_w_03n_forecast;
+                break;
+            case "04d":
+                resource = R.drawable.ic_w_04d_forecast;
+                break;
+            case "04n":
+                resource = R.drawable.ic_w_04n_forecast;
+                break;
+            case "09d":
+                resource = R.drawable.ic_w_09d_forecast;
+                break;
+            case "09n":
+                resource = R.drawable.ic_w_09n_forecast;
+                break;
+            case "10d":
+                resource = R.drawable.ic_w_10d_forecast;
+                break;
+            case "10n":
+                resource = R.drawable.ic_w_10n_forecast;
+                break;
+            case "11d":
+                resource = R.drawable.ic_w_11d_forecast;
+                break;
+            case "11n":
+                resource = R.drawable.ic_w_11n_forecast;
+                break;
+            case "13d":
+                resource = R.drawable.ic_w_13d_forecast;
+                break;
+            case "13n":
+                resource = R.drawable.ic_w_13n_forecast;
+                break;
+            case "50d":
+                resource = R.drawable.ic_w_50d_forecast;
+                break;
+            case "50n":
+                resource = R.drawable.ic_w_50n_forecast;
+                break;
+        }
+        return context.getResources().getDrawable(resource);
+    }
+
+
+    public Drawable getWeatherIconDrawable(String iconName) {
+        int resource = R.drawable.ic_w_01d;
+        switch (iconName) {
+            case "01d":
+                resource = R.drawable.ic_w_01d;
                 break;
             case "01n":
                 resource = R.drawable.ic_w_01n;
@@ -88,6 +161,16 @@ public class ResourceManager {
                 resource = R.drawable.ic_w_50n;
                 break;
         }
-        return BitmapFactory.decodeResource(mContext.getResources(), resource);
+        return context.getResources().getDrawable(resource);
     }
+
+    private boolean match(int pixel, int[] fromColor, int threshold) {
+        //There may be a better way to match, but I wanted to do a comparison ignoring
+        //transparency, so I couldn't just do a direct integer compare.
+        return Math.abs(Color.red(pixel) - fromColor[0]) < threshold &&
+                Math.abs(Color.green(pixel) - fromColor[1]) < threshold &&
+                Math.abs(Color.blue(pixel) - fromColor[2]) < threshold;
+    }
+
+
 }

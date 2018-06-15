@@ -12,4 +12,8 @@
     <color name="swipe_refresh_color_3">#F44336</color>
     <color name="swipe_refresh_color_2">#FFEB3B</color>
     <color name="swipe_refresh_color_1">#00BCD4</color>
+
+
+    <color name="textPrimary">#212121</color>
+    <color name="textSecondary">#757575</color>
 </resources>

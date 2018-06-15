@@ -4,10 +4,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.nanorus.materialweather.R;
+import com.example.nanorus.materialweather.app.App;
 import com.example.nanorus.materialweather.entity.weather.repository.DayForecast;
+import com.example.nanorus.materialweather.model.data.ResourceManager;
 import com.example.nanorus.materialweather.model.data.TempUtils;
 
 import java.text.SimpleDateFormat;
@@ -17,20 +21,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRecyclerViewAdapter.ForecastRecyclerViewHolder> {
 
-    private List<DayForecast> mData;
+    private List<DayForecast> data;
+    @Inject
+    ResourceManager resourceManager;
 
     public ForecastRecyclerViewAdapter() {
-        mData = new ArrayList<>();
+        data = new ArrayList<>();
+        App.getApp().getAppComponent().inject(this);
     }
 
     public void updateData(List<DayForecast> data) {
-        if (mData != null) {
-            mData.clear();
-            mData.addAll(data);
+        if (this.data != null) {
+            this.data.clear();
+            this.data.addAll(data);
         } else
-            mData = data;
+            this.data = data;
     }
 
     @Override
@@ -41,15 +50,20 @@ public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRe
 
     @Override
     public void onBindViewHolder(ForecastRecyclerViewHolder holder, int position) {
-        DayForecast dayForecast = mData.get(position);
+        DayForecast dayForecast = data.get(position);
 
         holder.dateTextView.setText(getDateString(dayForecast.getDate()));
+        holder.descriptionTextView.setText(dayForecast.getHourForecastList().get(0).getDescription());
         // set temperatures
         int minTemp = dayForecast.getTemperaturesAmplitude().getMinTemperature();
         int maxTemp = dayForecast.getTemperaturesAmplitude().getMaxTemperature();
         String tempMin = TempUtils.temperatureToString(minTemp);
         String tempMax = TempUtils.temperatureToString(maxTemp);
-        holder.temperatureTextView.setText(tempMin + "°C" + " / " + tempMax + "°C");
+        holder.tempMaxTextView.setText(tempMax + "°");
+        holder.tempMinTextView.setText(tempMin + "°");
+        Glide.with(holder.iconImageView.getContext())
+                .load(resourceManager.getForecastIconDrawable(dayForecast.getIcon()))
+                .into(holder.iconImageView);
     }
 
     private String getDateString(Date date) {
@@ -64,20 +78,26 @@ public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRe
 
     @Override
     public int getItemCount() {
-        if (mData != null)
-            return mData.size();
+        if (data != null)
+            return data.size();
         else
             return 0;
     }
 
     public static class ForecastRecyclerViewHolder extends RecyclerView.ViewHolder {
         TextView dateTextView;
-        TextView temperatureTextView;
+        TextView tempMaxTextView;
+        TextView tempMinTextView;
+        ImageView iconImageView;
+        TextView descriptionTextView;
 
         public ForecastRecyclerViewHolder(View itemView) {
             super(itemView);
             dateTextView = itemView.findViewById(R.id.forecast_list_item_tv_date);
-            temperatureTextView = itemView.findViewById(R.id.forecast_list_item_tv_temperature);
+            tempMaxTextView = itemView.findViewById(R.id.tv_temp_max);
+            tempMinTextView = itemView.findViewById(R.id.tv_temp_min);
+            iconImageView = itemView.findViewById(R.id.imageView_icon);
+            descriptionTextView = itemView.findViewById(R.id.tv_description);
         }
     }
 

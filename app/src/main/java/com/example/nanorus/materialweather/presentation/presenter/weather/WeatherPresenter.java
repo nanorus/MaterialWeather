@@ -53,7 +53,7 @@ public class WeatherPresenter implements IWeatherPresenter {
                 weatherForecast -> {
                     Log.d(TAG, "cachedWeatherForecastSingle.onSuccess");
                     view.updateWeatherForecast(weatherForecast);
-                    view.setIcon(resourceManager.getWeatherIcon(weatherForecast.getCurrentWeather().getIcon()));
+                    view.setIcon(resourceManager.getWeatherIconBitmap(weatherForecast.getCurrentWeather().getIcon()));
                     view.showRefresh(false);
                     view.scrollToTop();
                 },
@@ -95,7 +95,7 @@ public class WeatherPresenter implements IWeatherPresenter {
                 weatherForecast -> {
                     Log.d(TAG, "refreshedWeatherForecastSingle.onSuccess");
                     view.updateWeatherForecast(weatherForecast);
-                    view.setIcon(resourceManager.getWeatherIcon(weatherForecast.getCurrentWeather().getIcon()));
+                    view.setIcon(resourceManager.getWeatherIconBitmap(weatherForecast.getCurrentWeather().getIcon()));
                     view.showRefresh(false);
                     view.scrollToTop();
                 },

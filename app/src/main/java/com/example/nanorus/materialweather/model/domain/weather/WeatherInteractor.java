@@ -61,5 +61,9 @@ public class WeatherInteractor {
                 (currentWeather, weekForecast) -> new WeatherForecast(currentWeather, weekForecast, mRepository.getLastUpdateTime()));
     }
 
+    public String getSavedCity(){
+        return mRepository.getSavedCity();
+    }
+
 
 }

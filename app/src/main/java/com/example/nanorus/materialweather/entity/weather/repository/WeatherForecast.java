@@ -4,37 +4,37 @@ import java.util.Date;
 
 public class WeatherForecast {
 
-    private CurrentWeather mCurrentWeather;
-    private WeekForecast mWeekForecast;
-    private Date mLastUpdate;
+    private CurrentWeather currentWeather;
+    private WeekForecast weekForecast;
+    private Date lastUpdate;
 
     public WeatherForecast(CurrentWeather currentWeather, WeekForecast weekForecast, Date lastUpdate) {
-        mCurrentWeather = currentWeather;
-        mWeekForecast = weekForecast;
-        mLastUpdate = lastUpdate;
+        this.currentWeather = currentWeather;
+        this.weekForecast = weekForecast;
+        this.lastUpdate = lastUpdate;
     }
 
     public CurrentWeather getCurrentWeather() {
-        return mCurrentWeather;
+        return currentWeather;
     }
 
     public void setCurrentWeather(CurrentWeather currentWeather) {
-        mCurrentWeather = currentWeather;
+        this.currentWeather = currentWeather;
     }
 
     public WeekForecast getWeekForecast() {
-        return mWeekForecast;
+        return weekForecast;
     }
 
     public void setWeekForecast(WeekForecast weekForecast) {
-        mWeekForecast = weekForecast;
+        this.weekForecast = weekForecast;
     }
 
     public Date getLastUpdate() {
-        return mLastUpdate;
+        return lastUpdate;
     }
 
     public void setLastUpdate(Date lastUpdate) {
-        mLastUpdate = lastUpdate;
+        this.lastUpdate = lastUpdate;
     }
 }

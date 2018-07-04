@@ -5,12 +5,15 @@ import android.app.Application;
 import com.example.nanorus.materialweather.di.app.AppComponent;
 import com.example.nanorus.materialweather.di.app.AppModule;
 import com.example.nanorus.materialweather.di.app.DaggerAppComponent;
+import com.example.nanorus.materialweather.di.dayforecast.DayForecastComponent;
+import com.example.nanorus.materialweather.di.dayforecast.DayForecastModule;
 import com.example.nanorus.materialweather.di.settings.SettingsComponent;
 import com.example.nanorus.materialweather.di.settings.SettingsModule;
 import com.example.nanorus.materialweather.di.ui.auto_complete_text_view.AutoCompleteTextViewComponent;
 import com.example.nanorus.materialweather.di.ui.auto_complete_text_view.AutoCompleteTextViewModule;
 import com.example.nanorus.materialweather.di.weather.WeatherComponent;
 import com.example.nanorus.materialweather.di.weather.WeatherModule;
+import com.example.nanorus.materialweather.entity.weather.repository.DayForecast;
 
 public class App extends Application {
 
@@ -34,6 +37,7 @@ public class App extends Application {
 
     WeatherComponent mWeatherComponent;
     SettingsComponent mSettingsComponent;
+    DayForecastComponent dayForecastComponent;
     AutoCompleteTextViewComponent mAutoCompleteTextViewComponent;
 
     public AppComponent getAppComponent() {
@@ -56,6 +60,11 @@ public class App extends Application {
         return mWeatherComponent;
     }
 
+    public DayForecastComponent getDayForecastComponent() {
+        if (dayForecastComponent==null)
+            dayForecastComponent = getAppComponent().plusDayForecastComponent(new DayForecastModule());
+        return dayForecastComponent;
+    }
 
     public AutoCompleteTextViewComponent getAutoCompleteTextViewComponent() {
         if (mAutoCompleteTextViewComponent == null) {

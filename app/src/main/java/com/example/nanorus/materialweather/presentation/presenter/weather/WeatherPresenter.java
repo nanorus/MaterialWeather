@@ -27,14 +27,12 @@ public class WeatherPresenter implements IWeatherPresenter {
     private Single<WeatherForecast> cachedWeatherForecastSingle;
     private WeatherInteractor interactor;
     private ResourceManager resourceManager;
-    private AppPreferencesManager appPreferencesManager;
 
     @Inject
-    public WeatherPresenter(Router router, WeatherInteractor interactor, ResourceManager resourceManager, AppPreferencesManager appPreferencesManager) {
+    public WeatherPresenter(Router router, WeatherInteractor interactor, ResourceManager resourceManager) {
         this.router = router;
         this.interactor = interactor;
         this.resourceManager = resourceManager;
-        this.appPreferencesManager = appPreferencesManager;
     }
 
     @Override
@@ -43,7 +41,7 @@ public class WeatherPresenter implements IWeatherPresenter {
     }
 
     @Override
-    public void startWork() {
+    public void startPresenter() {
         view.initForecastList();
         weatherForecastObservable = interactor.getWeatherForecastUpdates().observeOn(AndroidSchedulers.mainThread());
         refreshedWeatherForecastSingle = interactor.getRefreshedWeatherForecast().observeOn(AndroidSchedulers.mainThread());
@@ -55,13 +53,11 @@ public class WeatherPresenter implements IWeatherPresenter {
                     view.updateWeatherForecast(weatherForecast);
                     view.setIcon(resourceManager.getWeatherIconBitmap(weatherForecast.getCurrentWeather().getIcon()));
                     view.showRefresh(false);
-                    view.scrollToTop();
                 },
                 throwable -> {
                     Log.e(TAG, throwable.toString());
                     Toaster.shortToast(throwable.getMessage());
                     view.showRefresh(false);
-                    view.scrollToTop();
                 }
         );
 
@@ -97,20 +93,18 @@ public class WeatherPresenter implements IWeatherPresenter {
                     view.updateWeatherForecast(weatherForecast);
                     view.setIcon(resourceManager.getWeatherIconBitmap(weatherForecast.getCurrentWeather().getIcon()));
                     view.showRefresh(false);
-                    view.scrollToTop();
                 },
                 throwable -> {
                     Log.e(TAG, throwable.toString());
                     Toaster.shortToast(throwable.getMessage());
                     view.showRefresh(false);
-                    view.scrollToTop();
                 });
     }
 
     @Override
     public void onActivityResult(boolean isResultOk, String showingCity) {
         if (isResultOk){
-            String savedCity = appPreferencesManager.getPlace();
+            String savedCity = interactor.getSavedCity();
             if (!savedCity.equals(showingCity)) {
                 onRefresh();
             }

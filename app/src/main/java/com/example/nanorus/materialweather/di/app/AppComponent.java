@@ -1,12 +1,17 @@
 package com.example.nanorus.materialweather.di.app;
 
+import com.example.nanorus.materialweather.di.dayforecast.DayForecastComponent;
+import com.example.nanorus.materialweather.di.dayforecast.DayForecastModule;
 import com.example.nanorus.materialweather.di.settings.SettingsComponent;
 import com.example.nanorus.materialweather.di.settings.SettingsModule;
 import com.example.nanorus.materialweather.di.ui.auto_complete_text_view.AutoCompleteTextViewComponent;
 import com.example.nanorus.materialweather.di.ui.auto_complete_text_view.AutoCompleteTextViewModule;
 import com.example.nanorus.materialweather.di.weather.WeatherComponent;
 import com.example.nanorus.materialweather.di.weather.WeatherModule;
+import com.example.nanorus.materialweather.entity.weather.repository.DayForecast;
+import com.example.nanorus.materialweather.presentation.presenter.dayforecast.DayForecastPresenter;
 import com.example.nanorus.materialweather.presentation.presenter.settings.SettingsPresenter;
+import com.example.nanorus.materialweather.presentation.ui.adapters.DayForecastRecyclerViewAdapter;
 import com.example.nanorus.materialweather.presentation.ui.adapters.ForecastRecyclerViewAdapter;
 import com.example.nanorus.materialweather.presentation.ui.adapters.auto_complete_text_view.presenter.cities.CitiesAutoCompleteTextViewAdapterPresenter;
 
@@ -22,11 +27,15 @@ public interface AppComponent {
 
     SettingsComponent plusSettingsComponent(SettingsModule settingsModule);
 
+    DayForecastComponent plusDayForecastComponent(DayForecastModule dayForecastModule);
+
     AutoCompleteTextViewComponent plustAutoCompleteTextViewComponent(AutoCompleteTextViewModule settingsModule);
 
     void inject(CitiesAutoCompleteTextViewAdapterPresenter presenter);
 
-    void inject(SettingsPresenter settingsPresenter);
-
     void inject(ForecastRecyclerViewAdapter forecastRecyclerViewAdapter);
+
+    void inject(DayForecastRecyclerViewAdapter dayForecastRecyclerViewAdapter);
+
+    void inject(DayForecastPresenter presenter);
 }

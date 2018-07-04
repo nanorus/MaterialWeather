@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Scrollable view here -->
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stateListAnimator="@null">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:contentScrim="@color/colorSecondaryDark"
+            app:expandedTitleGravity="top"
+            app:expandedTitleMarginStart="24dp"
+            app:expandedTitleMarginTop="56dp"
+            app:expandedTitleTextAppearance="@style/PrimaryBigTextView"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/relativeLayout3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@color/colorSecondary"
+                android:paddingBottom="8dp"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.5">
+
+
+                <ImageView
+                    android:id="@+id/iv_image"
+                    android:layout_width="86dp"
+                    android:layout_height="86dp"
+                    app:layout_constraintEnd_toEndOf="@+id/tv_description"
+                    app:layout_constraintStart_toStartOf="@+id/tv_description"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_last_update" />
+
+                <TextView
+                    android:id="@+id/tv_temp_max"
+                    style="@style/PrimaryBigTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_temp_min"
+                    app:layout_constraintStart_toStartOf="@+id/tv_last_update_text"
+                    app:layout_constraintTop_toTopOf="@+id/tv_temp_min"
+                    tools:text="max" />
+
+                <TextView
+                    android:id="@+id/tv_temp_min"
+                    style="@style/PrimaryBigTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginStart="12dp"
+                    android:textColor="#99FFFFFF"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_description"
+                    app:layout_constraintStart_toEndOf="@+id/tv_temp_max"
+                    app:layout_constraintTop_toTopOf="@+id/tv_description"
+                    tools:text="min" />
+
+                <TextView
+                    android:id="@+id/tv_last_update"
+                    style="@style/PrimarySmallTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/textWhiteGray"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_last_update_text"
+                    app:layout_constraintStart_toEndOf="@+id/tv_last_update_text"
+                    app:layout_constraintTop_toTopOf="@+id/tv_last_update_text"
+                    app:layout_constraintVertical_bias="1.0"
+                    tools:text="Mon, Jan 10, 8:00" />
+
+                <TextView
+                    android:id="@+id/tv_last_update_text"
+                    style="@style/PrimarySmallTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/last_weather_update"
+                    android:textColor="@color/textWhiteGray"
+                    app:layout_constraintStart_toStartOf="@+id/tv_city"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_city" />
+
+                <TextView
+                    android:id="@+id/tv_description"
+                    style="@style/PrimaryBigTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginRight="24dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/iv_image"
+                    tools:text="Description" />
+
+                <TextView
+                    android:id="@+id/tv_city"
+                    style="@style/PrimaryTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="80dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="City" />
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/appBar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@color/colorSecondary"
+                app:layout_collapseMode="pin"
+                app:theme="@style/LightToolbar" />
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_forecast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.support.v7.widget.RecyclerView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+</android.support.design.widget.CoordinatorLayout>

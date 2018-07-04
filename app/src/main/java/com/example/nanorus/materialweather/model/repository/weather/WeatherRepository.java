@@ -15,6 +15,7 @@ import java.util.Date;
 import javax.inject.Inject;
 
 import rx.Single;
+import rx.functions.Func1;
 
 public class WeatherRepository {
 
@@ -71,6 +72,10 @@ public class WeatherRepository {
 
     private void setLastUpdateTime(Date date) {
         mAppPreferencesManager.setLastWeatherUpdateTime(date);
+    }
+
+    public String getSavedCity() {
+        return mAppPreferencesManager.getPlace();
     }
 
 }

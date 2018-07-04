@@ -10,51 +10,53 @@ import java.util.List;
 
 public class DayForecast {
 
-    private Date mDate;
-    private TemperaturesAmplitude mTemperaturesAmplitude;
-    private String mIcon;
-    private List<HourForecast> mHourForecastList;
+    private Date date;
+    private TemperaturesAmplitude temperaturesAmplitude;
+    private String icon;
+    private List<HourForecast> hourForecastList;
+    private String place;
 
-    public DayForecast(Date date, TemperaturesAmplitude temperaturesAmplitude, String icon, List<HourForecast> hourForecastList) {
-        mDate = date;
-        mTemperaturesAmplitude = temperaturesAmplitude;
-        mIcon = icon;
-        mHourForecastList = hourForecastList;
+    public DayForecast(Date date, TemperaturesAmplitude temperaturesAmplitude, String icon, List<HourForecast> hourForecastList, String place) {
+        this.date = date;
+        this.temperaturesAmplitude = temperaturesAmplitude;
+        this.icon = icon;
+        this.hourForecastList = hourForecastList;
+        this.place = place;
     }
 
     public DayForecast() {
     }
 
     public Date getDate() {
-        return mDate;
+        return date;
     }
 
     public void setDate(Date date) {
-        mDate = date;
+        this.date = date;
     }
 
     public TemperaturesAmplitude getTemperaturesAmplitude() {
-        return mTemperaturesAmplitude;
+        return temperaturesAmplitude;
     }
 
     public void setTemperaturesAmplitude(TemperaturesAmplitude temperaturesAmplitude) {
-        mTemperaturesAmplitude = temperaturesAmplitude;
+        this.temperaturesAmplitude = temperaturesAmplitude;
     }
 
     public String getIcon() {
-        return mIcon;
+        return icon;
     }
 
     public void setIcon(String icon) {
-        mIcon = icon;
+        this.icon = icon;
     }
 
     public List<HourForecast> getHourForecastList() {
-        return mHourForecastList;
+        return hourForecastList;
     }
 
     public void setHourForecastList(List<HourForecast> hourForecastList) {
-        mHourForecastList = hourForecastList;
+        this.hourForecastList = hourForecastList;
     }
 
     public static List<DayForecast> fromHourForecasts(List<HourForecast> hourForecasts) {
@@ -83,7 +85,7 @@ public class DayForecast {
         return dayForecasts;
     }
 
-    private static void fillDay(DayForecast dayForecast, List<HourForecast> dayHourForecastList, Date date, List<DayForecast> dayForecasts){
+    private static void fillDay(DayForecast dayForecast, List<HourForecast> dayHourForecastList, Date date, List<DayForecast> dayForecasts) {
         dayForecast.setTemperaturesAmplitude(getTemperaturesAmplitude(dayHourForecastList));
         dayForecast.setHourForecastList(dayHourForecastList);
         dayForecast.setIcon(dayHourForecastList.get((dayHourForecastList.size()) / 2).getIcon());
@@ -96,6 +98,14 @@ public class DayForecast {
         Date date = calendar.getTime();
         calendar.add(Calendar.DATE, 1);
         return date;
+    }
+
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
     }
 
     public static TemperaturesAmplitude getTemperaturesAmplitude(List<HourForecast> hourForecasts) {

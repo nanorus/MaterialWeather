@@ -23,15 +23,10 @@ import rx.schedulers.Schedulers;
 public class SettingsPresenter implements ISettingsPresenter {
     private final String TAG = this.getClass().getSimpleName();
 
-    @Inject
     ResourceManager resourceManager;
-    @Inject
     AppPreferencesManager preferencesManager;
-    @Inject
     Router router;
-    @Inject
     WeatherRepository weatherRepository;
-    @Inject
     SettingsInteractor interactor;
 
     private StringBuilder enteredCity;
@@ -39,8 +34,13 @@ public class SettingsPresenter implements ISettingsPresenter {
 
     private ISettingsActivity mView;
 
-    public SettingsPresenter() {
-        App.getApp().getAppComponent().inject(this);
+    @Inject
+    public SettingsPresenter(ResourceManager resourceManager, AppPreferencesManager preferencesManager, WeatherRepository weatherRepository, SettingsInteractor interactor, Router router) {
+        this.resourceManager = resourceManager;
+        this.preferencesManager = preferencesManager;
+        this.weatherRepository = weatherRepository;
+        this.interactor = interactor;
+        this.router = router;
         enteredCity = new StringBuilder();
         previousEnteredCity = new StringBuilder();
     }

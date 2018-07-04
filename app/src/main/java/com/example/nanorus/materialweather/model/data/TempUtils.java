@@ -8,7 +8,7 @@ public class TempUtils {
             stringTemperature = "+" + String.valueOf(temperature);
         else if (temperature <= 0)
             stringTemperature = String.valueOf(temperature);
-        return stringTemperature;
+        return stringTemperature + "°";
     }
 
     public static int kelvinToCelsius(double kelvin) {

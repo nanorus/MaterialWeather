@@ -22,6 +22,4 @@ public interface IWeatherActivity {
     void closeDrawer();
 
     void setWeatherIcon(Bitmap icon);
-
-    void scrollToTop();
 }

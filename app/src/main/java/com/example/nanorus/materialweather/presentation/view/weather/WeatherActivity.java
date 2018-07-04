@@ -7,14 +7,16 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,8 +31,6 @@ import com.example.nanorus.materialweather.model.data.DateUtils;
 import com.example.nanorus.materialweather.model.data.ResourceManager;
 import com.example.nanorus.materialweather.presentation.presenter.weather.IWeatherPresenter;
 import com.example.nanorus.materialweather.presentation.ui.adapters.ForecastRecyclerViewAdapter;
-
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -66,8 +66,12 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
     TextView lastWeatherUpdateTextView;
     @BindView(R.id.imageView_weather_icon)
     ImageView weatherIcon;
-    @BindView(R.id.nested)
-    NestedScrollView nestedScrollView;
+    @BindView(R.id.appBar)
+    Toolbar toolbar;
+    @BindView(R.id.appBarLayout)
+    AppBarLayout appBarLayout;
+    @BindView(R.id.collapsing)
+    CollapsingToolbarLayout collapsingToolbarLayout;
 
     private ForecastRecyclerViewAdapter adapter;
     private LinearLayoutManager layoutManager;
@@ -76,13 +80,15 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getString(R.string.weather));
 
         setupNavigationDrawer();
+        initUi();
 
         App.getApp().getWeatherComponent().inject(this);
         presenter.bindView(getView());
-        presenter.startWork();
+        presenter.startPresenter();
         swipeRefresh.setOnRefreshListener(() -> presenter.onRefresh());
         swipeRefresh.setColorSchemeResources(R.color.swipe_refresh_color_1, R.color.swipe_refresh_color_2, R.color.swipe_refresh_color_3);
     }
@@ -173,16 +179,11 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
         weatherIcon.setImageBitmap(icon);
     }
 
-    @Override
-    public void scrollToTop() {
-        nestedScrollView.scrollTo(0, 0);
-    }
-
     private void setupNavigationDrawer() {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navigationHeader = (ConstraintLayout) navigationView.getHeaderView(0);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar,
                 R.string.drawer_open, R.string.drawer_close) {
 
             public void onDrawerClosed(View view) {
@@ -222,6 +223,11 @@ public class WeatherActivity extends AppCompatActivity implements IWeatherActivi
             result = false;
 
         presenter.onActivityResult(result, placeTextView.getText().toString());
+    }
+
+    private void initUi() {
+        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.white));
+        collapsingToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.white));
     }
 
 

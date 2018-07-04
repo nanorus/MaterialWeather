@@ -6,7 +6,7 @@ public interface IWeatherPresenter {
 
     void bindView(IWeatherActivity activity);
 
-    void startWork();
+    void startPresenter();
 
     void releasePresenter();
 

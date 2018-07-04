@@ -35,7 +35,7 @@ public class AppPreferencesManager {
     }
 
     public String getPlace() {
-        return getPreferences().getString("place", "Moscow");
+        return getPreferences().getString("now_city", "Moscow");
     }
     public String getCity() {
         return getPreferences().getString("city", "Moscow");

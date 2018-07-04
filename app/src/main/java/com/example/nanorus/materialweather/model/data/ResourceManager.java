@@ -164,13 +164,4 @@ public class ResourceManager {
         return context.getResources().getDrawable(resource);
     }
 
-    private boolean match(int pixel, int[] fromColor, int threshold) {
-        //There may be a better way to match, but I wanted to do a comparison ignoring
-        //transparency, so I couldn't just do a direct integer compare.
-        return Math.abs(Color.red(pixel) - fromColor[0]) < threshold &&
-                Math.abs(Color.green(pixel) - fromColor[1]) < threshold &&
-                Math.abs(Color.blue(pixel) - fromColor[2]) < threshold;
-    }
-
-
 }

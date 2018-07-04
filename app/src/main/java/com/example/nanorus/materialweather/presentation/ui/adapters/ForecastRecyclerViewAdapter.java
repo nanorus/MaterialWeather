@@ -11,35 +11,35 @@ import com.bumptech.glide.Glide;
 import com.example.nanorus.materialweather.R;
 import com.example.nanorus.materialweather.app.App;
 import com.example.nanorus.materialweather.entity.weather.repository.DayForecast;
+import com.example.nanorus.materialweather.model.data.DateUtils;
 import com.example.nanorus.materialweather.model.data.ResourceManager;
 import com.example.nanorus.materialweather.model.data.TempUtils;
+import com.example.nanorus.materialweather.navigation.Router;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
 public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRecyclerViewAdapter.ForecastRecyclerViewHolder> {
 
-    private List<DayForecast> data;
+    private List<DayForecast> list;
     @Inject
     ResourceManager resourceManager;
+    @Inject
+    Router router;
 
     public ForecastRecyclerViewAdapter() {
-        data = new ArrayList<>();
+        list = new ArrayList<>();
         App.getApp().getAppComponent().inject(this);
     }
 
     public void updateData(List<DayForecast> data) {
-        if (this.data != null) {
-            this.data.clear();
-            this.data.addAll(data);
+        if (this.list != null) {
+            this.list.clear();
+            this.list.addAll(data);
         } else
-            this.data = data;
+            this.list = data;
     }
 
     @Override
@@ -50,36 +50,29 @@ public class ForecastRecyclerViewAdapter extends RecyclerView.Adapter<ForecastRe
 
     @Override
     public void onBindViewHolder(ForecastRecyclerViewHolder holder, int position) {
-        DayForecast dayForecast = data.get(position);
+        DayForecast dayForecast = list.get(position);
 
-        holder.dateTextView.setText(getDateString(dayForecast.getDate()));
+        holder.dateTextView.setText(DateUtils.getDayString(dayForecast.getDate()));
         holder.descriptionTextView.setText(dayForecast.getHourForecastList().get(0).getDescription());
         // set temperatures
         int minTemp = dayForecast.getTemperaturesAmplitude().getMinTemperature();
         int maxTemp = dayForecast.getTemperaturesAmplitude().getMaxTemperature();
         String tempMin = TempUtils.temperatureToString(minTemp);
         String tempMax = TempUtils.temperatureToString(maxTemp);
-        holder.tempMaxTextView.setText(tempMax + "°");
-        holder.tempMinTextView.setText(tempMin + "°");
+        holder.tempMaxTextView.setText(tempMax);
+        holder.tempMinTextView.setText(tempMin);
         Glide.with(holder.iconImageView.getContext())
                 .load(resourceManager.getForecastIconDrawable(dayForecast.getIcon()))
                 .into(holder.iconImageView);
-    }
 
-    private String getDateString(Date date) {
-        Calendar day = Calendar.getInstance();
-        day.setTime(date);
-        if (day.get(Calendar.DAY_OF_MONTH) == Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
-            return "Today, " + (new SimpleDateFormat("dd MMMM", Locale.ENGLISH)).format(date);
-        } else {
-            return (new SimpleDateFormat("EEEE, dd MMMM", Locale.ENGLISH)).format(date);
-        }
+        holder.itemView.setOnClickListener(view -> router.startDayForecastActivity(holder.itemView.getContext(), dayForecast.getDate()));
+
     }
 
     @Override
     public int getItemCount() {
-        if (data != null)
-            return data.size();
+        if (list != null)
+            return list.size();
         else
             return 0;
     }

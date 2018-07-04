@@ -3,6 +3,7 @@ package com.example.nanorus.materialweather.model.data;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -45,6 +46,16 @@ public class DateUtils {
     public static String dateToDtTxt(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         return dateFormat.format(date);
+    }
+
+    public static String getDayString(Date date) {
+        Calendar day = Calendar.getInstance();
+        day.setTime(date);
+        if (day.get(Calendar.DAY_OF_MONTH) == Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
+            return "Today, " + (new SimpleDateFormat("dd MMMM", Locale.ENGLISH)).format(date);
+        } else {
+            return (new SimpleDateFormat("EEEE, dd MMMM", Locale.ENGLISH)).format(date);
+        }
     }
 
 }

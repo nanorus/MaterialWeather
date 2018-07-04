@@ -14,8 +14,8 @@ import dagger.Provides;
 public class WeatherModule {
 
     @Provides
-    IWeatherPresenter bindWeatherActivityPresenter(Router router, WeatherInteractor interactor, ResourceManager resourceManager, AppPreferencesManager appPreferencesManager) {
-        return new WeatherPresenter(router, interactor, resourceManager, appPreferencesManager);
+    IWeatherPresenter bindWeatherActivityPresenter(Router router, WeatherInteractor interactor, ResourceManager resourceManager) {
+        return new WeatherPresenter(router, interactor, resourceManager);
     }
 
 }

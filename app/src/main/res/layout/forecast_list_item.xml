@@ -9,10 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        android:layout_marginBottom="0.5dp"
         android:layout_marginLeft="5.5dp"
-        android:layout_marginRight="5.5dp"
         android:layout_marginTop="0.5dp"
+        android:layout_marginRight="5.5dp"
+        android:layout_marginBottom="0.5dp"
         app:cardUseCompatPadding="true"
 
         app:elevation="4dp">
@@ -20,17 +20,16 @@
         <android.support.constraint.ConstraintLayout
             android:id="@+id/relativeLayout2"
             android:layout_width="match_parent"
-            android:layout_height="90dp"
-            android:layout_margin="8dp">
+            android:layout_height="90dp">
 
             <TextView
                 android:id="@+id/forecast_list_item_tv_date"
                 style="@style/PrimaryTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginBottom="24dp"
                 android:text="date"
                 android:textColor="@color/textPrimary"
                 android:textSize="17sp"
@@ -43,8 +42,8 @@
                 style="@style/PrimaryTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="24dp"
                 android:textColor="@color/textSecondary"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -52,14 +51,26 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="description" />
 
+
+
+            <View
+                android:id="@+id/iconBackground"
+                android:layout_width="143dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/ic_weather_background_blue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/tv_temp_max"
                 style="@style/PrimaryTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginBottom="24dp"
                 android:textColor="@color/textPrimary"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView_icon"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -67,14 +78,13 @@
                 app:layout_constraintStart_toEndOf="@+id/imageView_icon"
                 app:layout_constraintTop_toTopOf="@+id/imageView_icon"
                 tools:text="temp" />
-
             <TextView
                 android:id="@+id/tv_temp_min"
                 style="@style/PrimaryTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
                 android:layout_marginTop="24dp"
                 android:textColor="@color/textSecondary"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView_icon"

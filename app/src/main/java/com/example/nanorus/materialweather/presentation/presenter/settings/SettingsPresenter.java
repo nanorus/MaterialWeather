@@ -2,7 +2,6 @@ package com.example.nanorus.materialweather.presentation.presenter.settings;
 
 import android.util.Log;
 
-import com.example.nanorus.materialweather.app.App;
 import com.example.nanorus.materialweather.entity.weather.repository.CurrentWeather;
 import com.example.nanorus.materialweather.model.data.AppPreferencesManager;
 import com.example.nanorus.materialweather.model.data.ResourceManager;
@@ -32,7 +31,7 @@ public class SettingsPresenter implements ISettingsPresenter {
     private StringBuilder enteredCity;
     private StringBuilder previousEnteredCity;
 
-    private ISettingsActivity mView;
+    private ISettingsActivity view;
 
     @Inject
     public SettingsPresenter(ResourceManager resourceManager, AppPreferencesManager preferencesManager, WeatherRepository weatherRepository, SettingsInteractor interactor, Router router) {
@@ -47,19 +46,19 @@ public class SettingsPresenter implements ISettingsPresenter {
 
     @Override
     public void bindView(ISettingsActivity settingsActivity) {
-        mView = settingsActivity;
+        view = settingsActivity;
     }
 
     @Override
     public void startWork() {
-        mView.setCity(interactor.getCity());
+        view.setCity(interactor.getCity());
     }
 
     @Override
     public void onSaveClicked(String locality) {
         if (!locality.isEmpty()) {
             interactor.setCity(locality);
-            router.finishActivityWithResult(mView.getView(), Router.RESULT_CODE_OK);
+            router.finishActivityWithResult(view.getView(), Router.RESULT_CODE_OK);
         } else {
             Toaster.shortToast(resourceManager.enterLocalityText());
         }
@@ -67,21 +66,23 @@ public class SettingsPresenter implements ISettingsPresenter {
 
     @Override
     public void onCitiesAutoCompleteItemClicked(String selectedCity) {
-        mView.showCheckCityProgress(true);
-        Single<Boolean> checkSity = interactor.checkCity(selectedCity);
-        checkSity.observeOn(AndroidSchedulers.mainThread());
-        checkSity.subscribe(new SingleSubscriber<Boolean>() {
+        view.showCheckCityProgress(true);
+        Single<Boolean> checkСity = interactor.checkCity(selectedCity);
+        checkСity.observeOn(AndroidSchedulers.mainThread());
+        checkСity.subscribe(new SingleSubscriber<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 if (aBoolean) {
                     Log.d(TAG, "check city Success");
                     setCity(selectedCity);
-                    mView.showCheckCityProgress(false);
-                    mView.showEnteredCitySuccessNotice(true);
+                 //   view.showCheckCityProgress(false);
+                    //view.showEnteredCitySuccessNotice(true);
+                    view.setCityFoundedTextSuccessful();
                 } else {
                     Log.d(TAG, "check city no success");
                     failEnterCity();
-                    mView.showCheckCityProgress(false);
+                    view.showCheckCityProgress(false);
+                    view.setCityFoundedTextUnsuccessful();
                 }
             }
 
@@ -94,7 +95,7 @@ public class SettingsPresenter implements ISettingsPresenter {
                 } else if (Utils.checkNetWorkError(error)) {
                     Toaster.shortToast(resourceManager.networkError());
                 }
-                mView.showCheckCityProgress(false);
+                view.showCheckCityProgress(false);
             }
         });
 
@@ -102,23 +103,23 @@ public class SettingsPresenter implements ISettingsPresenter {
 
     private void failEnterCity() {
         Toaster.shortToast(resourceManager.cityNotFound());
-        mView.setEnteredCity(previousEnteredCity.toString());
-        mView.showEnteredCitySuccessNotice(false);
+        view.setEnteredCity(previousEnteredCity.toString());
+        view.showEnteredCitySuccessNotice(false);
     }
 
     @Override
     public void onCitiesAutoCompleteTextChanged(String text) {
-        mView.showSaveButton(false);
+        view.showSaveButton(false);
         previousEnteredCity.setLength(0);
         previousEnteredCity.append(enteredCity);
         enteredCity.setLength(0);
         enteredCity.append(text);
-        mView.hideEnteredCitySuccessHotice();
+        view.hideEnteredCitySuccessNotice();
     }
 
     @Override
     public void onHomeClicked() {
-        router.backPress(mView.getView());
+        router.backPress(view.getView());
     }
 
 
@@ -129,19 +130,19 @@ public class SettingsPresenter implements ISettingsPresenter {
                     @Override
                     public void onSuccess(CurrentWeather currentWeather) {
                         Log.d(TAG, "setCity(). get current weather onSuccess");
-                        mView.setCity(currentWeather.getCity());
-                        mView.showEnteredCitySuccessNotice(true);
-                        mView.showSaveButton(true);
+                        view.setCity(currentWeather.getCity());
+                        view.showEnteredCitySuccessNotice(true);
+                        view.showSaveButton(true);
                     }
 
                     @Override
                     public void onError(Throwable error) {
                         Log.d(TAG, "setCity(). get current city Error: " + error.getMessage());
-                        mView.showSaveButton(false);
+                        view.showSaveButton(false);
                         if (Utils.check404Error(error)) {
                             Toaster.shortToast(resourceManager.cityNotFound());
-                            mView.setEnteredCity(previousEnteredCity.toString());
-                            mView.showEnteredCitySuccessNotice(false);
+                            view.setEnteredCity(previousEnteredCity.toString());
+                            view.showEnteredCitySuccessNotice(false);
                         } else if (Utils.checkNetWorkError(error)) {
                             Toaster.shortToast(resourceManager.networkError());
                         }
@@ -152,6 +153,6 @@ public class SettingsPresenter implements ISettingsPresenter {
 
     @Override
     public void releasePresenter() {
-        mView = null;
+        view = null;
     }
 }

@@ -5,6 +5,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -83,6 +84,7 @@ public class DayForecastActivity extends AppCompatActivity {
         }
         adapter = new DayForecastRecyclerViewAdapter();
         forecastRecyclerView.setAdapter(adapter);
+        forecastRecyclerView.addItemDecoration(new DividerItemDecoration(forecastRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
     }
 
     public void setInfo(DayForecast data) {

@@ -19,4 +19,8 @@
     <color name="textPrimary">#212121</color>
     <color name="textSecondary">#757575</color>
     <color name="textWhiteGray">#99FFFFFF</color>
+
+    <color name="searchingCityProcess">#D39E00</color>
+    <color name="searchingCitySuccessful">#00BD06</color>
+    <color name="searchingCityUnsuccessful">#FF0000</color>
 </resources>

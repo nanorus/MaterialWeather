@@ -3,126 +3,171 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".presentation.view.settings.SettingsActivity">
+    android:layout_height="match_parent">
 
-    <android.support.v7.widget.CardView
+    <TextView
+        android:id="@+id/textView_locality_label"
+        style="@style/PrimaryDarkTextView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp"
+        android:paddingTop="8dp"
+        android:text="@string/location"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:paddingBottom="16dp">
+    <TextView
+        android:id="@+id/textView_city"
+        style="@style/SecondarySmallTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView_locality_label"
+        tools:text="London" />
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textView_city"
-                style="@style/PrimaryTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/textView_locality_label"
-                app:layout_constraintTop_toBottomOf="@+id/textView_locality_label"
-                tools:text="city" />
-
-            <TextView
-                android:id="@+id/textView_locality_label"
-                style="@style/PrimaryBigTextView"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/locality"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-            <com.example.nanorus.materialweather.presentation.ui.custom.DelayAutoCompleteTextView
-                android:id="@+id/autoCompleteTextView_city"
-                style="@style/PrimaryEditText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:completionThreshold="1"
-                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 "
-                android:hint="@string/example_london_uk"
-                app:layout_constraintEnd_toStartOf="@+id/imageView_city_entered_success_icon"
-                app:layout_constraintStart_toStartOf="@+id/textView_city"
-                app:layout_constraintTop_toBottomOf="@id/textView_city" />
-
-            <ProgressBar
-                android:id="@+id/progress_bar_check_entered_city"
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/autoCompleteTextView_city"
-                app:layout_constraintEnd_toStartOf="@+id/successTextView"
-                app:layout_constraintTop_toTopOf="@+id/autoCompleteTextView_city"
-                />
-
-
-            <ImageView
-
-                android:id="@+id/imageView_city_entered_success_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/autoCompleteTextView_city"
-                app:layout_constraintEnd_toStartOf="@+id/successTextView"
-                app:layout_constraintTop_toTopOf="@+id/autoCompleteTextView_city"
-                />
-
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_marginBottom="4dp"
-
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@id/autoCompleteTextView_city"
-                app:layout_constraintRight_toRightOf="@id/autoCompleteTextView_city"
-                app:layout_constraintTop_toTopOf="@id/autoCompleteTextView_city" />
-
-            <TextView
-                android:id="@+id/successTextView"
-                style="@style/PrimaryTextView"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView_city_entered_success_icon"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/imageView_city_entered_success_icon"
-                tools:text="success" />
-
-
-        </android.support.constraint.ConstraintLayout>
-    </android.support.v7.widget.CardView>
-
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#90909090"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView_city" />
 
 </android.support.constraint.ConstraintLayout>
+
+
+
+    <!---
+    <?xml version="1.0" encoding="utf-8"?>
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presentation.view.settings.SettingsActivity">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:paddingBottom="16dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView_city"
+                    style="@style/PrimaryTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/textView_locality_label"
+                    app:layout_constraintTop_toBottomOf="@+id/textView_locality_label"
+                    tools:text="city" />
+
+                <TextView
+                    android:id="@+id/textView_locality_label"
+                    style="@style/PrimaryBigTextView"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/locality"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <com.example.nanorus.materialweather.presentation.ui.custom.DelayAutoCompleteTextView
+                    android:id="@+id/autoCompleteTextView_city"
+                    style="@style/PrimaryEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:completionThreshold="1"
+                    android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 "
+                    android:hint="@string/example_london_uk"
+                    app:layout_constraintEnd_toStartOf="@+id/imageView_city_entered_success_icon"
+                    app:layout_constraintStart_toStartOf="@+id/textView_city"
+                    app:layout_constraintTop_toBottomOf="@id/textView_city" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar_check_entered_city"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/autoCompleteTextView_city"
+                    app:layout_constraintEnd_toStartOf="@+id/successTextView"
+                    app:layout_constraintTop_toTopOf="@+id/autoCompleteTextView_city"
+                    />
+
+
+                <ImageView
+
+                    android:id="@+id/imageView_city_entered_success_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/autoCompleteTextView_city"
+                    app:layout_constraintEnd_toStartOf="@+id/successTextView"
+                    app:layout_constraintTop_toTopOf="@+id/autoCompleteTextView_city"
+                    />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginBottom="4dp"
+
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@id/autoCompleteTextView_city"
+                    app:layout_constraintRight_toRightOf="@id/autoCompleteTextView_city"
+                    app:layout_constraintTop_toTopOf="@id/autoCompleteTextView_city" />
+
+                <TextView
+                    android:id="@+id/successTextView"
+                    style="@style/PrimaryTextView"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView_city_entered_success_icon"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/imageView_city_entered_success_icon"
+                    tools:text="success" />
+
+
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
+
+
+    </android.support.constraint.ConstraintLayout>
+    -->
+

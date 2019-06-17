@@ -21,7 +21,11 @@
     <string name="network_error">No internet connection</string>
     <string name="refreshing">Loading forecast..</string>
     <string name="last_weather_update">Last update:</string>
-    <string name="city_found">city found</string>
-    <string name="city_no_found">city not found</string>
+    <string name="weather_city_found">Weather found for this city</string>
+    <string name="weather_city_no_found">Weather not found for this city</string>
+    <string name="weather_city_process">Searching weather for this city</string>
+    <string name="location">Location</string>
+    <string name="select">Select</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

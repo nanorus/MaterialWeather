@@ -42,7 +42,7 @@ public class ResourceManager {
 
 
     public Drawable getForecastIconDrawable(String iconName) {
-        int resource = R.drawable.ic_w_01d;
+        int resource = R.drawable.ic_w_01d_forecast;
         switch (iconName) {
             case "01d":
                 resource = R.drawable.ic_w_01d_forecast;
@@ -104,7 +104,8 @@ public class ResourceManager {
 
 
     public Drawable getWeatherIconDrawable(String iconName) {
-        int resource = R.drawable.ic_w_01d;
+        return getForecastIconDrawable(iconName);
+       /* int resource = R.drawable.ic_w_01d;
         switch (iconName) {
             case "01d":
                 resource = R.drawable.ic_w_01d;
@@ -161,7 +162,7 @@ public class ResourceManager {
                 resource = R.drawable.ic_w_50n;
                 break;
         }
-        return context.getResources().getDrawable(resource);
+        return context.getResources().getDrawable(resource);*/
     }
 
 }

@@ -11,9 +11,19 @@ public interface ISettingsActivity {
 
     void showEnteredCitySuccessNotice(boolean success);
 
-    void hideEnteredCitySuccessHotice();
+    void hideEnteredCitySuccessNotice();
 
     void showSaveButton(boolean show);
 
     void showCheckCityProgress(boolean show);
+
+    void showSelectCityDialog();
+
+    void setCityFoundedTextSuccessful();
+
+    void setCityFoundedTextUnsuccessful();
+
+    void setCityFoundedTextProcess();
+
+    void hideCityFoundedText();
 }

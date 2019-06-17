@@ -1,10 +1,13 @@
 package com.example.nanorus.materialweather.presentation.view.settings;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,8 +25,8 @@ import com.example.nanorus.materialweather.presentation.ui.adapters.auto_complet
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class SettingsActivity extends AppCompatActivity implements ISettingsActivity {
     private final String TAG = this.getClass().getSimpleName();
@@ -33,18 +36,13 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
     @Inject
     ISettingsPresenter presenter;
 
-    @BindView(R.id.autoCompleteTextView_city)
     DelayAutoCompleteTextView cityEditText;
-    @BindView(R.id.progress_bar)
     ProgressBar progressBar;
-    @BindView(R.id.textView_city)
     TextView cityTextView;
-    @BindView(R.id.imageView_city_entered_success_icon)
+    TextView cityFoundedTextView;
     ImageView cityEnteredSuccessIconImageView;
-    @BindView(R.id.successTextView)
     TextView successTextView;
     MenuItem saveMenuItem;
-    @BindView(R.id.progress_bar_check_entered_city)
     ProgressBar checkCityProgressBar;
 
     CitiesAutoCompleteTextViewAdapter cityAutoCompleteAdapter;
@@ -59,10 +57,9 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         App.getApp().getSettingsComponent().inject(this);
-
         presenter.bindView(this);
         presenter.startWork();
-        init();
+        //init();
     }
 
     @Override
@@ -109,9 +106,9 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
     @Override
     public void showEnteredCitySuccessNotice(boolean success) {
         cityEnteredSuccessIconImageView.setVisibility(View.VISIBLE);
-        if (successTextView.getVisibility() == View.INVISIBLE) {
+/*        if (successTextView.getVisibility() == View.INVISIBLE) {
             successTextView.setVisibility(View.VISIBLE);
-        }
+        }*/
         int iconResId = R.drawable.ic_check_white_24dp;
         if (!success) {
             iconResId = R.drawable.ic_close_red_24dp;
@@ -134,27 +131,86 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
     public void showCheckCityProgress(boolean show) {
         if (show) {
             checkCityProgressBar.setVisibility(View.VISIBLE);
+            //  setCityFoundedTextProcess();
         } else {
             checkCityProgressBar.setVisibility(View.INVISIBLE);
+            // hideCityFoundedText();
         }
     }
 
     @Override
-    public void hideEnteredCitySuccessHotice() {
-        if (successTextView.getVisibility() == View.VISIBLE) {
+    public void showSelectCityDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_select_city, null);
+        cityEditText = view.findViewById(R.id.autoCompleteTextView_city);
+        cityEnteredSuccessIconImageView = view.findViewById(R.id.imageView_city_entered_success_icon);
+        progressBar = view.findViewById(R.id.progress_bar);
+        checkCityProgressBar = view.findViewById(R.id.progress_bar_check_entered_city);
+        cityTextView = view.findViewById(R.id.textView_city);
+        cityFoundedTextView = view.findViewById(R.id.textView_city_founded);
+        init();
+
+        builder.setPositiveButton(R.string.select, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                presenter.onSaveClicked(cityEditText.getText().toString());
+                setEnteredCity(cityEditText.getText().toString());
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.setView(view);
+        builder.show();
+    }
+
+    @Override
+    public void setCityFoundedTextSuccessful() {
+        cityFoundedTextView.setTextColor(getResources().getColor(R.color.searchingCitySuccessful));
+        cityFoundedTextView.setText(R.string.weather_city_found);
+        cityFoundedTextView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void setCityFoundedTextUnsuccessful() {
+        cityFoundedTextView.setTextColor(getResources().getColor(R.color.searchingCityUnsuccessful));
+        cityFoundedTextView.setText(R.string.weather_city_no_found);
+        cityFoundedTextView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void setCityFoundedTextProcess() {
+        cityFoundedTextView.setTextColor(getResources().getColor(R.color.searchingCityProcess));
+        cityFoundedTextView.setText(R.string.weather_city_process);
+        cityFoundedTextView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideCityFoundedText() {
+        cityFoundedTextView.setVisibility(View.INVISIBLE);
+    }
+
+
+    @Override
+    public void hideEnteredCitySuccessNotice() {
+/*        if (successTextView.getVisibility() == View.VISIBLE) {
             successTextView.setVisibility(View.INVISIBLE);
         }
-        cityEnteredSuccessIconImageView.setVisibility(View.INVISIBLE);
+        cityEnteredSuccessIconImageView.setVisibility(View.INVISIBLE);*/
     }
 
     private void showSuccessNoticeLabel(boolean success) {
-        if (success) {
-            successTextView.setText(R.string.city_found);
+/*        if (success) {
+            successTextView.setText(R.string.weather_city_found);
             successTextView.setTextColor(getResources().getColor(R.color.white));
         } else {
-            successTextView.setText(R.string.city_no_found);
+            successTextView.setText(R.string.weather_city_no_found);
             successTextView.setTextColor(getResources().getColor(R.color.red));
-        }
+        }*/
     }
 
     private void init() {
@@ -185,6 +241,11 @@ public class SettingsActivity extends AppCompatActivity implements ISettingsActi
                 .duration(900)
                 .delay(100)
                 .playOn(cityEditText);
+    }
+
+    @OnClick({R.id.textView_locality_label, R.id.textView_city})
+    void onLocalityClick() {
+        showSelectCityDialog();
     }
 
 
